@@ -1,0 +1,7 @@
+endpoint: http://localhost:19120/api/v1
+
+auth:
+    type: none
+    profile:
+    timeout: 10
+verify: yes

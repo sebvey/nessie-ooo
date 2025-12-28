@@ -1,0 +1,28 @@
+services:
+  nessie:
+    image: ghcr.io/projectnessie/nessie:latest
+    container_name: nessie
+    environment:
+      NESSIE_VERSION_STORE_TYPE: ROCKSDB
+      QUARKUS_SWAGGER_UI_ALWAYS_INCLUDE: "true"  # enable Swagger UI in prod
+    ports:
+    - "19120:19120" # Nessie API
+    - "19000:9000" # Quarkus health (container 9000 -> host 19000)
+    volumes:
+    - nessie_data:/nessie/data
+
+  minio:
+    image: quay.io/minio/minio:latest
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    ports:
+    - "9000:9000" # MinIO S3 API
+    - "9001:9001" # MinIO console
+    volumes:
+    - minio_data:/data
+
+volumes:
+  nessie_data:
+  minio_data:
