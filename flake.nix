@@ -14,10 +14,10 @@
         in {
           default = pkgs.mkShell {
             packages = [
-              pkgs.openjdk17_headless
+              pkgs.openjdk21_headless
             ];
             shellHook = ''
-              export JAVA_HOME=${pkgs.openjdk17_headless}
+              export JAVA_HOME=${pkgs.openjdk21_headless}
               export PATH=$JAVA_HOME/bin:$PATH
               echo "Nix dev shell: JAVA_HOME=$JAVA_HOME"
             '';

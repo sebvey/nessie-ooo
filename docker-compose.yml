@@ -1,27 +1,62 @@
 services:
   nessie:
-    image: ghcr.io/projectnessie/nessie:latest
+    image: ghcr.io/projectnessie/nessie:0.106.0
     container_name: nessie
-    environment:
-      NESSIE_VERSION_STORE_TYPE: ROCKSDB
-      QUARKUS_SWAGGER_UI_ALWAYS_INCLUDE: "true"  # enable Swagger UI in prod
     ports:
     - "19120:19120" # Nessie API
-    - "19000:9000" # Quarkus health (container 9000 -> host 19000)
+    - "19000:9000" # Management port (metrics and health checks) - container 9000 -> host 19000
+    depends_on:
+      minio:
+        condition: service_healthy
+    environment:
+      # Version store settings -> RocksDB as nessie storage
+      - nessie.version.store.type=ROCKSDB
+      # Authentication Settings - disabled -> everyone can access nessie
+      - nessie.server.authentication.enabled=false
+      # Authorization Settings -> disabled -> all rights on nessie namespaces
+      - nessie.server.authorization.enabled=false
+      ## Object Store Settings (warehouse) -> MinIO
+      - nessie.catalog.default-warehouse=warehouse
+      - nessie.catalog.warehouses.warehouse.location=s3://iceberg-warehouse/
+      - nessie.catalog.service.s3.default-options.region=us-east-1
+      - nessie.catalog.service.s3.default-options.path-style-access=true
+      - nessie.catalog.service.s3.default-options.access-key=urn:nessie-secret:quarkus:nessie.catalog.secrets.access-key
+      - nessie.catalog.secrets.access-key.name=minioadmin
+      - nessie.catalog.secrets.access-key.secret=minioadmin
+        # MinIO endpoint for Nessie server
+      - nessie.catalog.service.s3.default-options.endpoint=http://minio:9000/
+        # MinIO endpoint for clients (on the Podman/Docker host)
+      - nessie.catalog.service.s3.default-options.external-endpoint=http://127.0.0.1:29000/
     volumes:
     - nessie_data:/nessie/data
+    healthcheck:
+      # healthcheck is executed from within the container’s own network namespace
+      test: "exec 3<>/dev/tcp/localhost/9000 && echo -e 'GET /q/health HTTP/1.1\\r\\nHost: localhost\\r\\nConnection: close\\r\\n\\r\\n' >&3 && cat <&3 | grep -q '200 OK'"
+      interval: 5s
+      timeout: 2s
+      retries: 15
 
   minio:
-    image: quay.io/minio/minio:latest
-    command: server /data --console-address ":9001"
-    environment:
-      MINIO_ROOT_USER: minioadmin
-      MINIO_ROOT_PASSWORD: minioadmin
+    image: quay.io/minio/minio:RELEASE.2025-09-07T16-13-09Z
+    container_name: minio
+    command: server /data
     ports:
-    - "9000:9000" # MinIO S3 API
-    - "9001:9001" # MinIO console
+    # API port
+    - "29000:9000"
+    # MinIO UI
+    - "29090:9090"
     volumes:
     - minio_data:/data
+    environment:
+      - MINIO_ROOT_USER=minioadmin
+      - MINIO_ROOT_PASSWORD=minioadmin
+      - MINIO_ADDRESS=:9000
+      - MINIO_CONSOLE_ADDRESS=:9090
+    healthcheck:
+      test: "bash -c '[[ \"$(exec 3<>/dev/tcp/localhost/9000 && echo -e '\"'\"'GET /minio/health/live HTTP/1.1\\r\\nHost: localhost\\r\\nConnection: close\\r\\n\\r\\n'\"'\"' >&3 && cat <&3 | head -n 1)\" == *\"200 OK\"* ]] || exit 1'"
+      interval: 5s
+      timeout: 2s
+      retries: 15
 
 volumes:
   nessie_data:

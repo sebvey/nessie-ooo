@@ -32,3 +32,27 @@
 - Auditable history and easy rollback of table states.
 - Reproducible reads by pinning to tags/commits.
 - Works across multiple engines that support Iceberg and Nessie.
+
+## SVE
+
+nessie exposes the Iceberg REST API at http://<nessie_host_port>/iceberg/<branch>/
+
+To see config :
+curl -s http://127.0.0.1:19120/iceberg/main/v1/config | jq .
+
+It provides endpoint list:
+- GET /v1/{prefix}/namespaces
+- GET /v1/{prefix}/namespaces/{namespace}
+- HEAD /v1/{prefix}/namespaces/{namespace}
+- ...
+
+
+That {prefix} is simply a free-form path segment that a server can use to route requests to some internal catalog context. So: {prefix} is a routing/context handle, server-defined.
+
+Examples of what {prefix} could mean in different servers:
+* a tenant name
+*	a “warehouse ID”
+
+! BUT NOT USED BY NESSIE'S ICEBERG REST API ! 
+
+=> To pick a branch/tag, append it to the URI: http://.../iceberg/my_branch 

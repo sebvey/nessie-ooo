@@ -8,12 +8,18 @@ Use Nix flakes to get a consistent JDK for PySpark/Nessie work.
 ## Enter the dev shell
 From the repo root:
 ```bash
-nix develop
+nix develop -c $SHELL
 ```
 
-With direnv:
+With direnv (auto-enter flake and re-exec your shell once):
 ```bash
-echo "use flake" > .envrc
+cat > .envrc <<'EOF'
+use flake
+if [ -z "${DIRENV_SHELL_REEXEC-}" ]; then
+  export DIRENV_SHELL_REEXEC=1
+  exec "$SHELL"
+fi
+EOF
 direnv allow
 ```
 

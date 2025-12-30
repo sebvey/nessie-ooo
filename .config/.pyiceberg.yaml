@@ -1,0 +1,19 @@
+catalog:
+  default:
+    type: rest
+    uri: http://localhost:19120/iceberg/main
+    default-namespace: nessie
+    s3.endpoint: http://localhost:29000
+    s3.region: us-east-1
+    s3.access-key-id: minioadmin
+    s3.secret-access-key: minioadmin
+    s3.path-style-access: true
+  dev:
+    type: rest
+    uri: http://localhost:19120/iceberg/dev
+    default-namespace: nessie
+    s3.endpoint: http://localhost:29000
+    s3.region: us-east-1
+    s3.access-key-id: minioadmin
+    s3.secret-access-key: minioadmin
+    s3.path-style-access: true

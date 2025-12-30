@@ -16,19 +16,22 @@ from pyspark.sql.functions import current_timestamp
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
-    nessie_uri: str = Field(default="http://localhost:19120/api/v2")
-    nessie_branch: str = Field(default="main")
-    warehouse: str = Field(default="s3a://iceberg-warehouse")
-    s3_endpoint: str = Field(default="http://localhost:9000")
-    s3_access_key: str = Field(default="minioadmin")
-    s3_secret_key: str = Field(default="minioadmin")
+    nessie_uri: str
+    nessie_branch: str
+    warehouse: str
+    s3_endpoint: str
+    s3_access_key: str
+    s3_secret_key: str
 
+    # Align these with your PySpark version; defaults assume PySpark 3.5.x and Hadoop 3.3.2 (Spark 3.5 prebuilt with Hadoop3).
     iceberg_pkg: str = Field(
-        default="org.apache.iceberg:iceberg-spark-runtime-4.1_2.12:1.6.1"
+        default="org.apache.iceberg:iceberg-spark-runtime-3.5_2.12:1.5.2"
     )
     nessie_pkg: str = Field(
-        default="org.projectnessie.nessie-integrations:nessie-spark-extensions-4.1_2.12:0.79.0"
+        default="org.projectnessie.nessie-integrations:nessie-spark-extensions-3.5_2.12:0.79.0"
     )
+    hadoop_s3_pkg: str = Field(default="org.apache.hadoop:hadoop-aws:3.3.2")
+    aws_bundle_pkg: str = Field(default="com.amazonaws:aws-java-sdk-bundle:1.12.262")
 
 
 def build_spark(settings: Settings) -> SparkSession:
@@ -48,13 +51,27 @@ def build_spark(settings: Settings) -> SparkSession:
         .config("spark.sql.catalog.nessie.authentication.type", "NONE")
         .config("spark.sql.catalog.nessie.warehouse", settings.warehouse)
         .config(
-            "spark.jars.packages", f"{settings.iceberg_pkg},{settings.nessie_pkg}"
+            "spark.jars.packages",
+            ",".join(
+                [
+                    settings.iceberg_pkg,
+                    settings.nessie_pkg,
+                    settings.hadoop_s3_pkg,
+                    settings.aws_bundle_pkg,
+                ]
+            ),
         )
         .config("spark.hadoop.fs.s3a.endpoint", settings.s3_endpoint)
         .config("spark.hadoop.fs.s3a.access.key", settings.s3_access_key)
         .config("spark.hadoop.fs.s3a.secret.key", settings.s3_secret_key)
         .config("spark.hadoop.fs.s3a.path.style.access", "true")
         .config("spark.hadoop.fs.s3a.impl", "org.apache.hadoop.fs.s3a.S3AFileSystem")
+        .config("spark.hadoop.fs.s3a.fast.upload", "true")
+        .config(
+            "spark.hadoop.fs.s3a.aws.credentials.provider",
+            "org.apache.hadoop.fs.s3a.SimpleAWSCredentialsProvider",
+        )
+        .config("spark.hadoop.fs.s3a.connection.ssl.enabled", "false")
         .getOrCreate()
     )
 
