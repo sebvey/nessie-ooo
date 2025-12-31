@@ -1,0 +1,143 @@
+from pyiceberg.table.sorting import SortOrder, SortField
+from pyiceberg.partitioning import PartitionField, PartitionSpec
+from pyiceberg.transforms import MonthTransform
+from pyiceberg.schema import Schema
+from pyiceberg.types import (
+    DoubleType,
+    LongType,
+    NestedField,
+    StringType,
+    TimestampType,
+)
+
+id = "ooo.taxi_dataset"
+
+schema = Schema(
+    NestedField(
+        field_id=1,
+        name="VendorID",
+        field_type=LongType(),
+        required=False,
+    ),
+    NestedField(
+        field_id=2,
+        name="tpep_pickup_datetime",
+        field_type=TimestampType(),
+        required=False,
+    ),
+    NestedField(
+        field_id=3,
+        name="tpep_dropoff_datetime",
+        field_type=TimestampType(),
+        required=False,
+    ),
+    NestedField(
+        field_id=4,
+        name="passenger_count",
+        field_type=DoubleType(),
+        required=False,
+    ),
+    NestedField(
+        field_id=5,
+        name="trip_distance",
+        field_type=DoubleType(),
+        required=False,
+    ),
+    NestedField(
+        field_id=6,
+        name="RatecodeID",
+        field_type=DoubleType(),
+        required=False,
+    ),
+    NestedField(
+        field_id=7,
+        name="store_and_fwd_flag",
+        field_type=StringType(),
+        required=False,
+    ),
+    NestedField(
+        field_id=8,
+        name="PULocationID",
+        field_type=LongType(),
+        required=False,
+    ),
+    NestedField(
+        field_id=9,
+        name="DOLocationID",
+        field_type=LongType(),
+        required=False,
+    ),
+    NestedField(
+        field_id=10,
+        name="payment_type",
+        field_type=LongType(),
+        required=False,
+    ),
+    NestedField(
+        field_id=11,
+        name="fare_amount",
+        field_type=DoubleType(),
+        required=False,
+    ),
+    NestedField(
+        field_id=12,
+        name="extra",
+        field_type=DoubleType(),
+        required=False,
+    ),
+    NestedField(
+        field_id=13,
+        name="mta_tax",
+        field_type=DoubleType(),
+        required=False,
+    ),
+    NestedField(
+        field_id=14,
+        name="tip_amount",
+        field_type=DoubleType(),
+        required=False,
+    ),
+    NestedField(
+        field_id=15,
+        name="tolls_amount",
+        field_type=DoubleType(),
+        required=False,
+    ),
+    NestedField(
+        field_id=16,
+        name="improvement_surcharge",
+        field_type=DoubleType(),
+        required=False,
+    ),
+    NestedField(
+        field_id=17,
+        name="total_amount",
+        field_type=DoubleType(),
+        required=False,
+    ),
+    NestedField(
+        field_id=18,
+        name="congestion_surcharge",
+        field_type=DoubleType(),
+        required=False,
+    ),
+    NestedField(
+        field_id=19,
+        name="airport_fee",
+        field_type=DoubleType(),
+        required=False,
+    ),
+    schema_id=0,
+    identifier_field_ids=[],
+)
+
+partition_spec = PartitionSpec(
+    PartitionField(
+        source_id=2,
+        field_id=1000,
+        transform=MonthTransform(),
+        name="tpep_pickup_month",
+    )
+)
+
+sort_order = SortOrder(SortField(source_id=2))

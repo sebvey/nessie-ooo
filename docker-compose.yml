@@ -1,4 +1,5 @@
 services:
+
   nessie:
     image: ghcr.io/projectnessie/nessie:0.106.0
     container_name: nessie
@@ -6,11 +7,22 @@ services:
     - "19120:19120" # Nessie API
     - "19000:9000" # Management port (metrics and health checks) - container 9000 -> host 19000
     depends_on:
+      postgres:
+        condition: service_healthy
       minio:
         condition: service_healthy
     environment:
-      # Version store settings -> RocksDB as nessie storage
-      - nessie.version.store.type=ROCKSDB
+      # Version store settings -> JDBC with Postgres
+      - nessie.version.store.type=JDBC
+      - nessie.version.store.jdbc.url=jdbc:postgresql://postgres:5432/nessie
+      - nessie.version.store.jdbc.username=nessie
+      - nessie.version.store.jdbc.password=nessie
+      # Quarkus datasource configuration for Nessie
+      - quarkus.datasource.db-kind=postgresql
+      - quarkus.datasource.jdbc.url=jdbc:postgresql://postgres:5432/nessie
+      - quarkus.datasource.username=nessie
+      - quarkus.datasource.password=nessie
+      - quarkus.datasource.jdbc.driver=org.postgresql.Driver
       # Authentication Settings - disabled -> everyone can access nessie
       - nessie.server.authentication.enabled=false
       # Authorization Settings -> disabled -> all rights on nessie namespaces
@@ -27,14 +39,29 @@ services:
       - nessie.catalog.service.s3.default-options.endpoint=http://minio:9000/
         # MinIO endpoint for clients (on the Podman/Docker host)
       - nessie.catalog.service.s3.default-options.external-endpoint=http://127.0.0.1:29000/
-    volumes:
-    - nessie_data:/nessie/data
     healthcheck:
       # healthcheck is executed from within the container’s own network namespace
       test: "exec 3<>/dev/tcp/localhost/9000 && echo -e 'GET /q/health HTTP/1.1\\r\\nHost: localhost\\r\\nConnection: close\\r\\n\\r\\n' >&3 && cat <&3 | grep -q '200 OK'"
       interval: 5s
       timeout: 2s
       retries: 15
+
+  postgres:
+    image: postgres:15
+    container_name: nessie-postgres
+    environment:
+      - POSTGRES_DB=nessie
+      - POSTGRES_USER=nessie
+      - POSTGRES_PASSWORD=nessie
+    ports:
+      - "35432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U nessie"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
 
   minio:
     image: quay.io/minio/minio:RELEASE.2025-09-07T16-13-09Z
@@ -59,5 +86,5 @@ services:
       retries: 15
 
 volumes:
-  nessie_data:
   minio_data:
+  postgres_data:

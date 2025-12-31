@@ -1,9 +1,0 @@
-#!/usr/bin/env bash
-set -euo pipefail
-IMAGE="${NESSIE_CLI_IMAGE:-ghcr.io/projectnessie/nessie-cli:0.106.0}"
-CONFIG_DIR="${NESSIEDIR:-$HOME/.config/nessie}"
-mkdir -p "${CONFIG_DIR}"
-exec docker run --rm -it \
-  -v "${CONFIG_DIR}:/root/.config/nessie" \
-  --network host \
-  "${IMAGE}" "$@"

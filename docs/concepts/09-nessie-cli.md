@@ -23,4 +23,7 @@ use branch dev
 create namespace ooo
 list contents
 
+-- assign a branch to another branch
+assign branch dev to main
+
 ```

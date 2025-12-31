@@ -1,5 +1,5 @@
 catalog:
-  default:
+  main:
     type: rest
     uri: http://localhost:19120/iceberg/main
     default-namespace: nessie
@@ -17,3 +17,6 @@ catalog:
     s3.access-key-id: minioadmin
     s3.secret-access-key: minioadmin
     s3.path-style-access: true
+
+# pyiceberg is not compatible with ns timestamp - polars parse timestamp in ns
+downcast-ns-timestamp-to-us-on-write: "True"
