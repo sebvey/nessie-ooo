@@ -1,5 +1,5 @@
 from pyiceberg.catalog import load_catalog
-from nessie_ooo.catalog.table_specs import taxi_dataset
+from nessie_ooo.catalog.table_specs import taxi_dataset, default
 
 
 def main():
@@ -13,6 +13,7 @@ def main():
         schema=taxi_dataset.schema,
         partition_spec=taxi_dataset.partition_spec,
         sort_order=taxi_dataset.sort_order,
+        properties=default.properties,
     )
 
 if __name__ == "__main__":

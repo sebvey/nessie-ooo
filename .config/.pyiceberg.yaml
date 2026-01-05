@@ -17,6 +17,15 @@ catalog:
     s3.access-key-id: minioadmin
     s3.secret-access-key: minioadmin
     s3.path-style-access: true
+  default:
+    type: rest
+    uri: http://localhost:19120/iceberg/good_one
+    default-namespace: nessie
+    s3.endpoint: http://localhost:29000
+    s3.region: us-east-1
+    s3.access-key-id: minioadmin
+    s3.secret-access-key: minioadmin
+    s3.path-style-access: true
 
-# pyiceberg is not compatible with ns timestamp - polars parse timestamp in ns
-downcast-ns-timestamp-to-us-on-write: "True"
+# Iceberg does not yet support 'ns' timestamp precision. - polars parse timestamp in ns
+downcast-ns-timestamp-to-us-on-write: true

@@ -27,11 +27,8 @@ def main() -> None:
 
     catalog = load_catalog("dev")
 
-    src_df: pl.DataFrame = pl.read_parquet(src_url).with_columns(
-        [
-            pl.col("tpep_pickup_datetime").dt.cast_time_unit("us"),
-            pl.col("tpep_dropoff_datetime").dt.cast_time_unit("us"),
-        ]
+    src_df: pl.DataFrame = (
+        pl.read_parquet(src_url)
     )
 
     table = catalog.load_table(taxi_dataset.id)

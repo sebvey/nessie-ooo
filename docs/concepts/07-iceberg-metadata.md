@@ -1,3 +1,5 @@
+Good intro to what is iceberg: https://www.youtube.com/watch?v=TsmhRZElPvM
+
 # Apache Iceberg metadata model (quick guide)
 
 This explains how Iceberg stores table metadata, manifests, and data files. Manifests remain in your warehouse (MinIO/local FS).

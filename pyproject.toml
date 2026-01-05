@@ -7,6 +7,7 @@ requires-python = ">=3.13"
 dependencies = [
     "duckdb>=1.4.3",
     "marimo[sql]>=0.18.4",
+    "numpy>=2.4.0",
     "polars[pyarrow]>=1.36.1",
     "pydantic>=2.12.5",
     "pydantic-settings>=2.12.0",

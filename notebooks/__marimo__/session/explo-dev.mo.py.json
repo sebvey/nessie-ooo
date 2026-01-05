@@ -19,7 +19,7 @@
     },
     {
       "id": "MJUe",
-      "code_hash": "ad51bb1f424bce082039d76b04146c79",
+      "code_hash": "440d411b2fab1a39e4fd1d7e30ffa642",
       "outputs": [
         {
           "type": "data",
@@ -32,12 +32,12 @@
     },
     {
       "id": "vblA",
-      "code_hash": "94a232e710aa69acf956ab8996bb9407",
+      "code_hash": "be6d42509ed8e5c05089b448362e10f0",
       "outputs": [
         {
           "type": "data",
           "data": {
-            "text/html": "<marimo-ui-element object-id='vblA-0' random-id='282f801a-2719-bc0b-480c-6ff6135aa611'><marimo-table data-initial-value='[]' data-label='null' data-data='&quot;[{&#92;&quot;pickup_date&#92;&quot;:&#92;&quot;2022-01-01&#92;&quot;,&#92;&quot;tip_amount_mean&#92;&quot;:2.519818571586238,&#92;&quot;trip_distance_sum&#92;&quot;:376599.13000000117,&#92;&quot;trip_count&#92;&quot;:63441},{&#92;&quot;pickup_date&#92;&quot;:&#92;&quot;2022-01-02&#92;&quot;,&#92;&quot;tip_amount_mean&#92;&quot;:2.765876482771657,&#92;&quot;trip_distance_sum&#92;&quot;:362812.7099999999,&#92;&quot;trip_count&#92;&quot;:58421},{&#92;&quot;pickup_date&#92;&quot;:&#92;&quot;2022-01-03&#92;&quot;,&#92;&quot;tip_amount_mean&#92;&quot;:2.486244458255604,&#92;&quot;trip_distance_sum&#92;&quot;:557758.1399999992,&#92;&quot;trip_count&#92;&quot;:72405},{&#92;&quot;pickup_date&#92;&quot;:&#92;&quot;2022-01-04&#92;&quot;,&#92;&quot;tip_amount_mean&#92;&quot;:2.35784689251903,&#92;&quot;trip_distance_sum&#92;&quot;:258920.91999999608,&#92;&quot;trip_count&#92;&quot;:74562},{&#92;&quot;pickup_date&#92;&quot;:&#92;&quot;2022-01-05&#92;&quot;,&#92;&quot;tip_amount_mean&#92;&quot;:2.318953775203805,&#92;&quot;trip_distance_sum&#92;&quot;:441324.6000000009,&#92;&quot;trip_count&#92;&quot;:74592},{&#92;&quot;pickup_date&#92;&quot;:&#92;&quot;2022-01-06&#92;&quot;,&#92;&quot;tip_amount_mean&#92;&quot;:2.269874231938884,&#92;&quot;trip_distance_sum&#92;&quot;:403197.74999999953,&#92;&quot;trip_count&#92;&quot;:79909},{&#92;&quot;pickup_date&#92;&quot;:&#92;&quot;2022-01-07&#92;&quot;,&#92;&quot;tip_amount_mean&#92;&quot;:2.2716256460399338,&#92;&quot;trip_distance_sum&#92;&quot;:216694.17999999915,&#92;&quot;trip_count&#92;&quot;:71590},{&#92;&quot;pickup_date&#92;&quot;:&#92;&quot;2022-01-08&#92;&quot;,&#92;&quot;tip_amount_mean&#92;&quot;:2.365159118506235,&#92;&quot;trip_distance_sum&#92;&quot;:261795.08999999924,&#92;&quot;trip_count&#92;&quot;:83177},{&#92;&quot;pickup_date&#92;&quot;:&#92;&quot;2022-01-09&#92;&quot;,&#92;&quot;tip_amount_mean&#92;&quot;:2.5438672790327637,&#92;&quot;trip_distance_sum&#92;&quot;:374978.6399999995,&#92;&quot;trip_count&#92;&quot;:64014},{&#92;&quot;pickup_date&#92;&quot;:&#92;&quot;2022-01-10&#92;&quot;,&#92;&quot;tip_amount_mean&#92;&quot;:2.279506052217379,&#92;&quot;trip_distance_sum&#92;&quot;:351410.94000000117,&#92;&quot;trip_count&#92;&quot;:73692}]&quot;' data-total-rows='181' data-total-columns='4' data-max-columns='50' data-banner-text='&quot;&quot;' data-pagination='true' data-page-size='10' data-field-types='[[&quot;pickup_date&quot;,[&quot;date&quot;,&quot;date&quot;]],[&quot;tip_amount_mean&quot;,[&quot;number&quot;,&quot;f64&quot;]],[&quot;trip_distance_sum&quot;,[&quot;number&quot;,&quot;f64&quot;]],[&quot;trip_count&quot;,[&quot;integer&quot;,&quot;u32&quot;]]]' data-show-filters='true' data-show-download='true' data-show-column-summaries='true' data-show-data-types='true' data-show-page-size-selector='true' data-show-column-explorer='true' data-show-chart-builder='true' data-row-headers='[]' data-has-stable-row-id='false' data-lazy='false' data-preload='false'></marimo-table></marimo-ui-element>"
+            "application/json": "{\"rest-metrics-reporting-enabled\": \"false\", \"warehouse\": \"s3://iceberg-warehouse\", \"rest-page-size\": \"200\", \"prefix\": \"good_one\", \"type\": \"rest\", \"uri\": \"http://localhost:19120/iceberg/\", \"default-namespace\": \"nessie\", \"s3.endpoint\": \"http://localhost:29000\", \"s3.region\": \"us-east-1\", \"s3.access-key-id\": \"minioadmin\", \"s3.secret-access-key\": \"minioadmin\", \"s3.path-style-access\": \"true\", \"nessie.core-base-uri\": \"http://localhost:19120/api/\", \"nessie.catalog-base-uri\": \"http://localhost:19120/catalog/v1/\", \"nessie.iceberg-base-uri\": \"http://localhost:19120/iceberg/\", \"nessie.is-nessie-catalog\": \"true\", \"nessie.prefix-pattern\": \"{ref}|{warehouse}\", \"nessie.default-branch.name\": \"good_one\"}"
           }
         }
       ],
@@ -45,12 +45,12 @@
     },
     {
       "id": "bkHC",
-      "code_hash": "befbd7ba0ffc01212d068c25f780fb68",
+      "code_hash": "5727344d22a90614fb0221b12e17e3f6",
       "outputs": [
         {
           "type": "data",
           "data": {
-            "text/plain": ""
+            "text/html": "<marimo-ui-element object-id='bkHC-0' random-id='44425f45-cbdd-6412-dbed-d5826df3d21a'><marimo-table data-initial-value='[]' data-label='null' data-data='&quot;[{&#92;&quot;pickup_year_month&#92;&quot;:&#92;&quot;2022-01&#92;&quot;,&#92;&quot;tip_amount_mean&#92;&quot;:2.3857225902025,&#92;&quot;trip_distance_sum&#92;&quot;:13238030.390000023,&#92;&quot;trip_count&#92;&quot;:2463900},{&#92;&quot;pickup_year_month&#92;&quot;:&#92;&quot;2022-02&#92;&quot;,&#92;&quot;tip_amount_mean&#92;&quot;:2.5008177366122677,&#92;&quot;trip_distance_sum&#92;&quot;:17435991.89999986,&#92;&quot;trip_count&#92;&quot;:2979419},{&#92;&quot;pickup_year_month&#92;&quot;:&#92;&quot;2022-03&#92;&quot;,&#92;&quot;tip_amount_mean&#92;&quot;:2.6496394458701737,&#92;&quot;trip_distance_sum&#92;&quot;:20901389.999999966,&#92;&quot;trip_count&#92;&quot;:3627888},{&#92;&quot;pickup_year_month&#92;&quot;:&#92;&quot;2022-04&#92;&quot;,&#92;&quot;tip_amount_mean&#92;&quot;:2.7039739554019913,&#92;&quot;trip_distance_sum&#92;&quot;:20407653.289999954,&#92;&quot;trip_count&#92;&quot;:3599902},{&#92;&quot;pickup_year_month&#92;&quot;:&#92;&quot;2022-05&#92;&quot;,&#92;&quot;tip_amount_mean&#92;&quot;:2.824751876380044,&#92;&quot;trip_distance_sum&#92;&quot;:24604460.50000016,&#92;&quot;trip_count&#92;&quot;:3588292},{&#92;&quot;pickup_year_month&#92;&quot;:&#92;&quot;2022-06&#92;&quot;,&#92;&quot;tip_amount_mean&#92;&quot;:2.796023950358668,&#92;&quot;trip_distance_sum&#92;&quot;:21233947.44000021,&#92;&quot;trip_count&#92;&quot;:3557692},{&#92;&quot;pickup_year_month&#92;&quot;:&#92;&quot;2022-07&#92;&quot;,&#92;&quot;tip_amount_mean&#92;&quot;:2.6707751295231605,&#92;&quot;trip_distance_sum&#92;&quot;:18418074.11000014,&#92;&quot;trip_count&#92;&quot;:3174334},{&#92;&quot;pickup_year_month&#92;&quot;:&#92;&quot;2022-08&#92;&quot;,&#92;&quot;tip_amount_mean&#92;&quot;:1.6626666666666665,&#92;&quot;trip_distance_sum&#92;&quot;:47.31,&#92;&quot;trip_count&#92;&quot;:15}]&quot;' data-total-rows='8' data-total-columns='4' data-max-columns='50' data-banner-text='&quot;&quot;' data-pagination='true' data-page-size='10' data-field-types='[[&quot;pickup_year_month&quot;,[&quot;string&quot;,&quot;str&quot;]],[&quot;tip_amount_mean&quot;,[&quot;number&quot;,&quot;f64&quot;]],[&quot;trip_distance_sum&quot;,[&quot;number&quot;,&quot;f64&quot;]],[&quot;trip_count&quot;,[&quot;integer&quot;,&quot;u32&quot;]]]' data-show-filters='true' data-show-download='true' data-show-column-summaries='false' data-show-data-types='true' data-show-page-size-selector='true' data-show-column-explorer='true' data-show-chart-builder='true' data-row-headers='[]' data-has-stable-row-id='false' data-lazy='false' data-preload='false'></marimo-table></marimo-ui-element>"
           }
         }
       ],
@@ -58,15 +58,26 @@
     },
     {
       "id": "lEQa",
-      "code_hash": "a5fe45140c6c77a7d9560c4c642a125a",
-      "outputs": [
-        {
-          "type": "data",
-          "data": {
-            "application/json": "{\"0\": \"text/plain:table {\\n  1: VendorID: optional long\\n  2: tpep_pickup_datetime: optional timestamp\\n  3: tpep_dropoff_datetime: optional timestamp\\n  4: passenger_count: optional double\\n  5: trip_distance: optional double\\n  6: RatecodeID: optional double\\n  7: store_and_fwd_flag: optional string\\n  8: PULocationID: optional long\\n  9: DOLocationID: optional long\\n  10: payment_type: optional long\\n  11: fare_amount: optional double\\n  12: extra: optional double\\n  13: mta_tax: optional double\\n  14: tip_amount: optional double\\n  15: tolls_amount: optional double\\n  16: improvement_surcharge: optional double\\n  17: total_amount: optional double\\n  18: congestion_surcharge: optional double\\n  19: airport_fee: optional double\\n}\", \"1\": \"text/plain:table {\\n  1: VendorID: optional long\\n  2: tpep_pickup_datetime: optional timestamp\\n  3: tpep_dropoff_datetime: optional timestamp\\n  4: passenger_count: optional double\\n  5: trip_distance: optional double\\n  6: RatecodeID: optional double\\n  7: store_and_fwd_flag: optional string\\n  8: PULocationID: optional long\\n  9: DOLocationID: optional long\\n  10: payment_type: optional long\\n  11: fare_amount: optional double\\n  12: extra: optional double\\n  13: mta_tax: optional double\\n  14: tip_amount: optional double\\n  15: tolls_amount: optional double\\n  16: improvement_surcharge: optional double\\n  17: total_amount: optional double\\n  18: congestion_surcharge: optional double\\n  19: Airport_fee: optional double\\n}\"}"
-          }
-        }
-      ],
+      "code_hash": "d6d4d5b0e02e6ffd0d39c2393cbaaa63",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "PKri",
+      "code_hash": "7a9395ee8187fd67c2155d56053cea3c",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "Xref",
+      "code_hash": "9c656357165bd55f9b92a0fa2760af8f",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "SFPL",
+      "code_hash": "5b507c18d14a3e62331520557df2da17",
+      "outputs": [],
       "console": []
     }
   ]
