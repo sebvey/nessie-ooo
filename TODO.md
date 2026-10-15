@@ -71,8 +71,18 @@ Retours du test (implémentés) :
 
 ## 4. Slide 03/09 (stack) : détail au clic
 
-- [ ] Clic sur un bloc → panneau de détail : rôle, ce que fait l'élément dans la démo, fichier(s)
-      concerné(s), alternatives.
+- [x] Clic sur un bloc → panneau de détail : rôle, ce que fait l'élément dans la démo, fichier(s)
+      concerné(s), alternatives, et une phrase « à dire ». Fermeture par Échap, ✕ ou clic à côté ;
+      les flèches ne changent pas de slide tant que le panneau est ouvert.
+- [x] Slide stack réorganisée : barre `pipeline.py · orchestration` au-dessus des colonnes data plane
+      et control plane (pas de l'infra) ; colonnes Infra / Data plane (PyIceberg, dbt · DuckDB,
+      plugin) / Control plane (`nessie.py`, Alerte). mise passe dans la légende.
+- [x] MinIO → Silo (fork communautaire de MinIO par Pigsty) dans les slides, le README, `plan.md`,
+      le scénario et la sortie de `stack-up` ; noms de services Docker inchangés. Détail Silo : seules
+      les alternatives de production restent.
+- [x] Sélecteur de thème clair / sombre (bouton ☀/☾ et touche `t`) sur les deux decks.
+- [ ] Mineur : `docker-compose.yml` utilise `nessie.version.store.type=JDBC`, variante dépréciée dans
+      Nessie (préférer `JDBC2`). Ne pas changer avant la présentation.
 
 ## 5. Slide 08/09 (maturité) : ajouter Snowflake
 

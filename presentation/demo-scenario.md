@@ -7,12 +7,12 @@
 ## Avant de démarrer (préparation)
 
 ```bash
-mise run stack-reset   # ardoise vierge : efface Nessie + MinIO
+mise run stack-reset   # ardoise vierge : efface Nessie + Silo
 mise run stack-up      # démarre la stack et prépare main
 ```
 
 `stack-up` affiche 3 étapes (sans pause) :
-1. **Démarrer la stack** : Postgres, MinIO + bucket `iceberg-warehouse`, Nessie.
+1. **Démarrer la stack** : Postgres, Silo (fork de MinIO) + bucket `iceberg-warehouse`, Nessie.
 2. **État initial de Nessie** : `main` est sur le « commit zéro » (`2e1cfa8`), l'équivalent d'un
    dépôt Git vide. Aucun namespace, aucune table.
 3. **Créer les namespaces** `raw` (données brutes) et `marts` (données transformées et testées).
@@ -26,7 +26,7 @@ mise run stack-up      # démarre la stack et prépare main
 > namespaces donnent à `main` ses premiers commits. `mise run pipeline-ok` refuse d'ailleurs de
 > démarrer si `stack-up` n'a pas été lancé.
 
-Utile à garder ouvert : `mise run branches` (liste des refs) et éventuellement la console MinIO
+Utile à garder ouvert : `mise run branches` (liste des refs) et éventuellement la console Silo
 (http://localhost:29090, `minioadmin` / `8qqR90Az`).
 
 ---

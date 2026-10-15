@@ -18,11 +18,12 @@ pipeline-HHMMSS      (raw.orders)        (marts.daily_orders)                   
 |---|---|---|
 | Catalogue versionné (branches/merge) | **Nessie** | le sujet de la démo — Git pour les tables |
 | Format de table | **Apache Iceberg** | tables ouvertes, snapshots |
-| Stockage objet | **MinIO** (S3) | fichiers de données/métadonnées Iceberg |
+| Stockage objet | **Silo** (S3, fork communautaire de MinIO) | fichiers de données/métadonnées Iceberg |
 | Version store de Nessie | **PostgreSQL** | persiste l'historique des commits/branches |
 | Moteur de transformation + tests | **dbt** sur **DuckDB** | léger |
 | Accès catalogue + **branches** | **PyIceberg** | seul chemin propre pour cibler une branche Nessie |
-| Control plane (branch/merge/alerte) | **API REST Nessie** (Python) | opérations Git *hors* dbt |
+| Orchestration + porte de qualité | **pipeline.py** (Python) | enchaîne les étapes, merge si vert, alerte sinon |
+| Control plane (branch/merge/tag) | **API REST Nessie** (Python) | opérations Git *hors* dbt |
 
 > **Pourquoi ce découpage ?** Nessie sépare deux plans. Le *control plane* (créer/merger une
 > branche) est propre à Nessie et vit dans l'orchestrateur Python. Le *data plane* (lire/écrire
@@ -41,7 +42,7 @@ pipeline-HHMMSS      (raw.orders)        (marts.daily_orders)                   
 ## Démarrage
 
 ```bash
-mise run stack-up      # démarre Nessie + Postgres + MinIO, crée le bucket et les namespaces raw / marts
+mise run stack-up      # démarre Nessie + Postgres + Silo, crée le bucket et les namespaces raw / marts
 mise run pipeline-ok   # pipeline nominale : branche → ingest → dbt build (vert) → MERGE sur main ✅
 mise run pipeline-ko   # pipeline en échec : mauvaise donnée → tests rouges → PAS de merge + ALERTE ⛔
 ```
@@ -58,7 +59,7 @@ mise run stack-reset           # arrête et efface tout (repart de zéro)
 ```
 
 - Nessie API : http://localhost:19120
-- Console MinIO : http://localhost:29090 (`minioadmin` / `8qqR90Az`)
+- Console Silo : http://localhost:29090 (`minioadmin` / `8qqR90Az`)
 
 ## Explorer les données (notebook marimo)
 
@@ -100,7 +101,7 @@ actes) et [`presentation/demo-cli.md`](presentation/demo-cli.md) (parcours du RE
 ## Arborescence
 
 ```
-├─ docker-compose.yml          # Nessie + Postgres + MinIO + init bucket
+├─ docker-compose.yml          # Nessie + Postgres + Silo (MinIO) + init bucket
 ├─ mise.toml                   # outils + variables d'environnement
 ├─ tasks.toml                  # tâches : stack-up / pipeline-ok / pipeline-ko / branches / stack-reset …
 ├─ src/nessie_demo/

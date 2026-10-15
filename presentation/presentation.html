@@ -96,10 +96,40 @@
   ul.tight li strong{color:var(--ink)}
 
   .lanes{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;margin-top:8px}
-  .lane{display:flex;flex-direction:column;gap:12px}
+  .lane{display:flex;flex-direction:column;gap:10px}
+  .orch{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0 18px;margin-top:4px}
+  .orch .bar{grid-column:2 / 4;border-left:4px solid var(--accent);background:color-mix(in srgb,var(--accent) 8%,var(--surface))}
+  .orch .bar .k{font-size:.95rem}
+  .orch .down{grid-row:2;text-align:center;color:var(--accent);font-size:1.1rem;line-height:1;padding:6px 0 2px}
+  .orch .down.c2{grid-column:2} .orch .down.c3{grid-column:3}
   .mini{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;box-shadow:var(--shadow)}
   .mini .k{font-family:var(--font-mono);font-weight:600;font-size:.92rem;color:var(--ink);display:flex;align-items:center;gap:8px}
   .mini .v{font-size:.84rem;color:var(--muted);margin-top:3px;line-height:1.45}
+  button.mini{display:block;width:100%;text-align:left;font:inherit;color:inherit;cursor:pointer;position:relative;transition:border-color .15s,transform .15s}
+  button.mini::after{content:"+";position:absolute;top:10px;right:13px;font-family:var(--font-mono);font-size:.9rem;color:var(--line-strong);transition:color .15s}
+  button.mini:hover{border-color:var(--accent);transform:translateY(-1px)}
+  button.mini:hover::after{color:var(--accent)}
+  .hint{font-family:var(--font-mono);font-size:.72rem;color:var(--muted);letter-spacing:.04em;margin:-6px 0 14px}
+
+  /* detail panel */
+  dialog.detail{border:1px solid var(--line);border-radius:16px;padding:0;background:var(--surface);color:var(--ink);box-shadow:0 24px 60px -20px rgba(0,0,0,.45);width:min(680px,calc(100vw - 32px));max-height:calc(100vh - 48px)}
+  dialog.detail::backdrop{background:rgba(10,20,18,.45);backdrop-filter:blur(2px)}
+  .detail .dh{display:flex;align-items:flex-start;gap:12px;padding:20px 22px 14px;border-bottom:1px solid var(--line);border-top:4px solid var(--dcol,var(--accent));border-radius:16px 16px 0 0}
+  .detail .dh h3{margin:0;font-family:var(--font-mono);font-size:1.15rem;letter-spacing:-.01em}
+  .detail .dh .lane-l{font-family:var(--font-mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0 0 4px}
+  .detail .close{margin-left:auto;border:1px solid var(--line);background:var(--surface-2);color:var(--muted);border-radius:8px;width:32px;height:32px;font-size:1rem;cursor:pointer;flex:none}
+  .detail .close:hover{color:var(--ink);border-color:var(--line-strong)}
+  .detail .db{padding:16px 22px 22px;overflow-y:auto}
+  .detail .db p{margin:0 0 12px;font-size:.92rem}
+  .detail .role{color:var(--ink);font-size:1rem !important;font-weight:550}
+  .detail h4{font-family:var(--font-mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:16px 0 6px}
+  .detail ul{margin:0;padding-left:1.1em}
+  .detail li{margin:.3em 0;font-size:.9rem;color:var(--muted)}
+  .detail li strong{color:var(--ink)}
+  .detail .files{display:flex;flex-wrap:wrap;gap:6px}
+  .detail .no li{list-style:none;margin-left:-1.1em;padding-left:1.4em;position:relative;opacity:.85}
+  .detail .no li::before{content:"✕";position:absolute;left:0;color:var(--fail);font-size:.8rem}
+  .detail .say{margin-top:16px;padding:10px 14px;border-left:3px solid var(--dcol,var(--accent));background:var(--surface-2);border-radius:0 8px 8px 0;font-size:.9rem;color:var(--ink)}
   .dot{width:8px;height:8px;border-radius:50%;flex:none}
   .caption{margin-top:22px;font-size:.9rem;color:var(--muted);border-left:2px solid var(--accent);padding-left:14px;max-width:70ch}
 
@@ -168,6 +198,8 @@
   .counter b{color:var(--ink)}
   .brand{position:fixed;right:22px;bottom:18px;font-family:var(--font-mono);font-size:.74rem;color:var(--muted);z-index:40;letter-spacing:.08em}
   :focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+  .theme-toggle{position:fixed;top:14px;right:18px;z-index:60;width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--muted);font-size:1rem;line-height:1;cursor:pointer;box-shadow:var(--shadow);transition:color .15s,border-color .15s}
+  .theme-toggle:hover{color:var(--ink);border-color:var(--accent)}
 
   /* reveal */
   .reveal{opacity:0;transform:translateY(16px);transition:opacity .6s cubic-bezier(.2,.7,.2,1),transform .6s cubic-bezier(.2,.7,.2,1)}
@@ -182,7 +214,8 @@
   .slide.in .pop.d1{transition-delay:.7s}.slide.in .pop.d2{transition-delay:.85s}.slide.in .pop.d3{transition-delay:1s}.slide.in .pop.d4{transition-delay:1.15s}
 
   @media (max-width:840px){
-    .cols,.lanes,.steps,.acts{grid-template-columns:1fr}
+    .cols,.lanes,.steps,.acts,.orch{grid-template-columns:1fr}
+    .orch .bar{grid-column:auto} .orch .down{display:none}
     .steps{grid-template-columns:1fr 1fr}
     .row{grid-template-columns:1fr;gap:8px}
     .nav{display:none}
@@ -192,6 +225,10 @@
     .reveal,.draw,.pop{transition:none;opacity:1;transform:none;stroke-dashoffset:0}
   }
 </style>
+<script>
+  // thème mémorisé (bouton ☀/☾ ou touche t), appliqué avant le rendu pour éviter un flash
+  try{var t=localStorage.getItem('deck-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}
+</script>
 </head>
 <body>
 
@@ -199,6 +236,7 @@
 <nav class="nav" id="nav" aria-label="Slides"></nav>
 <div class="counter" id="counter"><b>01</b> / 09</div>
 <div class="brand">NESSIE · DEMO</div>
+<button type="button" class="theme-toggle" id="theme-toggle"></button>
 
 <main class="deck" id="deck">
 
@@ -212,7 +250,7 @@
       <div class="cover-chips reveal">
         <span class="chip">Nessie</span><span class="chip">Apache Iceberg</span>
         <span class="chip">dbt · DuckDB</span><span class="chip">PyIceberg</span>
-        <span class="chip">MinIO</span><span class="chip">100 % local</span>
+        <span class="chip">Silo (MinIO)</span><span class="chip">100 % local</span>
       </div>
       <p class="cover-sub reveal" style="margin-top:34px">↓ &nbsp;faites défiler &nbsp;·&nbsp; ← → &nbsp;pour naviguer</p>
     </div>
@@ -256,26 +294,31 @@
     <div class="wrap">
       <p class="eyebrow reveal">02 · La stack</p>
       <h2 class="reveal">Léger et 100 % local</h2>
+      <p class="hint reveal">Cliquer sur un bloc pour le détail</p>
+      <div class="orch reveal">
+        <button type="button" class="mini bar" data-detail="pipeline" aria-haspopup="dialog"><div class="k"><span class="dot" style="background:var(--accent)"></span>pipeline.py · orchestration</div><div class="v">Enchaîne les étapes et <strong>décide</strong> : merge si les tests sont verts, alerte sinon.</div></button>
+        <span class="down c2" aria-hidden="true">↓</span><span class="down c3" aria-hidden="true">↓</span>
+      </div>
       <div class="lanes">
         <div class="lane reveal">
           <p class="col-h">Infra · docker-compose</p>
-          <div class="mini"><div class="k"><span class="dot" style="background:var(--accent)"></span>Nessie</div><div class="v">Le catalogue versionné « à la Git » — branches / merge. La star.</div></div>
-          <div class="mini"><div class="k"><span class="dot" style="background:var(--line-strong)"></span>PostgreSQL</div><div class="v">Version store de Nessie : persiste commits &amp; branches.</div></div>
-          <div class="mini"><div class="k"><span class="dot" style="background:var(--line-strong)"></span>MinIO</div><div class="v">Stockage objet S3 pour les fichiers Iceberg.</div></div>
+          <button type="button" class="mini" data-detail="nessie" aria-haspopup="dialog"><div class="k"><span class="dot" style="background:var(--accent)"></span>Nessie</div><div class="v">Le catalogue versionné « à la Git » — branches / merge. La star.</div></button>
+          <button type="button" class="mini" data-detail="postgres" aria-haspopup="dialog"><div class="k"><span class="dot" style="background:var(--line-strong)"></span>PostgreSQL</div><div class="v">Version store de Nessie : persiste commits &amp; branches.</div></button>
+          <button type="button" class="mini" data-detail="minio" aria-haspopup="dialog"><div class="k"><span class="dot" style="background:var(--line-strong)"></span>Silo</div><div class="v">Stockage objet S3 pour les fichiers Iceberg (fork de MinIO).</div></button>
         </div>
         <div class="lane reveal">
-          <p class="col-h">Traitement · Python</p>
-          <div class="mini"><div class="k"><span class="dot" style="background:var(--pass)"></span>PyIceberg</div><div class="v">Accès catalogue <strong>scopé à une branche</strong> (lecture / écriture Iceberg).</div></div>
-          <div class="mini"><div class="k"><span class="dot" style="background:var(--pass)"></span>dbt · DuckDB</div><div class="v">Les transformations <strong>+ les tests</strong> de qualité.</div></div>
-          <div class="mini"><div class="k"><span class="dot" style="background:var(--pass)"></span>Plugin dbt custom</div><div class="v">Matérialise les marts en tables Iceberg sur la branche.</div></div>
+          <p class="col-h">Data plane · lire, transformer</p>
+          <button type="button" class="mini" data-detail="pyiceberg" aria-haspopup="dialog"><div class="k"><span class="dot" style="background:var(--pass)"></span>PyIceberg</div><div class="v">Accès catalogue <strong>scopé à une branche</strong> (lecture / écriture Iceberg).</div></button>
+          <button type="button" class="mini" data-detail="dbt" aria-haspopup="dialog"><div class="k"><span class="dot" style="background:var(--pass)"></span>dbt · DuckDB</div><div class="v">Les transformations <strong>+ les tests</strong> de qualité.</div></button>
+          <button type="button" class="mini" data-detail="plugin" aria-haspopup="dialog"><div class="k"><span class="dot" style="background:var(--pass)"></span>Plugin dbt custom</div><div class="v">Matérialise les marts en tables Iceberg sur la branche.</div></button>
         </div>
         <div class="lane reveal">
-          <p class="col-h">Orchestration</p>
-          <div class="mini"><div class="k"><span class="dot" style="background:var(--tag)"></span>Client API Nessie</div><div class="v">Le <strong>control plane</strong> : create branch / merge / tag / alerte.</div></div>
-          <div class="mini"><div class="k"><span class="dot" style="background:var(--tag)"></span>mise</div><div class="v">Les commandes de démo : <code>stack-up</code> · <code>pipeline-ok</code> · <code>pipeline-ko</code>.</div></div>
+          <p class="col-h">Control plane · agir, prévenir</p>
+          <button type="button" class="mini" data-detail="client" aria-haspopup="dialog"><div class="k"><span class="dot" style="background:var(--tag)"></span>nessie.py</div><div class="v">Classe Python qui appelle l'<strong>API REST de Nessie</strong> : branche, merge, tag.</div></button>
+          <button type="button" class="mini" data-detail="alert" aria-haspopup="dialog"><div class="k"><span class="dot" style="background:var(--tag)"></span>Alerte</div><div class="v">Console, plus un webhook Slack en option.</div></button>
         </div>
       </div>
-      <p class="caption reveal">Nessie + Iceberg + MinIO côté catalogue/stockage · dbt-DuckDB + PyIceberg côté transformation/tests — orchestrés par un script Python et des tâches mise. <strong>100 % local.</strong></p>
+      <p class="caption reveal">L'infra est démarrée par <code>stack-up</code> ; <code>pipeline.py</code> orchestre le data plane et le control plane, lancé par <code>pipeline-ok</code> / <code>pipeline-ko</code>. <strong>100 % local.</strong></p>
     </div>
   </section>
 
@@ -540,6 +583,14 @@
 
 </main>
 
+<dialog class="detail" id="detail" aria-labelledby="detail-title">
+  <div class="dh">
+    <div><p class="lane-l" id="detail-lane"></p><h3 id="detail-title"></h3></div>
+    <button type="button" class="close" id="detail-close" aria-label="Fermer">✕</button>
+  </div>
+  <div class="db" id="detail-body"></div>
+</dialog>
+
 <script>
   (function(){
     var deck=document.getElementById('deck');
@@ -585,6 +636,7 @@
       slides[i].scrollIntoView();
     }
     window.addEventListener('keydown',function(e){
+      var dlg=document.getElementById('detail'); if(dlg && dlg.open) return;
       if(['ArrowDown','ArrowRight','PageDown',' '].indexOf(e.key)>-1){e.preventDefault();go(1);}
       else if(['ArrowUp','ArrowLeft','PageUp'].indexOf(e.key)>-1){e.preventDefault();go(-1);}
       else if(e.key==='Home'){e.preventDefault();slides[0].scrollIntoView();}
@@ -593,6 +645,143 @@
 
     slides[0].classList.add('in');
     setActive(0);
+  })();
+
+  // ---- stack details (slide 02) ----
+  (function(){
+    var D={
+      nessie:{lane:'Infra · docker-compose',col:'var(--accent)',title:'Nessie',
+        role:'Catalogue de tables Iceberg <strong>versionné à la Git</strong> : branches, commits, tags et merge sur <strong>tout le catalogue</strong>, plusieurs tables à la fois.',
+        demo:['Image <code>ghcr.io/projectnessie/nessie:0.106.0</code>, serveur Java (Quarkus) dans son conteneur.',
+              '<strong>API Nessie v2</strong> (<code>/api/v2</code>) : créer, merger, taguer les branches.',
+              '<strong>Iceberg REST</strong> par branche (<code>/iceberg/&lt;branche&gt;</code>) : ce que voient PyIceberg et dbt.',
+              'Ne stocke que des <strong>pointeurs</strong> vers les <code>metadata.json</code> : aucune donnée copiée.'],
+        files:['docker-compose.yml','src/nessie_demo/nessie.py'],
+        alt:['<strong>lakeFS</strong> : branches sur tout le catalogue aussi, catalogue Iceberg REST en préversion (offre Enterprise).'],
+        no:['<strong>Apache Polaris, Lakekeeper, AWS Glue</strong> : catalogues Iceberg REST, mais sans branches multi-tables à notre connaissance. Pas de « Git pour les données ».'],
+        say:'Nessie versionne les pointeurs, pas les fichiers : une branche coûte un pointeur.'},
+      postgres:{lane:'Infra · docker-compose',col:'var(--line-strong)',title:'PostgreSQL',
+        role:'Le <strong>version store</strong> de Nessie : l\'historique des commits, branches et tags. C\'est le « dépôt Git » du catalogue.',
+        demo:['Image <code>postgres:15</code>, base <code>nessie</code>, port local <code>35432</code>.',
+              'Branché par <code>nessie.version.store.type=JDBC</code>.',
+              '<code>mise run stack-reset</code> efface son volume : l\'historique Nessie repart de zéro.'],
+        files:['docker-compose.yml'],
+        alt:['Autres version stores de Nessie : <strong>in-memory</strong> (tests, tout est perdu au redémarrage), RocksDB, MongoDB, DynamoDB, Cassandra, Bigtable.'],
+        say:'Les données sont dans Silo, l\'historique du catalogue est dans Postgres.'},
+      minio:{lane:'Infra · docker-compose',col:'var(--line-strong)',title:'Silo (fork de MinIO)',
+        role:'Stockage objet <strong>compatible S3</strong> : les fichiers Parquet et les métadonnées Iceberg (<code>metadata.json</code>, manifests).',
+        demo:['Bucket <code>iceberg-warehouse</code>, créé au démarrage par le service <code>minio-setup</code>.',
+              'Image <code>pgsty/minio</code> : <strong>Silo</strong>, fork communautaire de MinIO maintenu par Pigsty (AGPLv3). Les images officielles MinIO ne sont plus publiées.',
+              'Console sur <code>localhost:29090</code> pour montrer les fichiers.'],
+        files:['docker-compose.yml','mise.toml (AWS_* pour aws s3 ls)'],
+        alt:['En production : <strong>S3, GCS, ADLS</strong>.'],
+        say:'Iceberg, ce sont des fichiers : ici dans Silo, en production dans S3.'},
+      pyiceberg:{lane:'Data plane · lire, transformer',col:'var(--pass)',title:'PyIceberg',
+        role:'Implémentation <strong>Python</strong> d\'Iceberg : client de catalogue REST, lecture (scan vers Arrow) et écriture (append, overwrite).',
+        demo:['La branche est dans l\'adresse : <code>…/iceberg/&lt;branche&gt;</code>.',
+              '<strong>Ingestion</strong> : ajoute les commandes à <code>raw.orders</code> sur la branche.',
+              'Sous les deux plugins dbt : lit <code>raw.orders</code>, écrit <code>daily_orders</code>.',
+              'Compte les lignes via le <strong>snapshot</strong> (métadonnées seules) pour la sortie de la pipeline.'],
+        files:['src/nessie_demo/catalog.py','src/nessie_demo/ingest.py','src/nessie_demo/settings.py'],
+        alt:['<strong>DuckDB ≥ 2.0</strong> : lecture et écriture directes sur la branche (voir DUCKDB-2.0.md).','<strong>Spark</strong> : complet, mais une JVM et un cluster.'],
+        say:'PyIceberg respecte l\'adresse que Nessie lui renvoie : c\'est pour ça qu\'il sait viser une branche.'},
+      dbt:{lane:'Data plane · lire, transformer',col:'var(--pass)',title:'dbt · DuckDB',
+        role:'<strong>dbt</strong> enchaîne les transformations SQL et les <strong>tests</strong> ; <strong>DuckDB</strong> est le moteur SQL embarqué qui les exécute.',
+        demo:['<code>stg_orders</code> (vue) puis <code>daily_orders</code> (table Iceberg).',
+              '<strong>6 tests</strong> : order_id non null et unique, customer_id non null, montant ≥ 0, order_date non null et unique.',
+              'Lancé par la pipeline avec <code>NESSIE_BRANCH=&lt;branche&gt; dbt build</code>.',
+              'Tests rouges : dbt saute <code>daily_orders</code> et la pipeline ne merge pas.'],
+        files:['dbt/models/','dbt/tests/','dbt/profiles.yml'],
+        alt:['dbt-spark, dbt-trino.','SQLMesh.'],
+        say:'dbt ne sait rien de Nessie : il transforme et teste la branche qu\'on lui donne.'},
+      plugin:{lane:'Data plane · lire, transformer',col:'var(--pass)',title:'Plugin dbt custom',
+        role:'Écrit le résultat d\'un modèle dbt en <strong>table Iceberg sur la branche</strong>, à la place de DuckDB.',
+        demo:['Modèles <code>materialized=\'external\'</code> avec <code>plugin=\'iceberg_write\'</code>.',
+              'DuckDB calcule, le résultat passe en Arrow, PyIceberg fait un <code>overwrite</code> de <code>marts.daily_orders</code>.',
+              'Existe parce que DuckDB ≤ 1.5.6 ne sait pas écrire sur une branche Nessie (slide « Le détour par PyIceberg »).'],
+        files:['src/nessie_demo/dbt_plugins/iceberg_write.py','dbt/dbt_project.yml'],
+        alt:['<strong>DuckDB 2.0</strong> : <code>ATTACH</code> sur la branche, plus besoin de plugin (voir DUCKDB-2.0.md).'],
+        say:'Une cinquantaine de lignes pour contourner une limite de DuckDB, à supprimer dès DuckDB 2.0.'},
+      client:{lane:'Control plane · agir, prévenir',col:'var(--tag)',title:'nessie.py · client de l\'API Nessie',
+        role:'Une petite <strong>classe Python <code>Nessie</code></strong> qui appelle l\'<strong>API REST v2</strong> de Nessie (<code>/api/v2</code>) avec <code>requests</code>. C\'est le <strong>control plane</strong> : les opérations Git sur le catalogue.',
+        demo:['<code>create_branch()</code> : ouvre <code>pipeline-HHMMSS</code> depuis <code>main</code> (<code>POST /trees</code>).',
+              '<code>merge()</code> : merge atomique dans <code>main</code> (<code>POST /trees/main@&lt;hash&gt;/history/merge</code>).',
+              '<code>create_tag()</code>, <code>delete_branch()</code>, <code>log()</code>, <code>ref_hash()</code> : tag, ménage, historique, hash d\'une branche.',
+              'Appelée par <code>pipeline.py</code> et le notebook : elle exécute, elle ne décide pas.'],
+        files:['src/nessie_demo/nessie.py'],
+        alt:['<strong>Nessie CLI</strong> (<code>mise run cli</code>) : les mêmes opérations en SQL.','Extensions SQL Nessie pour Spark.'],
+        no:['<strong>pynessie</strong> : l\'ancien client Python du projet Nessie, basé sur l\'API v1 (dernière version publiée en février 2024).'],
+        say:'Brancher, merger, taguer : quelques appels HTTP. La logique Git reste hors de dbt.'},
+      pipeline:{lane:'Orchestration',col:'var(--accent)',title:'pipeline.py · orchestration',
+        role:'L\'<strong>orchestrateur</strong> : enchaîne les étapes et <strong>décide</strong>. Merge si les tests sont verts, alerte sinon : c\'est la porte de qualité.',
+        demo:['<strong>Étape 1</strong> : ouvre la branche via <code>nessie.py</code> (control plane).',
+              '<strong>Étape 2</strong> : ingère <code>raw.orders</code> sur la branche via PyIceberg (data plane).',
+              '<strong>Étape 3</strong> : lance <code>dbt build</code> avec <code>NESSIE_BRANCH=&lt;branche&gt;</code> et lit le verdict dans <code>run_results.json</code> (data plane).',
+              '<strong>Étape 4</strong> : vert, merge + tag via <code>nessie.py</code> ; rouge, <strong>Alerte</strong> et branche conservée (control plane).',
+              'Ne pilote pas l\'infra : la stack est démarrée par <code>stack-up</code>.'],
+        files:['src/nessie_demo/pipeline.py','src/nessie_demo/display.py'],
+        alt:['En production : <strong>Airflow, Dagster, Prefect</strong>, ou un job de CI (GitHub Actions, GitLab CI).'],
+        say:'La règle tient en une ligne : on ne merge que si dbt est vert.'},
+      alert:{lane:'Control plane · agir, prévenir',col:'var(--tag)',title:'Alerte',
+        role:'Prévenir quand la pipeline <strong>refuse de merger</strong>.',
+        demo:['Encadré rouge dans le terminal, avec la branche fautive et la commande pour enquêter.',
+              'Message Slack si <code>SLACK_WEBHOOK_URL</code> est défini.',
+              'Une alerte qui échoue ne fait jamais planter la pipeline.'],
+        files:['src/nessie_demo/alert.py'],
+        say:'La mauvaise donnée ne part pas en prod, et quelqu\'un est prévenu.'}
+    };
+    var dlg=document.getElementById('detail');
+    if(!dlg) return;
+    function li(a){return '<ul>'+a.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul>';}
+    function open(key){
+      var d=D[key]; if(!d) return;
+      dlg.style.setProperty('--dcol',d.col);
+      document.getElementById('detail-lane').textContent=d.lane;
+      document.getElementById('detail-title').textContent=d.title;
+      document.getElementById('detail-body').innerHTML=
+        '<p class="role">'+d.role+'</p>'+
+        '<h4>Dans la démo</h4>'+li(d.demo)+
+        '<h4>Fichiers</h4><div class="files">'+d.files.map(function(f){return '<code>'+f+'</code>';}).join('')+'</div>'+
+        (d.alt ? '<h4>Alternatives</h4>'+li(d.alt) : '')+
+        (d.no ? '<h4>Alternatives écartées</h4><div class="no">'+li(d.no)+'</div>' : '')+
+        '<p class="say">'+d.say+'</p>';
+      dlg.showModal();
+    }
+    document.querySelectorAll('[data-detail]').forEach(function(b){
+      b.addEventListener('click',function(){open(b.getAttribute('data-detail'));});
+    });
+    document.getElementById('detail-close').addEventListener('click',function(){dlg.close();});
+    dlg.addEventListener('click',function(e){ if(e.target===dlg) dlg.close(); });
+  })();
+
+  // ---- light / dark toggle ----
+  (function(){
+    var root=document.documentElement, btn=document.getElementById('theme-toggle');
+    function current(){
+      var t=root.getAttribute('data-theme');
+      if(t==='light'||t==='dark') return t;
+      // sans choix explicite : on lit le fond réellement appliqué (suit prefers-color-scheme)
+      return getComputedStyle(root).getPropertyValue('--bg').trim().toUpperCase()==='#0B1413'?'dark':'light';
+    }
+    function render(){
+      var dark=current()==='dark';
+      btn.textContent=dark?'☀':'☾';
+      btn.setAttribute('aria-label',dark?'Passer en thème clair':'Passer en thème sombre');
+      btn.title=btn.getAttribute('aria-label')+' (touche t)';
+    }
+    function toggle(){
+      var next=current()==='dark'?'light':'dark';
+      root.setAttribute('data-theme',next);
+      try{localStorage.setItem('deck-theme',next);}catch(e){}
+      render();
+    }
+    btn.addEventListener('click',toggle);
+    try{window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',render);}catch(e){}
+    window.addEventListener('load',render);
+    window.addEventListener('keydown',function(e){
+      if((e.key==='t'||e.key==='T')&&!e.ctrlKey&&!e.metaKey&&!e.altKey) toggle();
+    });
+    render();
   })();
 </script>
 </body>

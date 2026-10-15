@@ -33,19 +33,25 @@ On récupère les réflexes de Git — **branch / commit / merge / tag** — sur
 **Infra (docker-compose)**
 - **Nessie** — le catalogue versionné « à la Git » (branches / merge). *La star.*
 - **PostgreSQL** — le version store de Nessie (persiste commits & branches).
-- **MinIO** — stockage objet S3 pour les fichiers **Iceberg**.
+- **Silo** — stockage objet S3 pour les fichiers **Iceberg** (fork communautaire de MinIO, image `pgsty/minio`).
 
-**Traitement (Python)**
+**Orchestration** — au-dessus du data plane et du control plane
+- **pipeline.py** — l'orchestrateur : enchaîne les étapes et **décide** merge ou alerte (la porte de
+  qualité). En production : Airflow, Dagster, Prefect ou une CI. Ne pilote pas l'infra.
+
+**Data plane (Python) — lire, transformer**
 - **PyIceberg** — accès au catalogue **scopé à une branche** (lecture/écriture Iceberg).
 - **dbt** sur **DuckDB** — les transformations + les **tests** de qualité.
 - **Plugin dbt-duckdb custom** — matérialise les marts en tables Iceberg sur la branche.
 
-**Orchestration**
-- **Client API Nessie** (Python) — le *control plane* : create branch / merge / alerte.
-- **mise** — les commandes de démo (`stack-up`, `pipeline-ok`, `pipeline-ko`, `branches`).
+**Control plane (Python) — agir, prévenir**
+- **nessie.py** — classe Python qui appelle l'API REST de Nessie : branche, merge, tag.
+- **Alerte** — console, plus un webhook Slack en option.
 
-**En une phrase :** Nessie + Iceberg + MinIO côté catalogue/stockage, dbt-DuckDB + PyIceberg
-côté transformation/tests, orchestrés par un script Python et des tâches mise — le tout
+L'infra est démarrée par `mise run stack-up` ; la pipeline par `mise run pipeline-ok` / `pipeline-ko`.
+
+**En une phrase :** Nessie + Iceberg + Silo côté infra, PyIceberg + dbt-DuckDB côté data plane,
+`nessie.py` côté control plane, et `pipeline.py` qui orchestre les deux — le tout
 **100 % local**.
 
 ---

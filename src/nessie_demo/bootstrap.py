@@ -1,6 +1,6 @@
 """`mise run stack-up`: start the stack and prepare main, with an output meant to be narrated.
 
-  1. start the stack            (docker compose: Postgres, MinIO + bucket, Nessie)
+  1. start the stack            (docker compose: Postgres, Silo (MinIO fork) + bucket, Nessie)
   2. initial state of Nessie    (main sits on the "commit zero", no content)
   3. create the namespaces      (raw, marts) on main -> one commit each
 
@@ -32,9 +32,9 @@ def start_stack() -> None:
         line("[bold red]docker compose a échoué :")
         display.console.print(result.stdout, result.stderr)
         sys.exit(1)
-    line("postgres [green]✓[/] · minio [green]✓[/] · bucket iceberg-warehouse [green]✓[/] · nessie [green]✓")
+    line("postgres [green]✓[/] · silo [green]✓[/] · bucket iceberg-warehouse [green]✓[/] · nessie [green]✓")
     line("[dim]Nessie        http://localhost:19120")
-    line("[dim]console MinIO http://localhost:29090 (minioadmin / 8qqR90Az)")
+    line("[dim]console Silo  http://localhost:29090 (minioadmin / 8qqR90Az)")
 
 
 def describe(entries: list[dict]) -> str:
