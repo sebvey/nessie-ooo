@@ -41,8 +41,8 @@ pipeline_YYYYMMDD      (raw.orders)        (marts.daily_orders)                 
 
 ```bash
 mise run stack-up      # démarre Nessie + Postgres + MinIO, crée le bucket et les namespaces raw / marts
-mise run pipeline     # pipeline nominale : branche → ingest → dbt build (vert) → MERGE sur main ✅
-mise run pipeline-bad    # pipeline en échec : mauvaise donnée → tests rouges → PAS de merge + ALERTE ⛔
+mise run pipeline-ok   # pipeline nominale : branche → ingest → dbt build (vert) → MERGE sur main ✅
+mise run pipeline-ko   # pipeline en échec : mauvaise donnée → tests rouges → PAS de merge + ALERTE ⛔
 ```
 
 Autres commandes :
@@ -76,10 +76,10 @@ Changer de branche recharge automatiquement tout le reste — pratique pour mont
 ## Déroulé de présentation suggéré
 
 1. **`mise run stack-up`** — la stack monte, `main` contient les namespaces `raw` et `marts`, aucune table.
-2. **`mise run pipeline`** — commente chaque étape `[1/4] … [4/4]`. À la fin, montre via `mise run branches`
+2. **`mise run pipeline-ok`** — commente chaque étape `[1/4] … [4/4]`. À la fin, montre via `mise run branches`
    que `main` contient maintenant `raw.orders` et `marts.daily_orders`, et que la branche
    `pipeline_YYYYMMDD` a été **mergée puis supprimée**.
-3. **`mise run pipeline-bad`** — le moment fort : on injecte une donnée sale (montant négatif, client `null`).
+3. **`mise run pipeline-ko`** — le moment fort : on injecte une donnée sale (montant négatif, client `null`).
    Les tests dbt passent au **rouge**, la pipeline **refuse le merge**, lève une **alerte**, et
    **conserve la branche** `pipeline_YYYYMMDD_bad`. Insiste : *`main` est resté propre, la mauvaise
    donnée ne l'a jamais touché.*
@@ -103,7 +103,7 @@ Changer de branche recharge automatiquement tout le reste — pratique pour mont
 
 ```
 ├─ docker-compose.yml          # Nessie + Postgres + MinIO + init bucket
-├─ mise.toml                   # tâches : up / pipeline / pipeline-bad / branches / reset …
+├─ mise.toml                   # tâches : stack-up / pipeline-ok / pipeline-ko / branches / stack-reset …
 ├─ src/nessie_demo/
 │  ├─ settings.py              # config (URIs Nessie, S3) — défauts locaux
 │  ├─ nessie.py                # client Nessie v2 : branch / merge / delete / list
@@ -125,5 +125,5 @@ docs/  — fiches d'apprentissage Nessie/Iceberg (conservées de l'exploration i
 
 ```bash
 export SLACK_WEBHOOK_URL=https://hooks.slack.com/services/…
-mise run pipeline-bad   # l'alerte est aussi postée sur Slack
+mise run pipeline-ko   # l'alerte est aussi postée sur Slack
 ```

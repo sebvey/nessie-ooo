@@ -1,4 +1,4 @@
-"""Central config for the demo. Sensible local defaults so `mise run stack-up` + `mise run pipeline` just works."""
+"""Central config for the demo. Sensible local defaults so `mise run stack-up` + `mise run pipeline-ok` just works."""
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 

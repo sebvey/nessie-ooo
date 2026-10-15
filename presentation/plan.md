@@ -42,7 +42,7 @@ On récupère les réflexes de Git — **branch / commit / merge / tag** — sur
 
 **Orchestration**
 - **Client API Nessie** (Python) — le *control plane* : create branch / merge / alerte.
-- **mise** — les commandes de démo (`stack-up`, `pipeline`, `pipeline-bad`, `branches`).
+- **mise** — les commandes de démo (`stack-up`, `pipeline-ok`, `pipeline-ko`, `branches`).
 
 **En une phrase :** Nessie + Iceberg + MinIO côté catalogue/stockage, dbt-DuckDB + PyIceberg
 côté transformation/tests, orchestrés par un script Python et des tâches mise — le tout

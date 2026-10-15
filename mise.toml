@@ -31,13 +31,13 @@ run = "docker compose down"
 description = "Arrête la stack et efface tout (historique Nessie + objets MinIO)"
 run = "docker compose down -v"
 
-[tasks.pipeline]
+[tasks.pipeline-ok]
 description = "Pipeline nominale : branche -> ingest -> dbt build -> merge + tag sur main"
 run = "uv run pipeline"
 raw = true    # stdin branché sur le terminal : pauses entre les étapes (Entrée)
 quiet = true  # pas de ligne « [pipeline] $ uv run pipeline »
 
-[tasks.pipeline-bad]
+[tasks.pipeline-ko]
 description = "Pipeline en échec : mauvaise donnée -> tests rouges -> pas de merge + alerte"
 # La pipeline sort en erreur exprès (une vraie CI échouerait ici) : on l'avale pour que
 # la démo se termine proprement sur la bannière d'alerte.

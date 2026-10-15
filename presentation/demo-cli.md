@@ -1,7 +1,7 @@
 # Démo CLI Nessie, pas à pas
 
 Parcours guidé du REPL Nessie pour l'acte 3. Prérequis : la stack tourne (`mise run stack-up`), au moins un
-`mise run pipeline` puis un `mise run pipeline-bad` ont été lancés.
+`mise run pipeline-ok` puis un `mise run pipeline-ko` ont été lancés.
 
 ```bash
 mise run cli
@@ -88,7 +88,7 @@ nouveau pointeur.
 
 ## 8. Rollback (le point fort)
 
-Il faut au moins deux tags `release-…`. Sinon, lancer `mise run pipeline` dans un autre terminal.
+Il faut au moins deux tags `release-…`. Sinon, lancer `mise run pipeline-ok` dans un autre terminal.
 
 ```sql
 LIST REFERENCES;

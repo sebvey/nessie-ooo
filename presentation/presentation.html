@@ -266,7 +266,7 @@
         <div class="lane reveal">
           <p class="col-h">Orchestration</p>
           <div class="mini"><div class="k"><span class="dot" style="background:var(--tag)"></span>Client API Nessie</div><div class="v">Le <strong>control plane</strong> : create branch / merge / tag / alerte.</div></div>
-          <div class="mini"><div class="k"><span class="dot" style="background:var(--tag)"></span>mise</div><div class="v">Les commandes de démo : <code>stack-up</code> · <code>pipeline</code> · <code>pipeline-bad</code>.</div></div>
+          <div class="mini"><div class="k"><span class="dot" style="background:var(--tag)"></span>mise</div><div class="v">Les commandes de démo : <code>stack-up</code> · <code>pipeline-ok</code> · <code>pipeline-ko</code>.</div></div>
         </div>
       </div>
       <p class="caption reveal">Nessie + Iceberg + MinIO côté catalogue/stockage · dbt-DuckDB + PyIceberg côté transformation/tests — orchestrés par un script Python et des tâches mise. <strong>100 % local, zéro Java côté machine.</strong></p>
@@ -344,13 +344,13 @@
       <div class="acts">
         <div class="act good reveal">
           <span class="lbl">Acte 1 — le run qui marche</span>
-          <div class="cmd"><span class="p">$</span> mise run pipeline</div>
+          <div class="cmd"><span class="p">$</span> mise run pipeline-ok</div>
           <p>Branche → ingestion → <code>dbt build</code> vert → <strong>merge</strong> dans main + <strong>tag</strong>.</p>
           <span class="out ok">✓ main est mis à jour, promotion taguée</span>
         </div>
         <div class="act bad reveal">
           <span class="lbl">Acte 2 — le run qui casse · le moment fort</span>
-          <div class="cmd"><span class="p">$</span> mise run pipeline-bad</div>
+          <div class="cmd"><span class="p">$</span> mise run pipeline-ko</div>
           <p>Mauvaise donnée (montant négatif, client <code>null</code>) → tests <strong>rouges</strong> → <strong>pas de merge</strong>, alerte, branche conservée.</p>
           <span class="out ko">⛔ main est resté propre</span>
         </div>
@@ -404,8 +404,8 @@
       <h2 class="reveal">Brancher. Tester. Merger.<br><span class="accent">Vos données comme votre code.</span></h2>
       <p class="lead reveal" style="margin-top:14px">Nessie + Iceberg, 100 % local, sans JVM. La mauvaise donnée reste isolée sur sa branche ; <code>main</code> n'avance qu'après un test vert.</p>
       <div class="cover-chips reveal" style="margin-top:26px">
-        <span class="chip">mise run pipeline → ✓ merge + tag</span>
-        <span class="chip">mise run pipeline-bad → ⛔ pas de merge + alerte</span>
+        <span class="chip">mise run pipeline-ok → ✓ merge + tag</span>
+        <span class="chip">mise run pipeline-ko → ⛔ pas de merge + alerte</span>
       </div>
     </div>
   </section>

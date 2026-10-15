@@ -23,7 +23,7 @@ mise run stack-up      # démarre la stack et prépare main
 
 > **Si on te demande pourquoi créer les namespaces à part** : un `main` tout neuf n'a aucun commit,
 > et Nessie refuse de merger vers une branche sans historique (« No common ancestor »). Les
-> namespaces donnent à `main` ses premiers commits. `mise run pipeline` refuse d'ailleurs de
+> namespaces donnent à `main` ses premiers commits. `mise run pipeline-ok` refuse d'ailleurs de
 > démarrer si `stack-up` n'a pas été lancé.
 
 Utile à garder ouvert : `mise run branches` (liste des refs) et éventuellement la console MinIO
@@ -34,7 +34,7 @@ Utile à garder ouvert : `mise run branches` (liste des refs) et éventuellement
 ## Acte 1 — le run qui marche
 
 ```bash
-mise run pipeline
+mise run pipeline-ok
 ```
 
 La pipeline s'arrête après chaque étape : **Entrée** pour passer à la suivante (`uv run pipeline --no-pause` pour
@@ -56,7 +56,7 @@ enchaîner). Ce qu'il faut lire à l'écran :
 ## Acte 2 — le run qui casse — *le moment fort*
 
 ```bash
-mise run pipeline-bad
+mise run pipeline-ko
 ```
 
 Même pipeline, mais on injecte une **mauvaise donnée** :
@@ -85,6 +85,6 @@ Même pipeline, mais on injecte une **mauvaise donnée** :
 
 ## Bonus — la vie dans le temps
 
-Rejouer `mise run pipeline` plusieurs fois : `raw.orders` **s'enrichit** (append de 5 lignes/run) et chaque
+Rejouer `mise run pipeline-ok` plusieurs fois : `raw.orders` **s'enrichit** (append de 5 lignes/run) et chaque
 promotion laisse un **tag `release-HHMMSS`** → historique auditable et **rollback** possible
 (« reviens à l'état de `release-…` »).

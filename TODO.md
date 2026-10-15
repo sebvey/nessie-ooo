@@ -6,23 +6,23 @@
       et `NESSIEDIR` / `PYICEBERG_HOME` ne servaient plus.
 - [x] `nessie-cli` : service compose (profil `tools`) lancé par `mise run cli`, sur le réseau compose
       (plus de `--network host`). Accepte les options du CLI, ex. `mise run cli -c "LIST REFERENCES;"`.
-- [x] Taskfile → tâches mise. `run` / `fail` renommées `pipeline` / `pipeline-bad`. Doc et slides
+- [x] Taskfile → tâches mise. `run` / `fail` renommées `pipeline-ok` / `pipeline-ko`. Doc et slides
       mises à jour.
 - [x] Images MinIO : les images officielles ne sont plus publiques (Docker Hub et quay.io → 401).
       Remplacées par le fork communautaire `pgsty/minio` + `pgsty/mc`, tags fixés.
-- [x] Dry-run (stack repartie de zéro) : `stack-reset`, `stack-up`, `pipeline`, `pipeline-bad`, `branches`,
+- [x] Dry-run (stack repartie de zéro) : `stack-reset`, `stack-up`, `pipeline-ok`, `pipeline-ko`, `branches`,
       `dbt-inspect`, `cli`, rollback `ASSIGN BRANCH main TO release-…` (10 → 5 lignes), notebook
       exécuté en headless.
 - [x] Testés à la main : le notebook (`mise run notebook`) et le REPL (`mise run cli`).
 - [x] `.envrc` et `.direnv/` supprimés.
 
-## 1 bis. Sortie de `mise run pipeline` / `pipeline-bad`
+## 1 bis. Sortie de `mise run pipeline-ok` / `pipeline-ko`
 
 - [x] Sortie en français, une étape à la fois (0 à 4) avec l'outil qui agit, pause (Entrée) entre
       les étapes, hash court de `main` avant / après, nombre de lignes branche vs main, tableau des
       lignes ingérées (lignes sales en rouge), résumé dbt par modèle et par test.
-- [x] `mise run pipeline` validé à la main (pauses comprises).
-- [ ] `mise run pipeline-bad` à valider à la main.
+- [x] `mise run pipeline-ok` validé à la main (pauses comprises).
+- [x] `mise run pipeline-ko` validé à la main.
 
 Retours du test (implémentés) :
 - [x] Sortir l'initialisation de `main` (namespaces `raw` et `marts`) de la pipeline : l'étape 0
