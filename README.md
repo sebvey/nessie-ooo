@@ -67,14 +67,14 @@ mise run stack-reset           # arrête et efface tout (repart de zéro)
 mise run notebook   # ouvre notebooks/explore.mo.py dans marimo
 ```
 
-Notebook **réactif** pour comparer les branches :
+Explorateur de données **réactif** :
 - un **sélecteur de branche**, alimenté par l'API Nessie (branches seulement, pas les tags) ;
-- le chargement de `raw.orders` sur la branche choisie, via PyIceberg ;
-- une **cellule SQL DuckDB** sur cette table, qui filtre les commandes à montant négatif.
+- le chargement, via PyIceberg, de **toutes les tables de tous les namespaces** de la branche, dans
+  DuckDB sous le nom `<namespace>_<table>` (`raw.orders` -> `raw_orders`), avec leur nombre de
+  lignes et de colonnes ;
+- une **cellule SQL DuckDB** pour interroger ces tables (`SELECT * FROM raw_orders`).
 
-Changer de branche relance tout : sur `main`, la requête ne renvoie rien ; sur une branche
-`pipeline-…-bad`, elle renvoie la ligne rejetée. Le notebook plante sur une branche qui n'a pas
-encore `raw.orders` (par exemple `main` avant le premier run).
+Changer de branche recharge tout. Une branche sans table affiche « Aucune table sur cette branche ».
 
 ## Déroulé de présentation
 

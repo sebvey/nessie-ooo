@@ -75,7 +75,8 @@ Même pipeline, mais on injecte une **mauvaise donnée** :
 
 - **`mise run branches`** : on voit `main`, la branche `-bad` conservée, et les tags `release-HHMMSS`.
 - **`mise run notebook`** : basculer le sélecteur entre `main` (données validées) et `pipeline-…-bad`
-  (données rejetées, isolées) — la démonstration visuelle de l'isolation.
+  (données rejetées, isolées) — la démonstration visuelle de l'isolation. Toutes les tables de la
+  branche sont chargées sous le nom `<namespace>_<table>` : `SELECT * FROM raw_orders WHERE amount < 0`.
 - **`mise run dbt-inspect pipeline-…-bad`** : rejouer/déboguer la pipeline sur la branche fautive,
   sans rien casser en prod.
 - **`mise run cli`** : parcours du REPL Nessie (historique, merge à blanc, rollback) dans

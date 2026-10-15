@@ -1,78 +1,60 @@
 import marimo
 
-__generated_with = "0.23.13"
-app = marimo.App()
+__generated_with = "0.25.1"
+app = marimo.App(width="medium")
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _():
+    import duckdb
     import marimo as mo
+
+    from nessie_demo.catalog import branch_catalog
     from nessie_demo.nessie import Nessie
-    from pyiceberg.catalog.rest import RestCatalog
 
-    return Nessie, RestCatalog, mo
+    return Nessie, branch_catalog, duckdb, mo
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(Nessie, mo):
-    _nessie = Nessie()
-    _branches = [r["name"] for r in _nessie.list_branches() if r["type"] == "BRANCH"]
+    _branches = sorted(r["name"] for r in Nessie().list_branches() if r["type"] == "BRANCH")
     branch = mo.ui.dropdown(
-        options=sorted(_branches),
-        value="main" if "main" in _branches else (_branches[0] if _branches else None),
+        options=_branches,
+        value="main" if "main" in _branches else _branches[0],
         label="Branche Nessie",
     )
     branch
     return (branch,)
 
 
-@app.cell
-def _(RestCatalog, branch):
+@app.cell(hide_code=True)
+def _(branch, branch_catalog, duckdb, mo):
+    # Toutes les tables de la branche, chargées en mémoire dans DuckDB sous le nom
+    # <namespace>_<table> (ex. raw.orders -> raw_orders).
+    _catalog = branch_catalog(branch.value)
+    con = duckdb.connect()
+    _loaded = []
+    for _ns in _catalog.list_namespaces():
+        for _ident in _catalog.list_tables(_ns):
+            _arrow = _catalog.load_table(_ident).scan().to_arrow()
+            _name = "_".join(_ident)
+            con.register(_name, _arrow)
+            _loaded.append({"table": _name, "lignes": _arrow.num_rows, "colonnes": _arrow.num_columns})
 
-
-    catalog = RestCatalog(
-        "nessie",
-        **{
-            "uri": f"http://localhost:19120/iceberg/{branch.value}",
-            "warehouse": "s3://iceberg-warehouse",
-            "s3.endpoint": "http://localhost:29000",
-            "s3.access-key-id": "minioadmin",
-            "s3.secret-access-key": "8qqR90Az",
-            "s3.region": "us-east-1",
-            "s3.path-style-access": "true",
-        },
-    )
-    catalog
-    return (catalog,)
-
-
-@app.cell
-def _(catalog):
-    # load_table() renvoie un objet catalogue pyiceberg ;
-    # .scan().to_arrow() matérialise en pyarrow Table, que DuckDB sait scanner.
-    raw__orders = catalog.load_table("raw.orders").scan().to_arrow()
-    marts__daily_orders = catalog.load_table("marts.daily_orders").scan().to_arrow()
-    return marts__daily_orders, raw__orders
+    mo.vstack([
+        mo.md(f"**{len(_loaded)} table(s)** chargée(s) depuis la branche `{branch.value}`"),
+        mo.ui.table(_loaded, selection=None) if _loaded else mo.md("_Aucune table sur cette branche._"),
+    ])
+    return (con,)
 
 
 @app.cell
-def _(mo, raw__orders):
+def _(con, mo, raw_orders):
     _df = mo.sql(
         f"""
-        SELECT *
-        FROM raw__orders
-        --WHERE amount < 0;
-        """
-    )
-    return
-
-
-@app.cell
-def _(marts__daily_orders, mo):
-    _df = mo.sql(
-        f"""
-        SELECT * FROM marts__daily_orders;
-        """
+        SELECT * FROM raw_orders where amount < 0
+        """,
+        engine=con
     )
     return
 

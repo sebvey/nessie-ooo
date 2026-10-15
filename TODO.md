@@ -102,8 +102,9 @@ Retours du test (implémentés) :
 
 ## Si on a fini
 
-- [ ] Raffiner le notebook : ne pas planter sur une branche sans `raw.orders`, pouvoir choisir les
-      tags, ajouter l'historique des commits, parcourir les tables.
+- [x] Notebook réécrit en explorateur (branche `notebook-rework`) : sélecteur de branche, toutes
+      les tables de tous les namespaces chargées dans DuckDB sous `<namespace>_<table>`, cellule SQL.
+      Ne plante plus sur une branche sans table.
 - [ ] Se passer de PyIceberg avec une version à jour de DuckDB : vérifier que `ATTACH` sur une
       branche Nessie fonctionne (lecture + écriture + `CREATE OR REPLACE`), et voir ce que ça
       simplifie (plugins dbt, `catalog.py`).

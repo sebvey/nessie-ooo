@@ -27,5 +27,5 @@ build-backend = "uv_build"
 
 [dependency-groups]
 explore = [
-    "marimo[sql]>=0.18",
+    "marimo[sql]>=0.25",
 ]
