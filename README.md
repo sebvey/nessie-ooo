@@ -34,7 +34,7 @@ pipeline_YYYYMMDD      (raw.orders)        (marts.daily_orders)                 
 ## Prérequis
 
 - Docker (+ compose)
-- [`mise`](https://mise.jdx.dev) (tâches + variables d'environnement, voir `mise.toml`)
+- [`mise`](https://mise.jdx.dev) (variables d'environnement dans `mise.toml`, tâches dans `tasks.toml`)
 - [`uv`](https://docs.astral.sh/uv/)
 
 ## Démarrage
@@ -103,7 +103,8 @@ Changer de branche recharge automatiquement tout le reste — pratique pour mont
 
 ```
 ├─ docker-compose.yml          # Nessie + Postgres + MinIO + init bucket
-├─ mise.toml                   # tâches : stack-up / pipeline-ok / pipeline-ko / branches / stack-reset …
+├─ mise.toml                   # outils + variables d'environnement
+├─ tasks.toml                  # tâches : stack-up / pipeline-ok / pipeline-ko / branches / stack-reset …
 ├─ src/nessie_demo/
 │  ├─ settings.py              # config (URIs Nessie, S3) — défauts locaux
 │  ├─ nessie.py                # client Nessie v2 : branch / merge / delete / list
