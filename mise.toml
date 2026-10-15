@@ -8,7 +8,7 @@ DBT_PROFILES_DIR = "{{config_root}}/dbt"
 
 # AWS CLI -> MinIO local (ex. `aws s3 ls s3://iceberg-warehouse --recursive`).
 AWS_ACCESS_KEY_ID = "minioadmin"
-AWS_SECRET_ACCESS_KEY = "minioadmin"
+AWS_SECRET_ACCESS_KEY = "8qqR90Az"
 AWS_ENDPOINT_URL = "http://localhost:29000"
 AWS_REGION = "us-east-1"
 AWS_S3_ADDRESSING_STYLE = "path"
@@ -17,31 +17,33 @@ AWS_EC2_METADATA_DISABLED = "true"
 # Garde l'ordre des logs pipeline / dbt quand la sortie est redirigée.
 PYTHONUNBUFFERED = "1"
 
-[tasks.up]
-description = "Démarre la stack (Nessie + Postgres + MinIO) et installe les deps Python"
-run = [
-  "docker compose up -d --wait nessie",
-  "uv sync",
-  "echo 'Nessie: http://localhost:19120   MinIO console: http://localhost:29090 (minioadmin/minioadmin)'",
-]
+[tasks.stack-up]
+description = "Démarre la stack (Nessie + Postgres + MinIO) et crée les namespaces raw / marts sur main"
+# `uv run` installe les deps Python au besoin (--quiet : sans la liste des paquets).
+run = "uv run --quiet bootstrap"
+quiet = true
 
-[tasks.down]
+[tasks.stack-down]
 description = "Arrête la stack (garde les volumes)"
 run = "docker compose down"
 
-[tasks.reset]
+[tasks.stack-reset]
 description = "Arrête la stack et efface tout (historique Nessie + objets MinIO)"
 run = "docker compose down -v"
 
 [tasks.pipeline]
 description = "Pipeline nominale : branche -> ingest -> dbt build -> merge + tag sur main"
 run = "uv run pipeline"
+raw = true    # stdin branché sur le terminal : pauses entre les étapes (Entrée)
+quiet = true  # pas de ligne « [pipeline] $ uv run pipeline »
 
 [tasks.pipeline-bad]
 description = "Pipeline en échec : mauvaise donnée -> tests rouges -> pas de merge + alerte"
 # La pipeline sort en erreur exprès (une vraie CI échouerait ici) : on l'avale pour que
 # la démo se termine proprement sur la bannière d'alerte.
 run = "uv run pipeline --bad || true"
+raw = true
+quiet = true
 
 [tasks.branches]
 description = "Liste les branches et tags Nessie"

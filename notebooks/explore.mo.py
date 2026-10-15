@@ -37,7 +37,7 @@ def _(RestCatalog, branch):
             "warehouse": "s3://iceberg-warehouse",
             "s3.endpoint": "http://localhost:29000",
             "s3.access-key-id": "minioadmin",
-            "s3.secret-access-key": "minioadmin",
+            "s3.secret-access-key": "8qqR90Az",
             "s3.region": "us-east-1",
             "s3.path-style-access": "true",
         },

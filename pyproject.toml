@@ -13,11 +13,13 @@ dependencies = [
     "pydantic-settings>=2.0",
     "requests>=2.31",
     "pandas>=3.0.3",
+    "rich>=14",
 ]
 
 [project.scripts]
 ingest = "nessie_demo.ingest:main"
 pipeline = "nessie_demo.pipeline:main"
+bootstrap = "nessie_demo.bootstrap:main"
 
 [build-system]
 requires = ["uv_build>=0.9.21,<0.10.0"]

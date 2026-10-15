@@ -266,7 +266,7 @@
         <div class="lane reveal">
           <p class="col-h">Orchestration</p>
           <div class="mini"><div class="k"><span class="dot" style="background:var(--tag)"></span>Client API Nessie</div><div class="v">Le <strong>control plane</strong> : create branch / merge / tag / alerte.</div></div>
-          <div class="mini"><div class="k"><span class="dot" style="background:var(--tag)"></span>mise</div><div class="v">Les commandes de démo : <code>up</code> · <code>pipeline</code> · <code>pipeline-bad</code>.</div></div>
+          <div class="mini"><div class="k"><span class="dot" style="background:var(--tag)"></span>mise</div><div class="v">Les commandes de démo : <code>stack-up</code> · <code>pipeline</code> · <code>pipeline-bad</code>.</div></div>
         </div>
       </div>
       <p class="caption reveal">Nessie + Iceberg + MinIO côté catalogue/stockage · dbt-DuckDB + PyIceberg côté transformation/tests — orchestrés par un script Python et des tâches mise. <strong>100 % local, zéro Java côté machine.</strong></p>
@@ -361,7 +361,7 @@
           <p>Basculer <code>main</code> ↔ branche <code>-bad</code> dans le notebook · rejouer avec <code>mise run dbt-inspect</code>.</p>
         </div>
       </div>
-      <p class="demo-foot reveal"># préparation : <span style="color:var(--accent-ink)">mise run reset &amp;&amp; mise run up</span> → ardoise vierge, main vide</p>
+      <p class="demo-foot reveal"># préparation : <span style="color:var(--accent-ink)">mise run stack-reset &amp;&amp; mise run stack-up</span> → ardoise vierge, main sans aucune table</p>
     </div>
   </section>
 

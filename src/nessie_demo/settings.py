@@ -1,4 +1,4 @@
-"""Central config for the demo. Sensible local defaults so `mise run up` + `mise run pipeline` just works."""
+"""Central config for the demo. Sensible local defaults so `mise run stack-up` + `mise run pipeline` just works."""
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -15,7 +15,7 @@ class Settings(BaseSettings):
     warehouse: str = "s3://iceberg-warehouse"
     s3_endpoint: str = "http://localhost:29000"
     s3_access_key: str = "minioadmin"
-    s3_secret_key: str = "minioadmin"
+    s3_secret_key: str = "8qqR90Az"
     s3_region: str = "us-east-1"
 
     def pyiceberg_props(self, branch: str) -> dict:

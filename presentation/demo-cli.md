@@ -1,6 +1,6 @@
 # Démo CLI Nessie, pas à pas
 
-Parcours guidé du REPL Nessie pour l'acte 3. Prérequis : la stack tourne (`mise run up`), au moins un
+Parcours guidé du REPL Nessie pour l'acte 3. Prérequis : la stack tourne (`mise run stack-up`), au moins un
 `mise run pipeline` puis un `mise run pipeline-bad` ont été lancés.
 
 ```bash

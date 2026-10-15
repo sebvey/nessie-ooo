@@ -97,6 +97,10 @@ class Nessie:
             raw=j,
         )
 
+    def entries(self, ref: str) -> list[dict]:
+        """Contents (namespaces, tables) of `ref`, e.g. {"type": "NAMESPACE", "name": {"elements": ["raw"]}}."""
+        return self._get(f"/trees/{ref}/entries")["entries"]
+
     def log(self, ref: str, limit: int = 10) -> list[dict]:
         j = self._get(f"/trees/{ref}/history?maxRecords={limit}")
         return j.get("logEntries", [])

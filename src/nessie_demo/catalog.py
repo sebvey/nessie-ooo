@@ -56,3 +56,15 @@ def column_max(catalog: Catalog, identifier: str, column: str) -> int:
     if arrow.num_rows == 0:
         return 0
     return int(pc.max(arrow[column]).as_py() or 0)
+
+
+def row_count(catalog: Catalog, identifier: str) -> int | None:
+    """Row count read from the Iceberg snapshot summary (metadata only, no data file read).
+    None if the table doesn't exist on this branch."""
+    try:
+        snapshot = catalog.load_table(identifier).current_snapshot()
+    except NoSuchTableError:
+        return None
+    if snapshot is None or snapshot.summary is None:
+        return 0
+    return int(snapshot.summary.get("total-records", 0))

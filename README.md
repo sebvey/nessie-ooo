@@ -40,7 +40,7 @@ pipeline_YYYYMMDD      (raw.orders)        (marts.daily_orders)                 
 ## Démarrage
 
 ```bash
-mise run up      # démarre Nessie + Postgres + MinIO, crée le bucket, installe les deps Python
+mise run stack-up      # démarre Nessie + Postgres + MinIO, crée le bucket et les namespaces raw / marts
 mise run pipeline     # pipeline nominale : branche → ingest → dbt build (vert) → MERGE sur main ✅
 mise run pipeline-bad    # pipeline en échec : mauvaise donnée → tests rouges → PAS de merge + ALERTE ⛔
 ```
@@ -50,12 +50,12 @@ Autres commandes :
 ```bash
 mise run branches                 # liste les branches Nessie
 mise run dbt-inspect <branche> # rejoue dbt sur une branche (ex. la branche _bad conservée)
-mise run down                     # arrête la stack (garde les données)
-mise run reset                    # arrête et efface tout (repart de zéro)
+mise run stack-down                     # arrête la stack (garde les données)
+mise run stack-reset                    # arrête et efface tout (repart de zéro)
 ```
 
 - Nessie API : http://localhost:19120
-- Console MinIO : http://localhost:29090 (`minioadmin` / `minioadmin`)
+- Console MinIO : http://localhost:29090 (`minioadmin` / `8qqR90Az`)
 
 ## Explorer les données (notebook marimo)
 
@@ -75,7 +75,7 @@ Changer de branche recharge automatiquement tout le reste — pratique pour mont
 
 ## Déroulé de présentation suggéré
 
-1. **`mise run up`** — la stack monte, `main` est vide.
+1. **`mise run stack-up`** — la stack monte, `main` contient les namespaces `raw` et `marts`, aucune table.
 2. **`mise run pipeline`** — commente chaque étape `[1/4] … [4/4]`. À la fin, montre via `mise run branches`
    que `main` contient maintenant `raw.orders` et `marts.daily_orders`, et que la branche
    `pipeline_YYYYMMDD` a été **mergée puis supprimée**.

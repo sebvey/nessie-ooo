@@ -10,11 +10,35 @@
       mises à jour.
 - [x] Images MinIO : les images officielles ne sont plus publiques (Docker Hub et quay.io → 401).
       Remplacées par le fork communautaire `pgsty/minio` + `pgsty/mc`, tags fixés.
-- [x] Dry-run (stack repartie de zéro) : `reset`, `up`, `pipeline`, `pipeline-bad`, `branches`,
+- [x] Dry-run (stack repartie de zéro) : `stack-reset`, `stack-up`, `pipeline`, `pipeline-bad`, `branches`,
       `dbt-inspect`, `cli`, rollback `ASSIGN BRANCH main TO release-…` (10 → 5 lignes), notebook
       exécuté en headless.
 - [x] Testés à la main : le notebook (`mise run notebook`) et le REPL (`mise run cli`).
 - [x] `.envrc` et `.direnv/` supprimés.
+
+## 1 bis. Sortie de `mise run pipeline` / `pipeline-bad`
+
+- [x] Sortie en français, une étape à la fois (0 à 4) avec l'outil qui agit, pause (Entrée) entre
+      les étapes, hash court de `main` avant / après, nombre de lignes branche vs main, tableau des
+      lignes ingérées (lignes sales en rouge), résumé dbt par modèle et par test.
+- [x] `mise run pipeline` validé à la main (pauses comprises).
+- [ ] `mise run pipeline-bad` à valider à la main.
+
+Retours du test (implémentés) :
+- [x] Sortir l'initialisation de `main` (namespaces `raw` et `marts`) de la pipeline : l'étape 0
+      décrit l'état, elle ne modifie rien.
+- [x] Étape 0 : afficher « raw.orders : n'existe pas encore » quand la table est absente (pas « 0 lignes »).
+- [x] `mise run stack-up` avec une sortie narrée, sans pause : [1/3] démarrer la stack (compose et
+      `uv sync` masqués sauf erreur), [2/3] état initial de Nessie (`main` @ commit zéro, aucune
+      table), [3/3] créer les namespaces sur `main` (rôle de `raw` / `marts`, +2 commits, « déjà en
+      place » si la stack est déjà initialisée).
+- [x] `demo-scenario.md` : noter le contournement « main vide → No common ancestor » comme réponse
+      possible à une question.
+- [x] Titres d'étapes sous forme de description ; la pause annonce l'étape suivante.
+- [x] État de `main` pour les deux tables (`raw.orders` en lignes, `marts.daily_orders` en jours et
+      commandes), une ligne par table.
+- [x] Tâches renommées `stack-up` / `stack-down` / `stack-reset`.
+- [x] Mot de passe MinIO aléatoire (Chrome signalait `minioadmin` comme mot de passe ayant fuité).
 
 ## 2. Corrections avant ce soir
 
@@ -26,12 +50,16 @@
       jour le déroulé.
 - [ ] Notebook : aligner sa description (README + acte 3) sur ce qu'il fait réellement.
 - [ ] « 100 % local, zéro Java » : nuancer (le serveur Nessie est en Java/Quarkus, dans un conteneur).
-- [ ] Mineur : `--keep` dans `pipeline.py` ne fait rien.
+- [x] Mineur : `--keep` dans `pipeline.py` ne fait rien (corrigé avec la nouvelle sortie).
 
 ## 3. Approfondir les concepts (questions / réponses)
 
 - [ ] Session de questions sur Iceberg, Nessie et la stack ; décider après chaque réponse si une
       slide doit évoluer.
+- [ ] Parler des namespaces dans les présentations HTML. Séparer ce qui relève d'Iceberg (un
+      namespace regroupe des tables, comme un schéma SQL : `raw.orders`) de ce qui est propre à
+      Nessie (un namespace est versionné : le créer produit un commit). Choisir où le placer
+      (`iceberg.html`, `presentation.html` ou les deux).
 
 ## 4. Slide 03/07 (stack) : détail au clic
 

@@ -55,12 +55,13 @@ def generate(start_id: int, n_rows: int = ROWS_PER_RUN, bad: bool = False) -> pa
     )
 
 
-def ingest(branch: str, bad: bool = False, n_rows: int = ROWS_PER_RUN) -> int:
+def ingest(branch: str, bad: bool = False, n_rows: int = ROWS_PER_RUN) -> pa.Table:
+    """Append a batch to raw.orders on `branch` and return the appended rows."""
     catalog = branch_catalog(branch)
     start_id = column_max(catalog, RAW_TABLE, "order_id")  # continue ids across appends
     data = generate(start_id=start_id, n_rows=n_rows, bad=bad)
     append_table(catalog, RAW_TABLE, data)
-    return data.num_rows
+    return data
 
 
 def main() -> None:
@@ -68,7 +69,7 @@ def main() -> None:
     p.add_argument("branch", help="target Nessie branch")
     p.add_argument("--bad", action="store_true", help="inject dirty rows that fail dbt tests")
     args = p.parse_args()
-    n = ingest(args.branch, bad=args.bad)
+    n = ingest(args.branch, bad=args.bad).num_rows
     print(f"appended {n} rows to {RAW_TABLE} on branch '{args.branch}'" + (" [BAD DATA]" if args.bad else ""))
 
 

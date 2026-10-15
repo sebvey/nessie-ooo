@@ -17,7 +17,7 @@ nessie_demo:
             uri: "http://localhost:19120/iceberg/{{ env_var('NESSIE_BRANCH', 'main') }}"
             s3.endpoint: http://localhost:29000
             s3.access-key-id: minioadmin
-            s3.secret-access-key: minioadmin
+            s3.secret-access-key: 8qqR90Az
             s3.region: us-east-1
             s3.path-style-access: "true"
         # WRITE marts: materialize models as Iceberg tables on the branch (custom plugin).
@@ -29,6 +29,6 @@ nessie_demo:
             uri: "http://localhost:19120/iceberg/{{ env_var('NESSIE_BRANCH', 'main') }}"
             s3.endpoint: http://localhost:29000
             s3.access-key-id: minioadmin
-            s3.secret-access-key: minioadmin
+            s3.secret-access-key: 8qqR90Az
             s3.region: us-east-1
             s3.path-style-access: "true"
