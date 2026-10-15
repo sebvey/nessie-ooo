@@ -157,6 +157,13 @@
   .card .num{font-family:var(--font-mono);font-size:.72rem;color:var(--accent-ink);letter-spacing:.08em;display:block;margin-bottom:4px}
   .card.ko{border-top:3px solid var(--fail)} .card.fix{border-top:3px solid var(--pass)} .card.cost{border-top:3px solid var(--tag)}
 
+  /* aller plus loin */
+  .duo2{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:6px}
+  .mini.big{padding:20px 22px}
+  .mini.big .k{font-size:1.02rem}
+  .mini.big .v{font-size:.9rem}
+  .mini.todo{border-style:dashed;box-shadow:none}
+
   /* demo acts */
   .acts{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:6px}
   .act{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:10px;position:relative;overflow:hidden}
@@ -214,7 +221,7 @@
   .slide.in .pop.d1{transition-delay:.7s}.slide.in .pop.d2{transition-delay:.85s}.slide.in .pop.d3{transition-delay:1s}.slide.in .pop.d4{transition-delay:1.15s}
 
   @media (max-width:840px){
-    .cols,.lanes,.steps,.acts,.orch{grid-template-columns:1fr}
+    .cols,.lanes,.steps,.acts,.orch,.duo2{grid-template-columns:1fr}
     .orch .bar{grid-column:auto} .orch .down{display:none}
     .steps{grid-template-columns:1fr 1fr}
     .row{grid-template-columns:1fr;gap:8px}
@@ -234,7 +241,7 @@
 
 <div class="progress" id="progress"></div>
 <nav class="nav" id="nav" aria-label="Slides"></nav>
-<div class="counter" id="counter"><b>01</b> / 09</div>
+<div class="counter" id="counter"><b>01</b> / 10</div>
 <div class="brand">NESSIE · DEMO</div>
 <button type="button" class="theme-toggle" id="theme-toggle"></button>
 
@@ -568,8 +575,29 @@
     </div>
   </section>
 
+  <!-- 08 ALLER PLUS LOIN -->
+  <section class="slide" id="s8">
+    <div class="wrap">
+      <p class="eyebrow reveal">08 · Aller plus loin</p>
+      <h2 class="reveal">À creuser</h2>
+      <div class="duo2">
+        <div class="mini big reveal">
+          <div class="k"><span class="dot" style="background:var(--accent)"></span>Protéger main</div>
+          <div class="v">Seul le compte de l'<strong>orchestrateur</strong> écrit sur <code>main</code> : authentification + règles d'autorisation Nessie par rôle.</div>
+          <div class="v" style="margin-top:8px">Limite : un merge et un commit direct demandent <strong>la même permission</strong>. On protège par l'identité, pas par le type d'opération.</div>
+        </div>
+        <div class="mini big todo reveal">
+          <div class="k"><span class="dot" style="background:var(--tag)"></span>Maintenance Iceberg <span class="pill warn" style="margin-left:auto">à creuser</span></div>
+          <div class="v">Compacter les petits fichiers, purger ce qui n'est plus référencé. Mais <strong>pas en direct</strong> sur les fichiers (<code>expire_snapshots</code>, <code>remove_orphan_files</code>) : on passe par <strong>Nessie GC</strong> (<em>garbage collector</em>), un programme à part, planifié, qui lit l'API Nessie et supprime les fichiers orphelins.</div>
+          <div class="v" style="margin-top:8px">Le <code>metadata.json</code> écrit par Nessie ne contient que le <strong>snapshot courant</strong> : l'historique est dans les commits Nessie, sur toutes les branches et tous les tags. Seul Nessie sait ce qui sert encore.</div>
+        </div>
+      </div>
+      <p class="caption reveal">Nessie GC : <strong>mark</strong> (parcourt toutes les références, collecte le contenu vivant) puis <strong>sweep</strong> (supprime, table par table, les fichiers que plus rien ne référence).</p>
+    </div>
+  </section>
+
   <!-- CLOSING -->
-  <section class="slide closing" id="s8">
+  <section class="slide closing" id="s9">
     <div class="wrap">
       <p class="eyebrow reveal">En résumé</p>
       <h2 class="reveal">Brancher. Tester. Merger.<br><span class="accent">Vos données comme votre code.</span></h2>
@@ -740,8 +768,9 @@
       document.getElementById('detail-title').textContent=d.title;
       document.getElementById('detail-body').innerHTML=
         '<p class="role">'+d.role+'</p>'+
-        '<h4>Dans la démo</h4>'+li(d.demo)+
-        '<h4>Fichiers</h4><div class="files">'+d.files.map(function(f){return '<code>'+f+'</code>';}).join('')+'</div>'+
+        (d.sections||[]).map(function(x){return '<h4>'+x.h+'</h4>'+(x.items?li(x.items):'')+(x.code?'<div class="codeblock">'+x.code+'</div>':'');}).join('')+
+        (d.demo ? '<h4>Dans la démo</h4>'+li(d.demo) : '')+
+        (d.files ? '<h4>Fichiers</h4><div class="files">'+d.files.map(function(f){return '<code>'+f+'</code>';}).join('')+'</div>' : '')+
         (d.alt ? '<h4>Alternatives</h4>'+li(d.alt) : '')+
         (d.no ? '<h4>Alternatives écartées</h4><div class="no">'+li(d.no)+'</div>' : '')+
         '<p class="say">'+d.say+'</p>';

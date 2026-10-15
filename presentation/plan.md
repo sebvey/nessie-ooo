@@ -146,3 +146,31 @@ lourd) et **PyIceberg** (léger, via l'URI) sont vraiment prêts. DuckDB et Trin
 Iceberg « classique », mais butent encore sur les **branches Nessie**. D'où notre choix :
 **PyIceberg pour le catalogue/branches + DuckDB pour le calcul** — le meilleur compromis léger
 aujourd'hui.
+
+---
+
+## 8. Aller plus loin : à creuser
+
+**Protéger `main`**. Seul le compte de l'orchestrateur écrit sur `main` :
+authentification (en général OIDC) + autorisation Nessie
+(`nessie.server.authorization.enabled=true`, règles CEL
+`nessie.server.authorization.rules.<id>=…` sur `op`, `ref`, `role`, `path`).
+**Limite** : un merge vérifie la même permission qu'un commit direct
+(`COMMIT_CHANGE_AGAINST_REFERENCE` sur la cible, vérifié dans le code de Nessie) : on protège par
+l'identité, pas par le type d'opération. La règle « merge seulement si vert » reste dans
+l'orchestrateur. Le rollback (`ASSIGN_REFERENCE_TO_HASH`) est une permission à part. Désactivé dans la
+démo.
+
+**Maintenance Iceberg** (à creuser). Compaction des petits fichiers, purge de ce qui n'est plus
+référencé. Pas de maintenance Iceberg en direct sur les fichiers (`expire_snapshots`,
+`remove_orphan_files`) : on passe par **Nessie GC** (*garbage collector*), un programme à part, planifié, qui lit
+l'API Nessie et supprime les fichiers orphelins. Le `metadata.json` écrit par Nessie ne contient
+que le **snapshot courant** (vérifié sur la démo : 1 snapshot, `snapshot-log` d'une entrée,
+`metadata-log` vide) ; l'historique est dans les commits Nessie, sur toutes les branches et tous les
+tags. Seul Nessie sait ce qui sert encore.
+
+Nessie GC fonctionne en deux phases : **mark** (parcourt toutes les références nommées et collecte le
+contenu vivant) puis **sweep** (supprime, table par table, les fichiers que plus aucune version vivante
+ne référence). Outil Java 17 ou image Docker `ghcr.io/projectnessie/nessie-gc`, avec une base JDBC
+pour stocker l'état du GC.
+
