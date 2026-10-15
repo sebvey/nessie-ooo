@@ -158,10 +158,10 @@
   .card.ko{border-top:3px solid var(--fail)} .card.fix{border-top:3px solid var(--pass)} .card.cost{border-top:3px solid var(--tag)}
 
   /* aller plus loin */
-  .duo2{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:6px}
-  .mini.big{padding:20px 22px}
+  .duo2{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:6px}
+  .mini.big{padding:16px 18px}
   .mini.big .k{font-size:1.02rem}
-  .mini.big .v{font-size:.9rem}
+  .mini.big .v{font-size:.86rem}
 
   /* demo acts */
   .acts{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:6px}
@@ -569,6 +569,11 @@
           <span class="pill warn">⚠ Pas mature</span>
           <div class="det">Branche Nessie = propriété <b>statique du catalogue</b> (<code>iceberg.nessie-catalog.ref</code>), ni par session ni par requête (<a href="https://github.com/trinodb/trino/issues/24134">#24134</a>, refusée). Le <code>CREATE BRANCH … IN TABLE</code> de 2025 crée une branche <b>Iceberg sur une table</b>, pas une branche Nessie multi-tables.</div>
         </div>
+        <div class="row reveal">
+          <div class="eng">Snowflake<small>consommation</small></div>
+          <span class="pill warn">⚠ Non testé</span>
+          <div class="det">Intégration Iceberg REST avec <code>PREFIX = '&lt;branche&gt;'</code> (<a href="https://docs.snowflake.com/en/sql-reference/sql/create-catalog-integration-rest">doc</a>) : branche <b>fixée par intégration</b>, comme Trino, mais une intégration + une base par branche se créent en SQL. Nessie doit être <b>authentifié</b> et joignable depuis Snowflake.</div>
+        </div>
       </div>
       <p class="caption reveal">Pour un workflow <strong>multi-branches dynamique</strong>, seuls <strong>Spark</strong> (natif, lourd) et <strong>PyIceberg</strong> (léger, via l'URI) sont prêts. D'où notre choix : <strong>PyIceberg pour les branches + DuckDB pour le calcul</strong>.</p>
     </div>
@@ -586,9 +591,24 @@
           <div class="v" style="margin-top:8px">Limite : un merge et un commit direct demandent <strong>la même permission</strong>. On protège par l'identité, pas par le type d'opération.</div>
         </div>
         <div class="mini big reveal">
+          <div class="k"><span class="dot" style="background:var(--tag)"></span>Pipelines concurrentes</div>
+          <div class="v">Deux branches modifient la même table : le second merge est <strong>refusé</strong>, même pour deux simples ajouts de lignes. Nessie compare des tables, pas des lignes.</div>
+          <div class="v" style="margin-top:8px">À prévoir : une pipeline par domaine, ou rejouer sur un <code>main</code> à jour.</div>
+        </div>
+        <div class="mini big reveal">
           <div class="k"><span class="dot" style="background:var(--tag)"></span>Maintenance Iceberg</div>
           <div class="v"><strong>Classique</strong> : <code>expire_snapshots</code> + <code>remove_orphan_files</code> d'Iceberg.<br><strong>Avec Nessie</strong> : <strong>Nessie GC</strong> (<em>garbage collector</em>), un programme à part qui les remplace.</div>
           <div class="v" style="margin-top:8px">Pourquoi : le <code>metadata.json</code> écrit par Nessie ne connaît que le snapshot courant ; l'historique (branches, tags) est dans Nessie. Rétention réglée par branche. La compaction, elle, ne change pas : un commit Iceberg normal.</div>
+        </div>
+        <div class="mini big reveal">
+          <div class="k"><span class="dot" style="background:var(--tag)"></span>Intégration aux outils</div>
+          <div class="v">Lire <code>main</code> : tout moteur Iceberg REST. Lire une branche (recette, debug) : <strong>une connexion par branche</strong>.</div>
+          <div class="v" style="margin-top:8px">Snowflake : une intégration avec <code>PREFIX = '&lt;branche&gt;'</code> et une base par branche. Non testé ; Nessie doit être authentifié et joignable depuis Snowflake.</div>
+        </div>
+        <div class="mini big reveal">
+          <div class="k"><span class="dot" style="background:var(--tag)"></span>Pérennité de Nessie</div>
+          <div class="v">Dremio, principal contributeur, racheté par <strong>SAP</strong> (juillet 2026) ; rapprochement avec Apache Polaris annoncé dès 2024.</div>
+          <div class="v" style="margin-top:8px">Projet actif (0.109, octobre 2026), mais trajectoire à surveiller avant de bâtir dessus.</div>
         </div>
       </div>
     </div>

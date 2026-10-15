@@ -140,6 +140,7 @@ sur le support Iceberg en général.
 | **PyIceberg** | ingestion + écriture des marts | ✅ **Mature** | Parle à Nessie via l'endpoint Iceberg REST ; la **branche est dans l'URI** (`/iceberg/<branche>`). Respecte la redirection `overrides.uri` du protocole → marche sur **n'importe quelle branche**, en lecture **et** écriture. |
 | **DuckDB** | transformations (dbt) | ⚠️ **Pas encore** | Jusqu'à la **1.5.6** (28/09/2026), le client **ignore `overrides.uri`** et double le prefix → il ne sait cibler que **`main`** ([#1145](https://github.com/duckdb/duckdb-iceberg/issues/1145)). **Corrigé** dans l'extension par [#1230](https://github.com/duckdb/duckdb-iceberg/pull/1230) (mergée le 26/07/2026 sur la branche principale), **pas encore dans une version publiée** de DuckDB (non testé de notre côté). `CREATE OR REPLACE TABLE` toujours non supporté ([#784](https://github.com/duckdb/duckdb-iceberg/issues/784), ouverte). **On a rusé** : DuckDB ne fait que **calculer**, et **PyIceberg** lit/écrit sur la branche (pont via Arrow + plugin dbt custom). |
 | **Trino** | — | ⚠️ **Pas mature** | La branche Nessie est une **propriété statique du catalogue** (`iceberg.nessie-catalog.ref`), pas sélectionnable par session/requête (propriété de session demandée dans [#24134](https://github.com/trinodb/trino/issues/24134), fermée « not planned » en avril 2025). Trino a ajouté en 2025 `CREATE / DROP / FAST FORWARD BRANCH … IN TABLE` et l'écriture sur une branche, mais ce sont des **branches Iceberg, table par table** : rien à voir avec une branche Nessie qui couvre tout le catalogue. |
+| **Snowflake** | consommation | ⚠️ **Non testé** | *Catalog integration* `ICEBERG_REST` avec `PREFIX = '<branche>'` ([doc](https://docs.snowflake.com/en/sql-reference/sql/create-catalog-integration-rest)) : la branche est **fixée par intégration**, comme Trino, mais une intégration + une base liée par branche se créent en SQL. Nessie doit être **authentifié** (pas de mode sans auth côté Snowflake) et joignable depuis Snowflake. |
 
 **À retenir** : pour un workflow **multi-branches dynamique** comme le nôtre, seuls **Spark** (natif,
 lourd) et **PyIceberg** (léger, via l'URI) sont vraiment prêts. DuckDB et Trino sont excellents sur
@@ -172,6 +173,31 @@ démo.
 | Qui exécute | toi, en tâche planifiée (Polaris stocke des politiques mais ne les exécute pas) | toi, en tâche planifiée (jar Java 17 ou image `ghcr.io/projectnessie/nessie-gc`) |
 
 Jamais de suppression à la main dans le bucket, quel que soit le catalogue.
+
+**Pipelines concurrentes** (vérifié le 15/10/2026). Deux branches créées depuis la même base ajoutent
+chacune des lignes à `raw.orders` : le premier merge passe, le second est refusé
+(`REFERENCE_CONFLICT`, « The following keys have been changed in conflict: 'raw.orders' »). Nessie
+détecte les conflits par table (clé de contenu), pas par ligne. À prévoir : une pipeline par domaine,
+ou rejouer la pipeline sur un `main` à jour.
+
+**Intégration aux outils.** Lire `main` : tout moteur Iceberg REST. Lire une branche (recette, debug) :
+il faut une connexion par branche. Snowflake (non testé) : une *catalog integration* `ICEBERG_REST`
+avec `CATALOG_URI = 'https://<nessie>/iceberg/'` et `PREFIX = '<branche>'` (Nessie encode la branche
+dans le préfixe : `/iceberg/v1/<branche>/…`), puis une *catalog-linked database* qui découvre les
+tables. Une intégration + une base par branche à recetter (`NESSIE_MAIN`, `NESSIE_RECETTE`…),
+créables en SQL par l'orchestrateur. Conditions : authentification obligatoire côté Snowflake (OAuth,
+bearer ou SigV4, pas de mode sans auth), Nessie joignable depuis Snowflake, accès aux fichiers par
+external volume ou credentials fournis par le catalogue, rafraîchissement par polling (30 s minimum).
+Non vérifié : que Snowflake construise bien `<uri>/v1/<prefix>/…`, et son comportement avec un
+`metadata.json` réduit au snapshot courant.
+
+**Pérennité de Nessie.** Dremio, principal contributeur, racheté par SAP (finalisé en juillet 2026) ;
+rapprochement avec Apache Polaris annoncé par Dremio dès 2024. Le projet reste actif (0.109 sortie le
+08/10/2026), mais sa trajectoire est à surveiller.
+
+À l'oral si besoin : volumétrie (PyIceberg en mémoire, mart réécrit à chaque run), exploitation de
+Nessie (sauvegarde Postgres, haute dispo, `JDBC2`), cycle de vie des branches `-bad` et des tags,
+commits sans auteur.
 
 Nessie GC fonctionne en deux phases : **mark** (parcourt toutes les références nommées et collecte le
 contenu vivant) puis **sweep** (supprime, table par table, les fichiers que plus aucune version vivante

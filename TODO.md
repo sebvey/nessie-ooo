@@ -90,15 +90,17 @@ Retours du test (implémentés) :
       même permission qu'un commit direct.
 - [x] Bloc « Maintenance Iceberg » (à creuser) : pas de maintenance en direct, passer par Nessie GC
       (garbage collector, programme à part) ; metadata.json Nessie = snapshot courant seulement.
-- [ ] Autres points à creuser (proposés, à choisir) : pérennité de Nessie (Dremio racheté par SAP,
-      juillet 2026), pipelines concurrentes et conflits de merge, cycle de vie des branches et
-      traçabilité des commits, volumétrie, moteurs côté consommateurs, exploitation de Nessie.
+- [x] Blocs ajoutés : Pipelines concurrentes (conflit de merge vérifié), Intégration aux outils,
+      Pérennité de Nessie. À l'oral : volumétrie, exploitation, cycle de vie des branches.
 
 ## 5. Slide 08/09 (maturité) : ajouter Snowflake
 
-- [ ] Vérifier ce que Snowflake sait faire avec un catalog Iceberg externe / Nessie (lecture,
-      écriture, choix de la branche), sources à l'appui.
-- [ ] Ajouter une ligne Snowflake et, si c'est possible, expliquer comment l'intégrer.
+- [x] Recherche doc : *catalog integration* `ICEBERG_REST` avec `PREFIX = '<branche>'`, une intégration
+      + une *catalog-linked database* par branche ; auth obligatoire, Nessie joignable depuis Snowflake.
+- [x] Ligne Snowflake « ⚠ Non testé » ajoutée à la slide Maturité ; bloc « Intégration aux outils »
+      sur la slide À creuser.
+- [ ] Tester pour de vrai (Nessie exposé et authentifié, external volume S3) : `PREFIX` bien pris en
+      compte ? comportement avec un metadata.json réduit au snapshot courant ?
 
 ## Si on a fini
 
