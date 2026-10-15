@@ -91,7 +91,7 @@ def run_pipeline(bad: bool = False, keep: bool = False) -> int:
             message=(
                 f"dbt tests failed. The bad data is isolated on branch '{branch}' and was "
                 f"NOT merged into '{settings.main_branch}'. Inspect it with:\n"
-                f"  NESSIE_BRANCH={branch} dbt build --project-dir dbt --profiles-dir dbt"
+                f"  mise run dbt-inspect {branch}"
             ),
         )
         if not keep:

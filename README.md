@@ -34,24 +34,24 @@ pipeline_YYYYMMDD      (raw.orders)        (marts.daily_orders)                 
 ## Prérequis
 
 - Docker (+ compose)
-- [`task`](https://taskfile.dev) (Taskfile)
+- [`mise`](https://mise.jdx.dev) (tâches + variables d'environnement, voir `mise.toml`)
 - [`uv`](https://docs.astral.sh/uv/)
 
 ## Démarrage
 
 ```bash
-task up      # démarre Nessie + Postgres + MinIO, crée le bucket, installe les deps Python
-task run     # pipeline nominale : branche → ingest → dbt build (vert) → MERGE sur main ✅
-task fail    # pipeline en échec : mauvaise donnée → tests rouges → PAS de merge + ALERTE ⛔
+mise run up      # démarre Nessie + Postgres + MinIO, crée le bucket, installe les deps Python
+mise run pipeline     # pipeline nominale : branche → ingest → dbt build (vert) → MERGE sur main ✅
+mise run pipeline-bad    # pipeline en échec : mauvaise donnée → tests rouges → PAS de merge + ALERTE ⛔
 ```
 
 Autres commandes :
 
 ```bash
-task branches                 # liste les branches Nessie
-task dbt-inspect -- <branche> # rejoue dbt sur une branche (ex. la branche _bad conservée)
-task down                     # arrête la stack (garde les données)
-task reset                    # arrête et efface tout (repart de zéro)
+mise run branches                 # liste les branches Nessie
+mise run dbt-inspect <branche> # rejoue dbt sur une branche (ex. la branche _bad conservée)
+mise run down                     # arrête la stack (garde les données)
+mise run reset                    # arrête et efface tout (repart de zéro)
 ```
 
 - Nessie API : http://localhost:19120
@@ -60,7 +60,7 @@ task reset                    # arrête et efface tout (repart de zéro)
 ## Explorer les données (notebook marimo)
 
 ```bash
-task notebook   # ouvre notebooks/explore.mo.py dans marimo
+mise run notebook   # ouvre notebooks/explore.mo.py dans marimo
 ```
 
 Notebook **réactif** pour explorer le catalogue :
@@ -75,15 +75,15 @@ Changer de branche recharge automatiquement tout le reste — pratique pour mont
 
 ## Déroulé de présentation suggéré
 
-1. **`task up`** — la stack monte, `main` est vide.
-2. **`task run`** — commente chaque étape `[1/4] … [4/4]`. À la fin, montre via `task branches`
+1. **`mise run up`** — la stack monte, `main` est vide.
+2. **`mise run pipeline`** — commente chaque étape `[1/4] … [4/4]`. À la fin, montre via `mise run branches`
    que `main` contient maintenant `raw.orders` et `marts.daily_orders`, et que la branche
    `pipeline_YYYYMMDD` a été **mergée puis supprimée**.
-3. **`task fail`** — le moment fort : on injecte une donnée sale (montant négatif, client `null`).
+3. **`mise run pipeline-bad`** — le moment fort : on injecte une donnée sale (montant négatif, client `null`).
    Les tests dbt passent au **rouge**, la pipeline **refuse le merge**, lève une **alerte**, et
    **conserve la branche** `pipeline_YYYYMMDD_bad`. Insiste : *`main` est resté propre, la mauvaise
    donnée ne l'a jamais touché.*
-4. **`task dbt-inspect -- pipeline_YYYYMMDD_bad`** — montre qu'on peut rejouer/déboguer la
+4. **`mise run dbt-inspect pipeline_YYYYMMDD_bad`** — montre qu'on peut rejouer/déboguer la
    pipeline sur la branche fautive, en isolation totale, sans rien casser en production.
 
 ## Ce qui se passe sous le capot
@@ -103,7 +103,7 @@ Changer de branche recharge automatiquement tout le reste — pratique pour mont
 
 ```
 ├─ docker-compose.yml          # Nessie + Postgres + MinIO + init bucket
-├─ Taskfile.yml                # up / run / fail / branches / reset …
+├─ mise.toml                   # tâches : up / pipeline / pipeline-bad / branches / reset …
 ├─ src/nessie_demo/
 │  ├─ settings.py              # config (URIs Nessie, S3) — défauts locaux
 │  ├─ nessie.py                # client Nessie v2 : branch / merge / delete / list
@@ -125,5 +125,5 @@ docs/  — fiches d'apprentissage Nessie/Iceberg (conservées de l'exploration i
 
 ```bash
 export SLACK_WEBHOOK_URL=https://hooks.slack.com/services/…
-task fail   # l'alerte est aussi postée sur Slack
+mise run pipeline-bad   # l'alerte est aussi postée sur Slack
 ```

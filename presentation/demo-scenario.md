@@ -7,12 +7,12 @@
 ## Avant de démarrer (préparation)
 
 ```bash
-task reset   # ardoise vierge : efface Nessie + MinIO
-task up       # démarre la stack (Nessie + Postgres + MinIO) + crée le bucket
+mise run reset   # ardoise vierge : efface Nessie + MinIO
+mise run up       # démarre la stack (Nessie + Postgres + MinIO) + crée le bucket
 ```
 → La stack tourne, `main` est **vide**.
 
-Utile à garder ouvert : `task branches` (liste des refs) et éventuellement la console MinIO
+Utile à garder ouvert : `mise run branches` (liste des refs) et éventuellement la console MinIO
 (http://localhost:29090, `minioadmin`/`minioadmin`).
 
 ---
@@ -20,7 +20,7 @@ Utile à garder ouvert : `task branches` (liste des refs) et éventuellement la 
 ## Acte 1 — le run qui marche
 
 ```bash
-task run
+mise run pipeline
 ```
 
 Commenter les 4 étapes qui s'affichent :
@@ -30,14 +30,14 @@ Commenter les 4 étapes qui s'affichent :
 4. Tests **verts** → **merge** dans `main`, **tag `release-HHMMSS`** posé, branche supprimée.
 
 **À montrer** : `main` contient maintenant les données, et un **tag immuable** marque cette promotion
-(`task branches`).
+(`mise run branches`).
 
 ---
 
 ## Acte 2 — le run qui casse — *le moment fort*
 
 ```bash
-task fail
+mise run pipeline-bad
 ```
 
 Même pipeline, mais on injecte une **mauvaise donnée** (montant négatif, client `null`) :
@@ -52,16 +52,18 @@ Même pipeline, mais on injecte une **mauvaise donnée** (montant négatif, clie
 
 ## Acte 3 — explorer & prouver
 
-- **`task branches`** : on voit `main`, la branche `-bad` conservée, et les tags `release-HHMMSS`.
-- **`task notebook`** : basculer le sélecteur entre `main` (données validées) et `pipeline-…-bad`
+- **`mise run branches`** : on voit `main`, la branche `-bad` conservée, et les tags `release-HHMMSS`.
+- **`mise run notebook`** : basculer le sélecteur entre `main` (données validées) et `pipeline-…-bad`
   (données rejetées, isolées) — la démonstration visuelle de l'isolation.
-- **`task dbt-inspect -- pipeline-…-bad`** : rejouer/déboguer la pipeline sur la branche fautive,
+- **`mise run dbt-inspect pipeline-…-bad`** : rejouer/déboguer la pipeline sur la branche fautive,
   sans rien casser en prod.
+- **`mise run cli`** : parcours du REPL Nessie (historique, merge à blanc, rollback) dans
+  [`demo-cli.md`](demo-cli.md).
 
 ---
 
 ## Bonus — la vie dans le temps
 
-Rejouer `task run` plusieurs fois : `raw.orders` **s'enrichit** (append de 5 lignes/run) et chaque
+Rejouer `mise run pipeline` plusieurs fois : `raw.orders` **s'enrichit** (append de 5 lignes/run) et chaque
 promotion laisse un **tag `release-HHMMSS`** → historique auditable et **rollback** possible
 (« reviens à l'état de `release-…` »).

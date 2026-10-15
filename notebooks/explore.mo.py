@@ -60,7 +60,7 @@ def _(mo, raw__orders):
         f"""
         SELECT *
         FROM raw__orders
-        --WHERE amount < 0;
+        WHERE amount < 0;
         """
     )
     return

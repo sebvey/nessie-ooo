@@ -42,10 +42,10 @@ On récupère les réflexes de Git — **branch / commit / merge / tag** — sur
 
 **Orchestration**
 - **Client API Nessie** (Python) — le *control plane* : create branch / merge / alerte.
-- **Taskfile** — les commandes de démo (`up`, `run`, `fail`, `branches`).
+- **mise** — les commandes de démo (`up`, `pipeline`, `pipeline-bad`, `branches`).
 
 **En une phrase :** Nessie + Iceberg + MinIO côté catalogue/stockage, dbt-DuckDB + PyIceberg
-côté transformation/tests, orchestrés par un script Python et un Taskfile — le tout
+côté transformation/tests, orchestrés par un script Python et des tâches mise — le tout
 **100 % local, zéro Java côté machine**.
 
 ---
@@ -80,7 +80,7 @@ Résultat : la mauvaise donnée est **confinée**, `main` n'est touché qu'aprè
 
 Trois actes : le run qui marche → le run qui casse (*le moment fort*) → explorer & prouver.
 
-→ **Détail pas-à-pas dans [`scenario-demo.md`](scenario-demo.md)** (notes à suivre en live).
+→ **Détail pas-à-pas dans [`demo-scenario.md`](demo-scenario.md) ; commandes du REPL pour l'acte 3 dans [`demo-cli.md`](demo-cli.md)** (notes à suivre en live).
 
 ---
 

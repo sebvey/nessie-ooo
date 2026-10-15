@@ -9,8 +9,8 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-      minio:
-        condition: service_healthy
+      minio-setup:
+        condition: service_completed_successfully
     environment:
       # Version store settings -> JDBC with Postgres
       - nessie.version.store.type=JDBC
@@ -64,7 +64,7 @@ services:
       retries: 10
 
   minio:
-    image: quay.io/minio/minio:RELEASE.2025-09-07T16-13-09Z
+    image: pgsty/minio:RELEASE.2026-08-04T00-00-00Z  # fork communautaire : les images officielles MinIO ne sont plus publiques
     container_name: minio
     command: server /data
     ports:
@@ -87,7 +87,7 @@ services:
 
   # One-shot: create the Iceberg warehouse bucket, then exit.
   minio-setup:
-    image: quay.io/minio/mc:latest
+    image: pgsty/mc:RELEASE.2026-09-16T00-00-00Z
     depends_on:
       minio:
         condition: service_healthy
@@ -97,6 +97,15 @@ services:
       mc mb -p local/iceberg-warehouse &&
       echo 'bucket iceberg-warehouse ready'
       "
+
+  # Nessie CLI (REPL), lancé à la demande : `mise run cli`. Sur le réseau compose, donc il
+  # joint Nessie par son nom de service (pas besoin de --network host).
+  nessie-cli:
+    image: ghcr.io/projectnessie/nessie-cli:0.106.0
+    profiles: [tools]
+    depends_on:
+      nessie:
+        condition: service_healthy
 
 volumes:
   minio_data:

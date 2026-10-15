@@ -4,19 +4,19 @@ Aide-mémoire des commandes du **REPL Nessie** (la CLI SQL-like) pour piloter br
 merges et rollback à la main pendant la présentation.
 
 > Toutes les commandes se terminent par `;`. `ReferenceType` = `BRANCH` ou `TAG`.
-> La pipeline (`task run` / `task fail`) automatise déjà branche → merge → tag ; ces commandes
+> La pipeline (`mise run pipeline` / `mise run pipeline-bad`) automatise déjà branche → merge → tag ; ces commandes
 > servent à **explorer, montrer et faire un rollback en direct**.
 
 ## Se connecter
 
 ```bash
-task nessie-cli          # ouvre le REPL déjà connecté à main
+mise run cli          # ouvre le REPL déjà connecté à main
 ```
 
 Ou manuellement, dans le REPL :
 
 ```sql
-CONNECT TO http://localhost:19120/api/v2 ON main;
+CONNECT TO http://nessie:19120/api/v2 ON main;   -- le CLI tourne sur le réseau compose
 ```
 
 ## Lister & inspecter
@@ -77,7 +77,7 @@ ASSIGN BRANCH main TO main AT TIMESTAMP 2026-07-08T10:00:00Z;
 ASSIGN TAG release-manuel TO main;
 ```
 
-> Idée de démo : après un `task run`, faire un `task fail` (rejeté, main intact), puis montrer
+> Idée de démo : après un `mise run pipeline`, faire un `mise run pipeline-bad` (rejeté, main intact), puis montrer
 > qu'on peut aussi **revenir en arrière** sur `main` avec `ASSIGN BRANCH main TO release-…` —
 > la donnée « comme du code », rollback compris.
 

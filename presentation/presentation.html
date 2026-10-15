@@ -266,10 +266,10 @@
         <div class="lane reveal">
           <p class="col-h">Orchestration</p>
           <div class="mini"><div class="k"><span class="dot" style="background:var(--tag)"></span>Client API Nessie</div><div class="v">Le <strong>control plane</strong> : create branch / merge / tag / alerte.</div></div>
-          <div class="mini"><div class="k"><span class="dot" style="background:var(--tag)"></span>Taskfile</div><div class="v">Les commandes de démo : <code>up</code> · <code>run</code> · <code>fail</code>.</div></div>
+          <div class="mini"><div class="k"><span class="dot" style="background:var(--tag)"></span>mise</div><div class="v">Les commandes de démo : <code>up</code> · <code>pipeline</code> · <code>pipeline-bad</code>.</div></div>
         </div>
       </div>
-      <p class="caption reveal">Nessie + Iceberg + MinIO côté catalogue/stockage · dbt-DuckDB + PyIceberg côté transformation/tests — orchestrés par un script Python et un Taskfile. <strong>100 % local, zéro Java côté machine.</strong></p>
+      <p class="caption reveal">Nessie + Iceberg + MinIO côté catalogue/stockage · dbt-DuckDB + PyIceberg côté transformation/tests — orchestrés par un script Python et des tâches mise. <strong>100 % local, zéro Java côté machine.</strong></p>
     </div>
   </section>
 
@@ -344,24 +344,24 @@
       <div class="acts">
         <div class="act good reveal">
           <span class="lbl">Acte 1 — le run qui marche</span>
-          <div class="cmd"><span class="p">$</span> task run</div>
+          <div class="cmd"><span class="p">$</span> mise run pipeline</div>
           <p>Branche → ingestion → <code>dbt build</code> vert → <strong>merge</strong> dans main + <strong>tag</strong>.</p>
           <span class="out ok">✓ main est mis à jour, promotion taguée</span>
         </div>
         <div class="act bad reveal">
           <span class="lbl">Acte 2 — le run qui casse · le moment fort</span>
-          <div class="cmd"><span class="p">$</span> task fail</div>
+          <div class="cmd"><span class="p">$</span> mise run pipeline-bad</div>
           <p>Mauvaise donnée (montant négatif, client <code>null</code>) → tests <strong>rouges</strong> → <strong>pas de merge</strong>, alerte, branche conservée.</p>
           <span class="out ko">⛔ main est resté propre</span>
         </div>
         <div class="act explore reveal">
           <span class="lbl">Acte 3 — explorer &amp; prouver</span>
-          <div class="cmd"><span class="p">$</span> task branches</div>
-          <div class="cmd"><span class="p">$</span> task notebook</div>
-          <p>Basculer <code>main</code> ↔ branche <code>-bad</code> dans le notebook · rejouer avec <code>task dbt-inspect</code>.</p>
+          <div class="cmd"><span class="p">$</span> mise run branches</div>
+          <div class="cmd"><span class="p">$</span> mise run notebook</div>
+          <p>Basculer <code>main</code> ↔ branche <code>-bad</code> dans le notebook · rejouer avec <code>mise run dbt-inspect</code>.</p>
         </div>
       </div>
-      <p class="demo-foot reveal"># préparation : <span style="color:var(--accent-ink)">task reset &amp;&amp; task up</span> → ardoise vierge, main vide</p>
+      <p class="demo-foot reveal"># préparation : <span style="color:var(--accent-ink)">mise run reset &amp;&amp; mise run up</span> → ardoise vierge, main vide</p>
     </div>
   </section>
 
@@ -404,8 +404,8 @@
       <h2 class="reveal">Brancher. Tester. Merger.<br><span class="accent">Vos données comme votre code.</span></h2>
       <p class="lead reveal" style="margin-top:14px">Nessie + Iceberg, 100 % local, sans JVM. La mauvaise donnée reste isolée sur sa branche ; <code>main</code> n'avance qu'après un test vert.</p>
       <div class="cover-chips reveal" style="margin-top:26px">
-        <span class="chip">task run → ✓ merge + tag</span>
-        <span class="chip">task fail → ⛔ pas de merge + alerte</span>
+        <span class="chip">mise run pipeline → ✓ merge + tag</span>
+        <span class="chip">mise run pipeline-bad → ⛔ pas de merge + alerte</span>
       </div>
     </div>
   </section>

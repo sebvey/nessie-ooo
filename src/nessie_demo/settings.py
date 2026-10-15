@@ -1,4 +1,4 @@
-"""Central config for the demo. Sensible local defaults so `task up` + `task run` just works."""
+"""Central config for the demo. Sensible local defaults so `mise run up` + `mise run pipeline` just works."""
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 

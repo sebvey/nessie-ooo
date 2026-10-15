@@ -1,0 +1,61 @@
+[tools]
+uv = "latest"
+
+[env]
+# dbt : le projet et ses profils sont dans dbt/ (prend le pas sur le DBT_PROFILES_DIR du workspace).
+DBT_PROJECT_DIR = "{{config_root}}/dbt"
+DBT_PROFILES_DIR = "{{config_root}}/dbt"
+
+# AWS CLI -> MinIO local (ex. `aws s3 ls s3://iceberg-warehouse --recursive`).
+AWS_ACCESS_KEY_ID = "minioadmin"
+AWS_SECRET_ACCESS_KEY = "minioadmin"
+AWS_ENDPOINT_URL = "http://localhost:29000"
+AWS_REGION = "us-east-1"
+AWS_S3_ADDRESSING_STYLE = "path"
+AWS_EC2_METADATA_DISABLED = "true"
+
+# Garde l'ordre des logs pipeline / dbt quand la sortie est redirigée.
+PYTHONUNBUFFERED = "1"
+
+[tasks.up]
+description = "Démarre la stack (Nessie + Postgres + MinIO) et installe les deps Python"
+run = [
+  "docker compose up -d --wait nessie",
+  "uv sync",
+  "echo 'Nessie: http://localhost:19120   MinIO console: http://localhost:29090 (minioadmin/minioadmin)'",
+]
+
+[tasks.down]
+description = "Arrête la stack (garde les volumes)"
+run = "docker compose down"
+
+[tasks.reset]
+description = "Arrête la stack et efface tout (historique Nessie + objets MinIO)"
+run = "docker compose down -v"
+
+[tasks.pipeline]
+description = "Pipeline nominale : branche -> ingest -> dbt build -> merge + tag sur main"
+run = "uv run pipeline"
+
+[tasks.pipeline-bad]
+description = "Pipeline en échec : mauvaise donnée -> tests rouges -> pas de merge + alerte"
+# La pipeline sort en erreur exprès (une vraie CI échouerait ici) : on l'avale pour que
+# la démo se termine proprement sur la bannière d'alerte.
+run = "uv run pipeline --bad || true"
+
+[tasks.branches]
+description = "Liste les branches et tags Nessie"
+run = "curl -s http://localhost:19120/api/v2/trees | python3 -m json.tool"
+
+[tasks.cli]
+description = "REPL Nessie connecté à main (ex. LIST REFERENCES;). Args passés au CLI, ex. -c 'SHOW LOG;'"
+run = "docker compose run --rm --no-deps nessie-cli -u http://nessie:19120/api/v2 -r main"
+
+[tasks.notebook]
+description = "Notebook marimo : choisir une branche, parcourir les tables, requêter avec DuckDB"
+run = "uv run --group explore marimo edit notebooks/explore.mo.py"
+
+[tasks.dbt-inspect]
+description = "Rejoue dbt build sur une branche, ex. mise run dbt-inspect pipeline-120000-bad"
+usage = 'arg "<branch>" help="branche Nessie à inspecter"'
+run = "NESSIE_BRANCH=${usage_branch?} uv run dbt build || true"
