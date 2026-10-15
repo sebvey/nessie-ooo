@@ -51,7 +51,8 @@ def _(catalog):
     # load_table() renvoie un objet catalogue pyiceberg ;
     # .scan().to_arrow() matérialise en pyarrow Table, que DuckDB sait scanner.
     raw__orders = catalog.load_table("raw.orders").scan().to_arrow()
-    return (raw__orders,)
+    marts__daily_orders = catalog.load_table("marts.daily_orders").scan().to_arrow()
+    return marts__daily_orders, raw__orders
 
 
 @app.cell
@@ -60,14 +61,19 @@ def _(mo, raw__orders):
         f"""
         SELECT *
         FROM raw__orders
-        WHERE amount < 0;
+        --WHERE amount < 0;
         """
     )
     return
 
 
 @app.cell
-def _():
+def _(marts__daily_orders, mo):
+    _df = mo.sql(
+        f"""
+        SELECT * FROM marts__daily_orders;
+        """
+    )
     return
 
 

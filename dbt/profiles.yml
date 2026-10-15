@@ -3,7 +3,8 @@ nessie_demo:
   outputs:
     dev:
       type: duckdb
-      path: "dbt/target/nessie_demo.duckdb"
+      # Absolute (mise exports DBT_PROJECT_DIR): dbt can run from the repo root or from dbt/.
+      path: "{{ env_var('DBT_PROJECT_DIR', 'dbt') }}/target/nessie_demo.duckdb"
       extensions:
         - httpfs
       # DuckDB is only the compute engine; the Nessie branch lives in the plugins' URI below.

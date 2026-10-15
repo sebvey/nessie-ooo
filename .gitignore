@@ -25,3 +25,6 @@ dbt/.user.yml
 
 # marimo cache
 __marimo__/
+
+# mise (réglages locaux)
+mise.local.toml
