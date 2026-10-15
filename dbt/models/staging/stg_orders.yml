@@ -1,0 +1,13 @@
+version: 2
+
+models:
+  - name: stg_orders
+    description: "Typed, cleaned orders. Quality gate for the pipeline branch."
+    columns:
+      - name: order_id
+        tests:
+          - not_null
+          - unique
+      - name: customer_id
+        tests:
+          - not_null

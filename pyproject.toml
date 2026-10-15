@@ -1,24 +1,29 @@
 [project]
-name = "nessie-ooo"
+name = "nessie-demo"
 version = "0.1.0"
-description = "Add your description here"
+description = "Nessie + Iceberg + dbt (DuckDB) branch->test->merge demo"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
+    "dbt-duckdb>=1.10.0",
     "duckdb>=1.4.3",
-    "marimo[sql]>=0.18.4",
-    "numpy>=2.4.0",
-    "polars[pyarrow]>=1.36.1",
-    "pydantic>=2.12.5",
-    "pydantic-settings>=2.12.0",
-    "pyiceberg[s3fs,pyiceberg-core]>=0.10.0",
-    "pyspark>=3.5,<3.6",
-    "ruff>=0.14.10",
+    "numpy>=2.0",
+    "pyarrow>=17.0",
+    "pyiceberg[s3fs,pyarrow]>=0.10.0",
+    "pydantic-settings>=2.0",
+    "requests>=2.31",
+    "pandas>=3.0.3",
 ]
 
 [project.scripts]
-ingest_taxi_dataset = "nessie_ooo.ingestion.taxi_dataset:main"
+ingest = "nessie_demo.ingest:main"
+pipeline = "nessie_demo.pipeline:main"
 
 [build-system]
 requires = ["uv_build>=0.9.21,<0.10.0"]
 build-backend = "uv_build"
+
+[dependency-groups]
+explore = [
+    "marimo[sql]>=0.18",
+]

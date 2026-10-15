@@ -85,6 +85,19 @@ services:
       timeout: 2s
       retries: 15
 
+  # One-shot: create the Iceberg warehouse bucket, then exit.
+  minio-setup:
+    image: quay.io/minio/mc:latest
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: >
+      /bin/sh -c "
+      mc alias set local http://minio:9000 minioadmin minioadmin &&
+      mc mb -p local/iceberg-warehouse &&
+      echo 'bucket iceberg-warehouse ready'
+      "
+
 volumes:
   minio_data:
   postgres_data:

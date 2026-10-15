@@ -1,0 +1,10 @@
+version: 2
+
+models:
+  - name: daily_orders
+    description: "Daily order metrics — materialized as an Iceberg table on the branch."
+    columns:
+      - name: order_date
+        tests:
+          - not_null
+          - unique

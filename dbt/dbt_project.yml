@@ -1,0 +1,16 @@
+name: nessie_demo
+version: "1.0"
+profile: nessie_demo
+
+model-paths: ["models"]
+test-paths: ["tests"]
+target-path: "target"
+clean-targets: ["target", "dbt_packages"]
+
+models:
+  nessie_demo:
+    staging:
+      +materialized: view
+    marts:
+      +materialized: external
+      +plugin: iceberg_write

@@ -1,0 +1,34 @@
+nessie_demo:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: "dbt/target/nessie_demo.duckdb"
+      extensions:
+        - httpfs
+      # DuckDB is only the compute engine; the Nessie branch lives in the plugins' URI below.
+      plugins:
+        # READ sources: raw.* Iceberg tables on the branch (bundled plugin).
+        - module: iceberg
+          alias: iceberg_read
+          config:
+            catalog: nessie
+            type: rest
+            uri: "http://localhost:19120/iceberg/{{ env_var('NESSIE_BRANCH', 'main') }}"
+            s3.endpoint: http://localhost:29000
+            s3.access-key-id: minioadmin
+            s3.secret-access-key: minioadmin
+            s3.region: us-east-1
+            s3.path-style-access: "true"
+        # WRITE marts: materialize models as Iceberg tables on the branch (custom plugin).
+        - module: nessie_demo.dbt_plugins.iceberg_write
+          alias: iceberg_write
+          config:
+            catalog: nessie
+            type: rest
+            uri: "http://localhost:19120/iceberg/{{ env_var('NESSIE_BRANCH', 'main') }}"
+            s3.endpoint: http://localhost:29000
+            s3.access-key-id: minioadmin
+            s3.secret-access-key: minioadmin
+            s3.region: us-east-1
+            s3.path-style-access: "true"

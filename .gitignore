@@ -12,3 +12,16 @@ wheels/
 # direnv
 .envrc
 .direnv
+
+# dbt
+dbt/target/
+dbt/logs/
+dbt/dbt_packages/
+dbt/.user.yml
+*.duckdb
+
+# macOS
+.DS_Store
+
+# marimo cache
+__marimo__/
