@@ -161,13 +161,17 @@ l'identité, pas par le type d'opération. La règle « merge seulement si vert 
 l'orchestrateur. Le rollback (`ASSIGN_REFERENCE_TO_HASH`) est une permission à part. Désactivé dans la
 démo.
 
-**Maintenance Iceberg** (à creuser). Compaction des petits fichiers, purge de ce qui n'est plus
-référencé. Pas de maintenance Iceberg en direct sur les fichiers (`expire_snapshots`,
-`remove_orphan_files`) : on passe par **Nessie GC** (*garbage collector*), un programme à part, planifié, qui lit
-l'API Nessie et supprime les fichiers orphelins. Le `metadata.json` écrit par Nessie ne contient
-que le **snapshot courant** (vérifié sur la démo : 1 snapshot, `snapshot-log` d'une entrée,
-`metadata-log` vide) ; l'historique est dans les commits Nessie, sur toutes les branches et tous les
-tags. Seul Nessie sait ce qui sert encore.
+**Maintenance Iceberg.**
+
+| | Catalogue classique (Polaris, Glue, REST) | Avec Nessie |
+|---|---|---|
+| Purge (snapshots expirés, fichiers orphelins) | `expire_snapshots` + `remove_orphan_files` d'Iceberg, lancés par un moteur (Spark…) | **Nessie GC** (*garbage collector*), un programme à part ; la doc Nessie le présente comme un remplacement complet de ces deux procédures |
+| Pourquoi | le `metadata.json` garde tout l'historique des snapshots | le `metadata.json` écrit par Nessie ne contient que le **snapshot courant** (vérifié sur la démo) ; l'historique est dans les commits Nessie, sur toutes les branches et tous les tags. Les procédures Iceberg supprimeraient des fichiers encore utilisés |
+| Rétention | par table (`expire_snapshots` : âge, nombre de snapshots) | par branche (`--default-cutoff`, `--cutoff <regex>=<policy>`) : nombre de commits, durée ou date |
+| Compaction | `rewrite_data_files` (Spark…) | identique : une écriture Iceberg normale, donc un commit ; les fichiers remplacés sont purgés plus tard par Nessie GC (déduit, non documenté côté Nessie) |
+| Qui exécute | toi, en tâche planifiée (Polaris stocke des politiques mais ne les exécute pas) | toi, en tâche planifiée (jar Java 17 ou image `ghcr.io/projectnessie/nessie-gc`) |
+
+Jamais de suppression à la main dans le bucket, quel que soit le catalogue.
 
 Nessie GC fonctionne en deux phases : **mark** (parcourt toutes les références nommées et collecte le
 contenu vivant) puis **sweep** (supprime, table par table, les fichiers que plus aucune version vivante

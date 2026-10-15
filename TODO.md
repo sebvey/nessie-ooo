@@ -69,7 +69,7 @@ Retours du test (implémentés) :
       **une** table (Spark, Trino `CREATE BRANCH … IN TABLE`) ; une branche Nessie couvre **tout le
       catalogue** (plusieurs tables, merge atomique). Question probable : en parler dans les slides ?
 
-## 4. Slide 03/10 (stack) : détail au clic
+## 4. Slide 03/09 (stack) : détail au clic
 
 - [x] Clic sur un bloc → panneau de détail : rôle, ce que fait l'élément dans la démo, fichier(s)
       concerné(s), alternatives, et une phrase « à dire ». Fermeture par Échap, ✕ ou clic à côté ;
@@ -84,7 +84,7 @@ Retours du test (implémentés) :
 - [ ] Mineur : `docker-compose.yml` utilise `nessie.version.store.type=JDBC`, variante dépréciée dans
       Nessie (préférer `JDBC2`). Ne pas changer avant la présentation.
 
-## 4 bis. Slide 09/10 « À creuser »
+## 4 bis. Slide 09/09 « À creuser »
 
 - [x] Bloc « Protéger main » (non cliquable) : autorisations Nessie par rôle ; limite : merge =
       même permission qu'un commit direct.
@@ -94,7 +94,7 @@ Retours du test (implémentés) :
       juillet 2026), pipelines concurrentes et conflits de merge, cycle de vie des branches et
       traçabilité des commits, volumétrie, moteurs côté consommateurs, exploitation de Nessie.
 
-## 5. Slide 08/10 (maturité) : ajouter Snowflake
+## 5. Slide 08/09 (maturité) : ajouter Snowflake
 
 - [ ] Vérifier ce que Snowflake sait faire avec un catalog Iceberg externe / Nessie (lecture,
       écriture, choix de la branche), sources à l'appui.

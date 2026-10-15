@@ -162,7 +162,6 @@
   .mini.big{padding:20px 22px}
   .mini.big .k{font-size:1.02rem}
   .mini.big .v{font-size:.9rem}
-  .mini.todo{border-style:dashed;box-shadow:none}
 
   /* demo acts */
   .acts{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:6px}
@@ -241,7 +240,7 @@
 
 <div class="progress" id="progress"></div>
 <nav class="nav" id="nav" aria-label="Slides"></nav>
-<div class="counter" id="counter"><b>01</b> / 10</div>
+<div class="counter" id="counter"><b>01</b> / 09</div>
 <div class="brand">NESSIE · DEMO</div>
 <button type="button" class="theme-toggle" id="theme-toggle"></button>
 
@@ -582,32 +581,19 @@
       <h2 class="reveal">À creuser</h2>
       <div class="duo2">
         <div class="mini big reveal">
-          <div class="k"><span class="dot" style="background:var(--accent)"></span>Protéger main</div>
+          <div class="k"><span class="dot" style="background:var(--tag)"></span>Protéger main</div>
           <div class="v">Seul le compte de l'<strong>orchestrateur</strong> écrit sur <code>main</code> : authentification + règles d'autorisation Nessie par rôle.</div>
           <div class="v" style="margin-top:8px">Limite : un merge et un commit direct demandent <strong>la même permission</strong>. On protège par l'identité, pas par le type d'opération.</div>
         </div>
-        <div class="mini big todo reveal">
-          <div class="k"><span class="dot" style="background:var(--tag)"></span>Maintenance Iceberg <span class="pill warn" style="margin-left:auto">à creuser</span></div>
-          <div class="v">Compacter les petits fichiers, purger ce qui n'est plus référencé. Mais <strong>pas en direct</strong> sur les fichiers (<code>expire_snapshots</code>, <code>remove_orphan_files</code>) : on passe par <strong>Nessie GC</strong> (<em>garbage collector</em>), un programme à part, planifié, qui lit l'API Nessie et supprime les fichiers orphelins.</div>
-          <div class="v" style="margin-top:8px">Le <code>metadata.json</code> écrit par Nessie ne contient que le <strong>snapshot courant</strong> : l'historique est dans les commits Nessie, sur toutes les branches et tous les tags. Seul Nessie sait ce qui sert encore.</div>
+        <div class="mini big reveal">
+          <div class="k"><span class="dot" style="background:var(--tag)"></span>Maintenance Iceberg</div>
+          <div class="v"><strong>Classique</strong> : <code>expire_snapshots</code> + <code>remove_orphan_files</code> d'Iceberg.<br><strong>Avec Nessie</strong> : <strong>Nessie GC</strong> (<em>garbage collector</em>), un programme à part qui les remplace.</div>
+          <div class="v" style="margin-top:8px">Pourquoi : le <code>metadata.json</code> écrit par Nessie ne connaît que le snapshot courant ; l'historique (branches, tags) est dans Nessie. Rétention réglée par branche. La compaction, elle, ne change pas : un commit Iceberg normal.</div>
         </div>
       </div>
-      <p class="caption reveal">Nessie GC : <strong>mark</strong> (parcourt toutes les références, collecte le contenu vivant) puis <strong>sweep</strong> (supprime, table par table, les fichiers que plus rien ne référence).</p>
     </div>
   </section>
 
-  <!-- CLOSING -->
-  <section class="slide closing" id="s9">
-    <div class="wrap">
-      <p class="eyebrow reveal">En résumé</p>
-      <h2 class="reveal">Brancher. Tester. Merger.<br><span class="accent">Vos données comme votre code.</span></h2>
-      <p class="lead reveal" style="margin-top:14px">Nessie + Iceberg, 100 % local. La mauvaise donnée reste isolée sur sa branche ; <code>main</code> n'avance qu'après un test vert.</p>
-      <div class="cover-chips reveal" style="margin-top:26px">
-        <span class="chip">mise run pipeline-ok → ✓ merge + tag</span>
-        <span class="chip">mise run pipeline-ko → ⛔ pas de merge + alerte</span>
-      </div>
-    </div>
-  </section>
 
 </main>
 
