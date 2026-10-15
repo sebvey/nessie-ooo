@@ -59,13 +59,11 @@ Retours du test (implémentés) :
 
 ## 3. Approfondir les concepts (questions / réponses)
 
-- [ ] Session de questions sur Iceberg, Nessie et la stack ; décider après chaque réponse si une
+- [x] Session de questions sur Iceberg, Nessie et la stack ; décider après chaque réponse si une
       slide doit évoluer.
-- [ ] Parler des namespaces dans les présentations HTML. Séparer ce qui relève d'Iceberg (un
-      namespace regroupe des tables, comme un schéma SQL : `raw.orders`) de ce qui est propre à
-      Nessie (un namespace est versionné : le créer produit un commit). Choisir où le placer
-      (`iceberg.html`, `presentation.html` ou les deux).
-- [ ] Branches Iceberg vs branches Nessie : une branche Iceberg est une référence de snapshot dans
+- [x] Namespaces : une ligne sur la carte Catalog de la slide « modèle mental » d'`iceberg.html`
+      (concept de catalogue Iceberg, comme un schéma SQL). Le versionnement par Nessie reste à l'oral.
+- [x] (à l'oral) Branches Iceberg vs branches Nessie : une branche Iceberg est une référence de snapshot dans
       **une** table (Spark, Trino `CREATE BRANCH … IN TABLE`) ; une branche Nessie couvre **tout le
       catalogue** (plusieurs tables, merge atomique). Question probable : en parler dans les slides ?
 
