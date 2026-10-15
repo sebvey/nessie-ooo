@@ -42,15 +42,20 @@ Retours du test (implémentés) :
 
 ## 2. Corrections avant ce soir
 
-- [ ] Slide « Maturité » + `plan.md` : le bug DuckDB #1145 est corrigé (PR #1230, mergée le
-      26/07/2026). Vérifier dans quelle version de DuckDB le correctif est publié, puis reformuler.
-- [ ] Slide « Maturité » : Trino #24134 a été fermée en « not planned » (une syntaxe dédiée aux
-      branches est annoncée). Préciser.
-- [ ] README : `pipeline_YYYYMMDD` → `pipeline-HHMMSS`, ajouter les tags `release-HHMMSS`, mettre à
-      jour le déroulé.
-- [ ] Notebook : aligner sa description (README + acte 3) sur ce qu'il fait réellement.
-- [ ] « 100 % local, zéro Java » : nuancer (le serveur Nessie est en Java/Quarkus, dans un conteneur).
+- [x] Slide « Maturité » + `plan.md`, DuckDB : #1145 corrigé dans l'extension (PR #1230, mergée le
+      26/07/2026 sur la branche principale) mais pas encore publié : la 1.5.6 (28/09/2026) ne
+      l'inclut pas. `CREATE OR REPLACE` toujours absent (#784). Pastille « Pas encore ».
+- [x] Slide « Maturité » + `plan.md`, Trino : #24134 fermée « not planned ». Le `CREATE BRANCH … IN
+      TABLE` ajouté en 2025 concerne les branches Iceberg d'une table, pas les branches Nessie.
+- [x] README : noms `pipeline-HHMMSS` / `-bad`, tags, étapes 0 à 4, mise en place, arborescence ;
+      le déroulé renvoie vers `demo-scenario.md` et `demo-cli.md`.
+- [x] Notebook : description du README alignée sur ce qu'il fait (l'acte 3 était déjà juste).
+- [x] « Zéro Java » / « sans JVM » retiré des slides, de `plan.md` et du README (pas important).
 - [x] Mineur : `--keep` dans `pipeline.py` ne fait rien (corrigé avec la nouvelle sortie).
+- [x] Deux slides après « La pipeline » : 04 « La branche, c'est une adresse » (cas idéal, DuckDB
+      attache la branche) et 05 « Le détour par PyIceberg » (le bug, les plugins, le prix). Le deck
+      passe à 9 slides ; `plan.md` suit.
+- [ ] Slide 04/09 « La pipeline » : dépasse de 24 px en 1440×900 (antérieur).
 
 ## 3. Approfondir les concepts (questions / réponses)
 
@@ -60,13 +65,16 @@ Retours du test (implémentés) :
       namespace regroupe des tables, comme un schéma SQL : `raw.orders`) de ce qui est propre à
       Nessie (un namespace est versionné : le créer produit un commit). Choisir où le placer
       (`iceberg.html`, `presentation.html` ou les deux).
+- [ ] Branches Iceberg vs branches Nessie : une branche Iceberg est une référence de snapshot dans
+      **une** table (Spark, Trino `CREATE BRANCH … IN TABLE`) ; une branche Nessie couvre **tout le
+      catalogue** (plusieurs tables, merge atomique). Question probable : en parler dans les slides ?
 
-## 4. Slide 03/07 (stack) : détail au clic
+## 4. Slide 03/09 (stack) : détail au clic
 
 - [ ] Clic sur un bloc → panneau de détail : rôle, ce que fait l'élément dans la démo, fichier(s)
       concerné(s), alternatives.
 
-## 5. Slide 06/07 (maturité) : ajouter Snowflake
+## 5. Slide 08/09 (maturité) : ajouter Snowflake
 
 - [ ] Vérifier ce que Snowflake sait faire avec un catalog Iceberg externe / Nessie (lecture,
       écriture, choix de la branche), sources à l'appui.
@@ -79,3 +87,10 @@ Retours du test (implémentés) :
 - [ ] Se passer de PyIceberg avec une version à jour de DuckDB : vérifier que `ATTACH` sur une
       branche Nessie fonctionne (lecture + écriture + `CREATE OR REPLACE`), et voir ce que ça
       simplifie (plugins dbt, `catalog.py`).
+      Tests du 15/10/2026 (branche jetable, `main` intact) :
+      - DuckDB 1.5.6 (stable) et son extension `core_nightly` : **KO**, adresse
+        `/iceberg/<br>/v1/<br>|warehouse/…` (extension tirée de la branche 1.5, sans le correctif).
+      - DuckDB `2.0.0.dev2610011535` (préversion PyPI) : **lecture OK** sur la branche ;
+        `CREATE TABLE AS`, `INSERT`, `DELETE`, `DROP` OK avec `SET iceberg_use_metadata_log = false` ;
+        `CREATE OR REPLACE` toujours refusé (#784) → passer par DROP + CREATE.
+      - Mode d'emploi et plan d'intégration dans dbt : [`DUCKDB-2.0.md`](DUCKDB-2.0.md).

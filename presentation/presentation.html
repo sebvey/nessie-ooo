@@ -121,6 +121,12 @@
   .legend span{display:inline-flex;align-items:center;gap:7px}
   .legend i{width:20px;height:3px;border-radius:2px;display:inline-block}
 
+  /* branch mechanism */
+  .codeblock{font-family:var(--font-mono);font-size:.78rem;line-height:1.5;background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:9px 12px;color:var(--ink);white-space:pre;overflow-x:auto;margin:8px 0 0}
+  .codeblock .hl{color:var(--accent-ink);font-weight:650}
+  .card .num{font-family:var(--font-mono);font-size:.72rem;color:var(--accent-ink);letter-spacing:.08em;display:block;margin-bottom:4px}
+  .card.ko{border-top:3px solid var(--fail)} .card.fix{border-top:3px solid var(--pass)} .card.cost{border-top:3px solid var(--tag)}
+
   /* demo acts */
   .acts{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:6px}
   .act{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:10px;position:relative;overflow:hidden}
@@ -191,7 +197,7 @@
 
 <div class="progress" id="progress"></div>
 <nav class="nav" id="nav" aria-label="Slides"></nav>
-<div class="counter" id="counter"><b>01</b> / 07</div>
+<div class="counter" id="counter"><b>01</b> / 09</div>
 <div class="brand">NESSIE · DEMO</div>
 
 <main class="deck" id="deck">
@@ -206,7 +212,7 @@
       <div class="cover-chips reveal">
         <span class="chip">Nessie</span><span class="chip">Apache Iceberg</span>
         <span class="chip">dbt · DuckDB</span><span class="chip">PyIceberg</span>
-        <span class="chip">MinIO</span><span class="chip">100 % local · zéro Java</span>
+        <span class="chip">MinIO</span><span class="chip">100 % local</span>
       </div>
       <p class="cover-sub reveal" style="margin-top:34px">↓ &nbsp;faites défiler &nbsp;·&nbsp; ← → &nbsp;pour naviguer</p>
     </div>
@@ -249,7 +255,7 @@
   <section class="slide" id="s2">
     <div class="wrap">
       <p class="eyebrow reveal">02 · La stack</p>
-      <h2 class="reveal">Léger, local, sans JVM</h2>
+      <h2 class="reveal">Léger et 100 % local</h2>
       <div class="lanes">
         <div class="lane reveal">
           <p class="col-h">Infra · docker-compose</p>
@@ -269,7 +275,7 @@
           <div class="mini"><div class="k"><span class="dot" style="background:var(--tag)"></span>mise</div><div class="v">Les commandes de démo : <code>stack-up</code> · <code>pipeline-ok</code> · <code>pipeline-ko</code>.</div></div>
         </div>
       </div>
-      <p class="caption reveal">Nessie + Iceberg + MinIO côté catalogue/stockage · dbt-DuckDB + PyIceberg côté transformation/tests — orchestrés par un script Python et des tâches mise. <strong>100 % local, zéro Java côté machine.</strong></p>
+      <p class="caption reveal">Nessie + Iceberg + MinIO côté catalogue/stockage · dbt-DuckDB + PyIceberg côté transformation/tests — orchestrés par un script Python et des tâches mise. <strong>100 % local.</strong></p>
     </div>
   </section>
 
@@ -336,10 +342,132 @@
     </div>
   </section>
 
-  <!-- 04 DEMO -->
+  <!-- 04 MECANISME : CAS IDEAL -->
   <section class="slide" id="s4">
     <div class="wrap">
-      <p class="eyebrow reveal">04 · Le scénario de démo</p>
+      <p class="eyebrow reveal">04 · Travailler sur une branche · le principe</p>
+      <h2 class="reveal">La branche, c'est une adresse</h2>
+
+      <svg class="diagram reveal" viewBox="0 0 920 230" role="img" aria-label="DuckDB attache l'adresse de la branche dans Nessie : il y lit raw.orders et y écrit daily_orders. L'adresse de main n'est utilisée par personne.">
+        <!-- DuckDB -->
+        <rect x="30" y="40" width="330" height="160" rx="14" fill="var(--surface)" stroke="var(--pass)" stroke-width="2"/>
+        <text x="52" y="72" fill="var(--ink)" font-family="var(--font-mono)" font-size="15" font-weight="700">dbt build · DuckDB</text>
+        <text x="52" y="108" fill="var(--muted)" font-family="var(--font-mono)" font-size="12.5">raw.orders</text>
+        <text x="52" y="134" fill="var(--muted)" font-family="var(--font-mono)" font-size="12.5">→ stg_orders → daily_orders</text>
+        <text x="52" y="160" fill="var(--pass)" font-family="var(--font-mono)" font-size="12.5">+ tests de qualité</text>
+        <text x="52" y="184" fill="var(--muted)" font-family="var(--font-mono)" font-size="11">un seul moteur, en SQL</text>
+
+        <!-- Nessie -->
+        <rect x="560" y="20" width="330" height="200" rx="14" fill="var(--surface)" stroke="var(--line-strong)" stroke-width="1.5"/>
+        <text x="582" y="48" fill="var(--ink)" font-family="var(--font-mono)" font-size="15" font-weight="700">Nessie · Iceberg REST</text>
+        <rect x="580" y="62" width="290" height="54" rx="9" fill="var(--surface-2)" stroke="var(--line)" stroke-dasharray="4 4"/>
+        <text x="596" y="85" fill="var(--muted)" font-family="var(--font-mono)" font-size="13">/iceberg/main</text>
+        <text x="596" y="104" fill="var(--muted)" font-family="var(--font-mono)" font-size="11">personne ne s'y adresse</text>
+        <rect x="580" y="128" width="290" height="72" rx="9" fill="color-mix(in srgb,var(--accent) 10%,var(--surface))" stroke="var(--accent)" stroke-width="2"/>
+        <text x="596" y="158" fill="var(--accent-ink)" font-family="var(--font-mono)" font-size="13" font-weight="700">/iceberg/pipeline-143205</text>
+        <text x="596" y="182" fill="var(--muted)" font-family="var(--font-mono)" font-size="11">chaque écriture = un commit</text>
+
+        <!-- read: branch -> DuckDB -->
+        <path class="draw" style="--len:220" d="M578,148 H368" fill="none" stroke="var(--accent)" stroke-width="2.5"/>
+        <path class="pop d1" d="M372,142 l-9,6 l9,6 z" fill="var(--accent)"/>
+        <text x="470" y="140" text-anchor="middle" fill="var(--accent-ink)" font-family="var(--font-mono)" font-size="12">lit raw.orders</text>
+        <!-- write: DuckDB -> branch -->
+        <path class="draw" style="--len:220" d="M362,184 H572" fill="none" stroke="var(--pass)" stroke-width="2.5"/>
+        <path class="pop d2" d="M568,178 l9,6 l-9,6 z" fill="var(--pass)"/>
+        <text x="470" y="204" text-anchor="middle" fill="var(--pass)" font-family="var(--font-mono)" font-size="12">écrit daily_orders</text>
+      </svg>
+
+      <div class="cols" style="margin-top:10px">
+        <div class="card reveal">
+          <span class="num">1 · L'ADRESSE</span>
+          <p>Nessie sert un catalogue Iceberg REST <strong>par branche</strong> : <code>/iceberg/&lt;branche&gt;</code>. Le client ne sait même pas qu'il est sur une branche.</p>
+        </div>
+        <div class="card reveal">
+          <span class="num">2 · UN SEUL MOTEUR</span>
+          <p>DuckDB <strong>attache</strong> l'adresse de la branche, puis lit, calcule, teste et écrit en SQL.</p>
+          <div class="codeblock">ATTACH 'warehouse' AS lake (TYPE iceberg,
+  ENDPOINT '…/iceberg/<span class="hl">pipeline-143205</span>');</div>
+        </div>
+        <div class="card reveal">
+          <span class="num">3 · MAIN INTOUCHÉ</span>
+          <p>Personne n'utilise <code>/iceberg/main</code> avant le merge : <code>main</code> <strong>ne peut pas bouger</strong>. Le merge final est une opération Nessie.</p>
+        </div>
+      </div>
+      <p class="caption reveal">C'est la cible. Avec DuckDB ≤ 1.5.6, l'<code>ATTACH</code> sur une branche échoue : slide suivante.</p>
+    </div>
+  </section>
+
+  <!-- 05 MECANISME : CONTOURNEMENT -->
+  <section class="slide" id="s5">
+    <div class="wrap">
+      <p class="eyebrow reveal">05 · Travailler sur une branche · aujourd'hui</p>
+      <h2 class="reveal">Le détour par PyIceberg</h2>
+
+      <svg class="diagram reveal" viewBox="0 0 920 240" role="img" aria-label="L'accès direct de DuckDB à la branche échoue (404). Un plugin PyIceberg lit raw.orders sur la branche et le passe à DuckDB ; un plugin maison réécrit daily_orders sur la branche.">
+        <!-- DuckDB -->
+        <rect x="20" y="64" width="250" height="112" rx="14" fill="var(--surface)" stroke="var(--line-strong)" stroke-width="1.5"/>
+        <text x="40" y="96" fill="var(--ink)" font-family="var(--font-mono)" font-size="15" font-weight="700">DuckDB</text>
+        <text x="40" y="122" fill="var(--muted)" font-family="var(--font-mono)" font-size="12">calcul + tests seulement</text>
+        <text x="40" y="146" fill="var(--muted)" font-family="var(--font-mono)" font-size="11">stg_orders → daily_orders</text>
+
+        <!-- plugins -->
+        <rect x="350" y="14" width="250" height="62" rx="11" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.8"/>
+        <text x="368" y="40" fill="var(--ink)" font-family="var(--font-mono)" font-size="13" font-weight="700">plugin iceberg</text>
+        <text x="368" y="60" fill="var(--muted)" font-family="var(--font-mono)" font-size="11">lecture · PyIceberg → Arrow</text>
+        <rect x="350" y="164" width="250" height="62" rx="11" fill="var(--surface)" stroke="var(--pass)" stroke-width="1.8"/>
+        <text x="368" y="190" fill="var(--ink)" font-family="var(--font-mono)" font-size="13" font-weight="700">plugin iceberg_write</text>
+        <text x="368" y="210" fill="var(--muted)" font-family="var(--font-mono)" font-size="11">écriture · maison · PyIceberg</text>
+
+        <!-- Nessie -->
+        <rect x="680" y="64" width="220" height="112" rx="14" fill="color-mix(in srgb,var(--accent) 10%,var(--surface))" stroke="var(--accent)" stroke-width="2"/>
+        <text x="698" y="96" fill="var(--ink)" font-family="var(--font-mono)" font-size="15" font-weight="700">Nessie</text>
+        <text x="698" y="122" fill="var(--accent-ink)" font-family="var(--font-mono)" font-size="12">branche</text>
+        <text x="698" y="146" fill="var(--accent-ink)" font-family="var(--font-mono)" font-size="12" font-weight="700">pipeline-143205</text>
+
+        <!-- read path: Nessie -> plugin -> DuckDB -->
+        <path class="draw" style="--len:120" d="M690,64 C690,45 640,45 604,45" fill="none" stroke="var(--accent)" stroke-width="2.2"/>
+        <path class="draw" style="--len:140" d="M348,45 C300,45 250,45 250,62" fill="none" stroke="var(--accent)" stroke-width="2.2"/>
+        <path class="pop d1" d="M244,58 l6,9 l6,-9 z" fill="var(--accent)"/>
+        <text x="660" y="36" fill="var(--accent-ink)" font-family="var(--font-mono)" font-size="11">raw.orders</text>
+        <!-- write path: DuckDB -> plugin -> Nessie -->
+        <path class="draw" style="--len:140" d="M250,178 C250,195 300,195 348,195" fill="none" stroke="var(--pass)" stroke-width="2.2"/>
+        <path class="draw" style="--len:120" d="M604,195 C640,195 690,195 690,180" fill="none" stroke="var(--pass)" stroke-width="2.2"/>
+        <path class="pop d2" d="M684,184 l6,-9 l6,9 z" fill="var(--pass)"/>
+        <text x="640" y="216" fill="var(--pass)" font-family="var(--font-mono)" font-size="11">daily_orders</text>
+
+        <!-- direct path: broken -->
+        <path d="M272,120 H676" fill="none" stroke="var(--fail)" stroke-width="2" stroke-dasharray="5 6" opacity=".85"/>
+        <g class="pop d3">
+          <circle cx="475" cy="120" r="12" fill="var(--bg)" stroke="var(--fail)" stroke-width="2.5"/>
+          <path d="M470,115 l10,10 M480,115 l-10,10" stroke="var(--fail)" stroke-width="2.5" stroke-linecap="round"/>
+        </g>
+        <text x="475" y="148" text-anchor="middle" fill="var(--fail)" font-family="var(--font-mono)" font-size="11">ATTACH direct · 404</text>
+      </svg>
+
+      <div class="cols" style="margin-top:8px">
+        <div class="card ko reveal">
+          <span class="num" style="color:var(--fail)">LE BUG</span>
+          <p>Nessie répond <code>prefix = &lt;branche&gt;</code> et <code>uri = /iceberg/</code>. DuckDB ignore <code>uri</code> et colle le préfixe derrière l'adresse de la branche :</p>
+          <div class="codeblock">/iceberg/<span class="hl">br</span>/v1/<span class="hl">br</span>/… → 404
+/iceberg/v1/<span class="hl">br</span>/…    → 200</div>
+        </div>
+        <div class="card fix reveal">
+          <span class="num" style="color:var(--pass)">LE DÉTOUR</span>
+          <p><strong>Lecture</strong> : le plugin <code>iceberg</code> de dbt-duckdb charge <code>raw.orders</code> via PyIceberg, en Arrow. <strong>Écriture</strong> : notre plugin <code>iceberg_write</code> réécrit <code>daily_orders</code> sur la branche via PyIceberg.</p>
+        </div>
+        <div class="card cost reveal">
+          <span class="num" style="color:var(--tag)">LE PRIX</span>
+          <p>Les données transitent <strong>en mémoire</strong> (Arrow), un plugin <strong>maison</strong> à maintenir, et le mart est <strong>réécrit en entier</strong> à chaque run.</p>
+        </div>
+      </div>
+      <p class="caption reveal">Corrigé dans l'extension DuckDB (<a href="https://github.com/duckdb/duckdb-iceberg/pull/1230" style="color:var(--accent-ink)">#1230</a>, juillet 2026), <strong>pas encore dans une version publiée</strong>. Dès sa sortie : retirer les plugins et revenir au principe de la slide précédente.</p>
+    </div>
+  </section>
+
+  <!-- 06 DEMO -->
+  <section class="slide" id="s6">
+    <div class="wrap">
+      <p class="eyebrow reveal">06 · Le scénario de démo</p>
       <h2 class="reveal">Trois actes</h2>
       <div class="acts">
         <div class="act good reveal">
@@ -365,10 +493,10 @@
     </div>
   </section>
 
-  <!-- 05 MATURITE -->
-  <section class="slide" id="s5">
+  <!-- 07 MATURITE -->
+  <section class="slide" id="s7">
     <div class="wrap">
-      <p class="eyebrow reveal">05 · Maturité</p>
+      <p class="eyebrow reveal">07 · Maturité</p>
       <h2 class="reveal">Qui gère vraiment les branches Nessie ?</h2>
       <p class="mat-note reveal">Maturité de l'intégration <strong>Nessie</strong> — surtout écrire/lire sur une branche ≠ <code>main</code> — pas du support Iceberg en général.</p>
       <div class="mat">
@@ -384,13 +512,13 @@
         </div>
         <div class="row reveal">
           <div class="eng">DuckDB<small>transformations</small></div>
-          <span class="pill warn">⚠ Pas mature</span>
-          <div class="det"><b>main uniquement</b> : le client ignore <code>overrides.uri</code> et double le prefix (<a href="https://github.com/duckdb/duckdb-iceberg/issues/1145">#1145</a>) ; pas de <code>CREATE OR REPLACE</code>. <b>On a rusé</b> : DuckDB calcule, PyIceberg écrit sur la branche.</div>
+          <span class="pill warn">⚠ Pas encore</span>
+          <div class="det">Jusqu'à la 1.5.6 (sept. 2026) : <b>main uniquement</b>, le client ignore <code>overrides.uri</code> (<a href="https://github.com/duckdb/duckdb-iceberg/issues/1145">#1145</a>). <b>Corrigé</b> dans l'extension (<a href="https://github.com/duckdb/duckdb-iceberg/pull/1230">#1230</a>), <b>pas encore publié</b>. <code>CREATE OR REPLACE</code> toujours absent (<a href="https://github.com/duckdb/duckdb-iceberg/issues/784">#784</a>). <b>On a rusé</b> : DuckDB calcule, PyIceberg écrit sur la branche.</div>
         </div>
         <div class="row reveal">
           <div class="eng">Trino<small>—</small></div>
           <span class="pill warn">⚠ Pas mature</span>
-          <div class="det">Branche = propriété <b>statique du catalogue</b>, pas par session/requête ; pas de branch en SQL (<a href="https://github.com/trinodb/trino/issues/24134">#24134</a>).</div>
+          <div class="det">Branche Nessie = propriété <b>statique du catalogue</b> (<code>iceberg.nessie-catalog.ref</code>), ni par session ni par requête (<a href="https://github.com/trinodb/trino/issues/24134">#24134</a>, refusée). Le <code>CREATE BRANCH … IN TABLE</code> de 2025 crée une branche <b>Iceberg sur une table</b>, pas une branche Nessie multi-tables.</div>
         </div>
       </div>
       <p class="caption reveal">Pour un workflow <strong>multi-branches dynamique</strong>, seuls <strong>Spark</strong> (natif, lourd) et <strong>PyIceberg</strong> (léger, via l'URI) sont prêts. D'où notre choix : <strong>PyIceberg pour les branches + DuckDB pour le calcul</strong>.</p>
@@ -398,11 +526,11 @@
   </section>
 
   <!-- CLOSING -->
-  <section class="slide closing" id="s6">
+  <section class="slide closing" id="s8">
     <div class="wrap">
       <p class="eyebrow reveal">En résumé</p>
       <h2 class="reveal">Brancher. Tester. Merger.<br><span class="accent">Vos données comme votre code.</span></h2>
-      <p class="lead reveal" style="margin-top:14px">Nessie + Iceberg, 100 % local, sans JVM. La mauvaise donnée reste isolée sur sa branche ; <code>main</code> n'avance qu'après un test vert.</p>
+      <p class="lead reveal" style="margin-top:14px">Nessie + Iceberg, 100 % local. La mauvaise donnée reste isolée sur sa branche ; <code>main</code> n'avance qu'après un test vert.</p>
       <div class="cover-chips reveal" style="margin-top:26px">
         <span class="chip">mise run pipeline-ok → ✓ merge + tag</span>
         <span class="chip">mise run pipeline-ko → ⛔ pas de merge + alerte</span>
