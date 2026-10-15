@@ -69,9 +69,10 @@ mise run notebook   # ouvre notebooks/explore.mo.py dans marimo
 
 Explorateur de données **réactif** :
 - un **sélecteur de branche**, alimenté par l'API Nessie (branches seulement, pas les tags) ;
-- le chargement, via PyIceberg, de **toutes les tables de tous les namespaces** de la branche, dans
-  DuckDB sous le nom `<namespace>_<table>` (`raw.orders` -> `raw_orders`), avec leur nombre de
-  lignes et de colonnes ;
+- une **vue DuckDB par table** de chaque namespace de la branche, nommée `<namespace>_<table>`
+  (`raw.orders` -> `raw_orders`). PyIceberg demande à Nessie le `metadata.json` courant de chaque
+  table, puis DuckDB le lit avec `iceberg_scan` : rien n'est chargé à l'avance, les fichiers Parquet
+  sont lus dans Silo au moment de la requête ;
 - une **cellule SQL DuckDB** pour interroger ces tables (`SELECT * FROM raw_orders`).
 
 Changer de branche recharge tout. Une branche sans table affiche « Aucune table sur cette branche ».

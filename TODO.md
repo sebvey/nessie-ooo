@@ -103,7 +103,8 @@ Retours du test (implémentés) :
 ## Si on a fini
 
 - [x] Notebook réécrit en explorateur (branche `notebook-rework`) : sélecteur de branche, toutes
-      les tables de tous les namespaces chargées dans DuckDB sous `<namespace>_<table>`, cellule SQL.
+      les tables de tous les namespaces exposées en vues DuckDB `iceberg_scan` (`<namespace>_<table>`,
+      rien en mémoire), cellule SQL.
       Ne plante plus sur une branche sans table.
 - [ ] Se passer de PyIceberg avec une version à jour de DuckDB : vérifier que `ATTACH` sur une
       branche Nessie fonctionne (lecture + écriture + `CREATE OR REPLACE`), et voir ce que ça
