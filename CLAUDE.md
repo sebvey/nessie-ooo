@@ -7,7 +7,7 @@ Demo of Project Nessie (Git-like catalog for Iceberg tables): a pipeline works o
 - `README.md`: what the repo does, quick start, mise tasks.
 - `docs/README.md`: documentation index.
   - `docs/concepts/`: Iceberg and Nessie knowledge, valid outside this repo.
-  - `docs/project/`: what we built (architecture, pipeline, CLI, DuckDB 2.0 plan).
+  - `docs/project/`: what we built (architecture, pipeline, CLI, dependency policy).
   - `docs/presentation/`: the talk's slides and notes.
   - `docs/adr/`: architecture decision records, why things are the way they are.
 - `00-tracking/`: tickets, one file each, foldered by status.

@@ -3,7 +3,8 @@
 - Status: accepted
 - Date: 2026-10-15
 - Tickets: T001
-- Basis: investigated (tests of 2026-10-15, [duckdb-2.0.md](../project/duckdb-2.0.md))
+- Basis: investigated (tests of 2026-10-15, recorded in T001)
+- Amended: 2026-10-16: the basis pointed to `docs/project/duckdb-2.0.md`, whose test results moved to T001
 
 ## Context
 

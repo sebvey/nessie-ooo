@@ -59,7 +59,7 @@ DuckDB's Iceberg extension can attach an Iceberg REST catalog, but up to DuckDB 
 - dbt-duckdb reads sources through its bundled `iceberg` plugin (PyIceberg scan to Arrow) and writes models through `iceberg_write`; DuckDB only runs the SQL.
 - The notebook asks PyIceberg for each table's `metadata.json` and lets DuckDB read it with `iceberg_scan`, which doesn't go through the REST catalog.
 
-Plan to drop the detour once DuckDB 2.0 ships: [DuckDB 2.0](duckdb-2.0.md).
+Plan to drop the detour once DuckDB 2.0 ships: ticket T001.
 
 ## Choices
 
