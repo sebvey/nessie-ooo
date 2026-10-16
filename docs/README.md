@@ -25,7 +25,7 @@ What we built and how to use it:
 
 [Architecture decision records](adr/README.md): what was decided about the demo, why, what was ruled out. The ADR process (selection tests, lifecycle, template) is part of the agentic layer: [`00-agentic/processes/adr.md`](../00-agentic/processes/adr.md).
 
-How we work with the agent on this repo (rules, processes, infra, its own ADRs) is documented apart, in [`00-agentic/`](../00-agentic/README.md).
+How we work with the agent on this repo is the agentic layer, in [`00-agentic/`](../00-agentic/): working agreements imported by `CLAUDE.md`, processes, ticket backends.
 
 ## Presentation (French)
 

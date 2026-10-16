@@ -20,8 +20,6 @@ A title, then these sections, in the form the backend stores them (a file, an is
 ```markdown
 <Why: the problem or the goal, in a few lines.>
 
-<Area: agentic   (a ticket on the agentic layer only, see "Area" below)>
-
 ## Acceptance criteria
 
 - [ ] <Observable result, checkable without reading the code>
@@ -41,4 +39,4 @@ In Backlog a ticket may skip the acceptance criteria. From Ready on they're requ
 
 ## Area
 
-A ticket on the agentic layer (`00-agentic/`: rules, processes, agent infra) carries an `Area: agentic` line under its first paragraph. Tickets on the layer and on the project share one backend; the line lets them be filtered, and becomes a label in a backend that has labels.
+A project may tag tickets with an `Area: <name>` line under the first paragraph, to filter them (a label in a backend that has labels). The areas, if any, are named where the project's instructions define them.

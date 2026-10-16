@@ -2,12 +2,7 @@
 
 One file per important decision: what was decided, why, what was ruled out, and how solid the basis is. A doc says how things are now; an ADR says why they are that way.
 
-Two series follow this process:
-
-| Series | Folder | IDs | About |
-|---|---|---|---|
-| Project | `docs/adr/` | `ADR001`, `ADR002`… | the Nessie demo: stack, dependencies, data plane |
-| Agentic layer | `00-agentic/adr/` | `A001`, `A002`… | how we work with the agent: rules, processes, agent infra |
+A project keeps one series: its folder and ID prefix are named in the project's `CLAUDE.md` (for example `docs/adr/`, `ADR001`, `ADR002`…).
 
 Few ADRs, each worth reading: a choice that doesn't pass the three tests below goes elsewhere.
 
@@ -24,8 +19,8 @@ What goes elsewhere:
 | Content | Where |
 |---|---|
 | Work to do | a ticket |
-| How things are now | a doc in `docs/project/` or `00-agentic/` |
-| Working agreements (developer and agent) | `00-agentic/agreements/` |
+| How things are now | a doc |
+| Working agreements (developer and agent) | the agreements imported by `CLAUDE.md` |
 | Project conventions (language, running things) | `CLAUDE.md` |
 | A local implementation choice | a code comment |
 
@@ -37,7 +32,7 @@ What goes elsewhere:
 
 ## Lifecycle
 
-- **Naming**: `ADR<nnn>-<short-kebab-case-title>.md` in `docs/adr/` (`ADR001`), `A<nnn>-<short-kebab-case-title>.md` in `00-agentic/adr/` (`A001`). In each series, the ID is the highest existing one plus one, never reused.
+- **Naming**: `<prefix><nnn>-<short-kebab-case-title>.md` in the series' folder (`ADR001-…`). The ID is the highest existing one in the series plus one, never reused.
 - **Written on the branch of the ticket that takes the decision**, with status `proposed`. It becomes `accepted` when the developer validates the ticket, in the ticket's squashed commit.
 - **Substance or form.** Test: could someone who agreed with the old version disagree with the new one?
   - **Substance** (the decision, an alternative or the basis changes): a new ADR that supersedes the old one. The two are linked both ways: the new one gets `Supersedes: <old ID>`, the old one's status becomes `superseded by <new ID>`, and it stays. Never deleted.

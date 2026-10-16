@@ -1,6 +1,6 @@
 # Agentic layer
 
-How we work with a coding agent (Claude Code) on this repo: the rules it follows, the processes it runs, the infra it runs on, and the decisions behind them. This layer is documented and tracked here, apart from the Nessie demo, because it will live outside the repo at some point.
+How we work with a coding agent (Claude Code) on this repo: the rules it follows, the processes it runs, the infra it runs on, and the decisions behind them. This layer is documented and tracked here, apart from the Nessie demo, because it will live outside the repo at some point. Working on it has its own instructions, [`CLAUDE.md`](CLAUDE.md), which Claude Code loads when it works in this folder ([`layer.md`](layer.md), "Two missions").
 
 ## Boundary with the project
 
@@ -15,7 +15,8 @@ Test: would this still hold for another repo worked on the same way? Then it bel
 
 ## Contents
 
-- [`layer.md`](layer.md): the components and how they fit.
+- [`CLAUDE.md`](CLAUDE.md): instructions for evolving the layer, loaded on demand.
+- [`layer.md`](layer.md): the two missions, the components and how they fit.
 - [`infra.md`](infra.md): Claude Code setup and what the layer depends on outside the repo.
 - [`agreements/`](agreements/): the working agreements between the developer and the agent, imported by `CLAUDE.md` (`@00-agentic/agreements/…`).
   - [`tickets.md`](agreements/tickets.md): the ticket workflow and references.
@@ -26,9 +27,9 @@ Test: would this still hold for another repo worked on the same way? Then it bel
   - [`boundaries.md`](agreements/boundaries.md): the developer's setup, destructive actions.
 - [`processes/`](processes/): reference for humans and the agent, read when needed.
   - [`tickets.md`](processes/tickets.md): statuses, template, `Area` line.
+  - [`adr.md`](processes/adr.md): what deserves an ADR, lifecycle, template.
 - [`ticket-backends/`](ticket-backends/): how tickets are stored, one file per backend; a project imports one in its `CLAUDE.md`.
   - [`local.md`](ticket-backends/local.md): local Markdown files, ignored by git (naming, IDs, operations).
-  - [`adr.md`](processes/adr.md): what deserves an ADR, lifecycle, template, for both series.
 - [`adr/`](adr/README.md): decisions on the agentic layer (`A001`…).
 
 ## Tracking

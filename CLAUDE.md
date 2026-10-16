@@ -9,13 +9,9 @@ Demo of Project Nessie (Git-like catalog for Iceberg tables): a pipeline works o
   - `docs/concepts/`: Iceberg and Nessie knowledge, valid outside this repo.
   - `docs/project/`: what we built (architecture, pipeline, CLI, dependency policy).
   - `docs/presentation/`: the talk's slides and notes.
-  - `docs/adr/`: architecture decision records, why things are the way they are.
-- `00-tracking/`: tickets, one file each, foldered by status. Local only: ignored by git, absent from clones and git worktrees.
-- `00-agentic/`: the agentic layer, how we work with the agent (working agreements, processes, infra, its own ADRs). It will leave the repo at some point.
+  - `docs/adr/`: architecture decision records, why things are the way they are. The project's ADR series: `ADR001`, `ADR002`…
 
 ## Working agreements
-
-The working agreements between the developer and the agent live in `00-agentic/agreements/` and are imported here:
 
 @00-agentic/agreements/tickets.md
 @00-agentic/agreements/decisions.md
@@ -24,7 +20,7 @@ The working agreements between the developer and the agent live in `00-agentic/a
 @00-agentic/agreements/writing.md
 @00-agentic/agreements/boundaries.md
 
-Tickets are stored as local Markdown files (one backend among others; to switch, replace this import):
+Ticket backend:
 
 @00-agentic/ticket-backends/local.md
 
