@@ -1,4 +1,0 @@
-uri: http://localhost:19120/api/v2
-ref: main
-authentication:
-  type: none

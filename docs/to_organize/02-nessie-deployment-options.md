@@ -1,27 +1,42 @@
-# Deployment options and choices
+# Nessie deployment options
 
-## Deployment patterns
-- **Single container (Docker)**: simplest for local dev; use built-in RocksDB store on a volume.
-- **Docker Compose**: add dependencies like object storage (MinIO) or external DBs for the version store.
-- **Kubernetes/Helm**: Nessie publishes Helm charts; common in shared dev/test clusters with Postgres/DynamoDB backends.
-- **Managed DB backends**: use Postgres/MySQL/Aurora or DynamoDB for HA in production; Nessie is stateless when the backend is external.
+## Runtime
 
-## Version store backends
-- **RocksDB**: embedded key-value store; best for local dev or single-node demos. Fast, no extra infra; not HA.
-- **JDBC (Postgres, MySQL, MariaDB, Oracle, SQL Server)**: durable and scalable for teams; runs with Nessie statelessly.
-- **DynamoDB**: cloud-friendly, serverless option; good for AWS-native stacks.
+- **Single container**: `ghcr.io/projectnessie/nessie`, fine for local work.
+- **docker compose**: Nessie plus its version store and object storage (this repo).
+- **Kubernetes**: Nessie publishes a Helm chart. Nessie is stateless when the version store is
+  external, so it scales horizontally.
 
-## Object storage vs catalog storage
-- Nessie stores catalog history only (in the backend above).
-- Iceberg table files and metadata live in your warehouse: local FS/HDFS/S3/MinIO. This guide uses **local FS by default** and **MinIO optionally** to mimic S3.
+## Version store (`nessie.version.store.type`)
 
-## What this tutorial chooses and why
-- **Nessie runtime**: Docker + RocksDB, run via a single `docker-compose` that also brings up MinIO with non-conflicting ports.
-- **Warehouse**: MinIO (`s3a://iceberg-warehouse`) by default in the compose stack; you can still point Spark at local FS if you prefer.
-- **Compute**: PySpark because Iceberg + Nessie integration is mature there.
-- **CLI**: `pynessie` for inspecting branches/commits without writing code.
+| Type | Use |
+|---|---|
+| `IN_MEMORY` | Tests only (default value): everything is lost on restart |
+| `ROCKSDB` | Single node, embedded on a volume; no HA |
+| `JDBC2` | PostgreSQL, MySQL/MariaDB, H2…; the usual choice for teams |
+| `MONGODB2`, `CASSANDRA2`, `BIGTABLE`, `DYNAMODB2` | Managed or distributed backends |
 
-## Ports and network
-- Nessie REST: `19120` (exposed from the container).
-- MinIO API/console (optional): `9000` / `9001`.
-- Spark runs locally and connects to Nessie via HTTP and to storage via filesystem or S3A.
+`JDBC`, `MONGODB` and `CASSANDRA` (without the `2`) are deprecated for removal; the Nessie Server Admin
+Tool migrates their data. This repo still uses `JDBC` on Postgres (to switch before any reuse).
+
+## Storage
+
+- Nessie stores catalog history only, in the version store.
+- Iceberg files live in the warehouse declared to Nessie (`nessie.catalog.warehouses.*`): S3, GCS,
+  ADLS, or an S3-compatible store (Silo here). With Iceberg REST, Nessie needs credentials for that
+  store, because it writes `metadata.json` files and can hand storage settings to clients.
+
+## Choices in this repo
+
+| Concern | Choice | Why |
+|---|---|---|
+| Runtime | docker compose, Nessie `0.106.0` | One command, everything local |
+| Version store | Postgres (`JDBC`) | Durable across restarts, close to a production setup |
+| Warehouse | Silo (`s3://iceberg-warehouse`) | S3 API locally; official MinIO images are gone |
+| Engines | PyIceberg, dbt-duckdb | Light, no JVM; DuckDB can't address a Nessie branch yet |
+| Nessie operations | `src/nessie_demo/nessie.py` (API v2), Nessie CLI | `pynessie` is API v1 and unmaintained |
+
+## Before production
+
+Authentication and authorization (disabled here), `JDBC2`, Nessie GC for cleanup, and a durable
+object store. See the "À creuser" slide in `docs/presentation/presentation.html`.

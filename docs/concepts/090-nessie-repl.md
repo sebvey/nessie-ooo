@@ -1,254 +1,84 @@
-https://projectnessie.org/nessie-latest/cli/#repl-commands
+# Nessie CLI (REPL) reference
 
-# Nessie CLI / REPL – Accurate Training Sheet (Doc-backed)
+The Nessie CLI is a SQL-like REPL on top of the Nessie API. Reference:
+https://projectnessie.org/nessie-latest/cli/. When in doubt, `HELP;` and `HELP <COMMAND>;` inside the
+REPL are the source of truth.
 
-This document is a **precise, doc-aligned training sheet** for the **current Nessie CLI / REPL** (the SQL-like interface).
+Start it connected to `main`:
 
-It deliberately avoids **any legacy `pynessie` CLI syntax** and only uses commands that exist in the **official Nessie CLI documentation**.
-
----
-
-## 1. How to explore the CLI
-
-Inside the Nessie REPL:
-
-```sql
-HELP;
+```bash
+mise run cli                          # interactive
+mise run cli -c "LIST REFERENCES;"    # one command (needs a terminal)
 ```
 
-This lists all available commands.
+Every command ends with `;`. `<ref>` is a branch or tag name; `BRANCH` / `TAG` keywords are only
+needed where shown.
 
-For any command:
+## Where am I, what exists
 
 ```sql
-HELP <COMMAND>;
+SHOW REFERENCE;                    -- current ref, type and hash
+LIST REFERENCES;                   -- all branches and tags
+LIST CONTENTS;                     -- namespaces and tables on the current ref
+LIST CONTENTS ON pipeline-120000-bad;
+USE BRANCH main;                   -- or USE TAG release-120000, USE REFERENCE <ref>
 ```
 
-Examples:
+On a tag you are read-only.
+
+## History
 
 ```sql
-HELP SHOW LOG;
-HELP CREATE BRANCH;
-HELP MERGE;
+SHOW LOG;                          -- current ref
+SHOW LOG ON main LIMIT 10;
+SHOW LOG ON main AT COMMIT <hash> LIMIT 5;
 ```
 
-**Rule:** when in doubt, `HELP` is the source of truth.
-
----
-
-## 2. Inspecting the current reference ("where am I?")
-
-### Show the current reference (branch or tag)
+## Create and drop refs
 
 ```sql
-SHOW REFERENCE;
-```
+CREATE BRANCH dev;                                   -- from the current ref
+CREATE BRANCH IF NOT EXISTS dev FROM main;
+CREATE BRANCH investigate FROM main AT COMMIT <hash>;
+CREATE BRANCH investigate FROM main AT TIMESTAMP 2026-10-15T10:00:00Z;
+CREATE TAG release-manual FROM main;
 
-This prints:
-
-* current reference name
-* type (BRANCH or TAG)
-* current commit hash
-
-### Show a specific reference
-
-```sql
-SHOW REFERENCE dev;
-```
-
----
-
-## 3. Switching references (checkout equivalent)
-
-### Switch to a branch (rw) / tag (read only)
-
-```sql
-USE BRANCH dev;
-USE TAG v1;
-```
-
-When using a tag:
-
-* you are in detached mode
-* you cannot commit
-
----
-
-## 4. Listing references
-
-### List all branches and tags
-
-```sql
-LIST REFERENCES;
-```
-
-This shows:
-
-* all branches
-* all tags
-* their HEAD commit hashes
-
----
-
-## 5. Inspecting commit history
-
-### Show log on current reference
-
-```sql
-SHOW LOG;
-```
-
-### Show log on a specific branch or tag
-
-```sql
-SHOW LOG ON BRANCH dev;
-SHOW LOG ON TAG v1;
-```
-
-### Limit history
-
-```sql
-SHOW LOG LIMIT 20;
-SHOW LOG ON BRANCH dev LIMIT 10;
-```
-
-### Log relative to a specific commit
-
-```sql
-SHOW LOG ON BRANCH dev AT COMMIT <hash> LIMIT 5;
-```
-
----
-
-## 6. Creating branches and tags
-
-### Create a branch from the current reference
-
-```sql
-CREATE BRANCH dev;
-```
-
-### Create a tag from the current reference
-
-```sql
-CREATE TAG v1;
-```
-
-### Create from another reference
-
-```sql
-CREATE BRANCH dev FROM BRANCH main;
-CREATE TAG v1 FROM BRANCH dev;
-```
-
-### Create from a specific commit
-
-```sql
-CREATE TAG v1 FROM BRANCH dev AT COMMIT <hash>;
-```
-
----
-
-## 7. Deleting branches and tags
-
-### Delete a branch
-
-```sql
 DROP BRANCH dev;
+DROP BRANCH IF EXISTS dev;
+DROP TAG release-manual;
 ```
 
-### Delete a tag
+`FROM` takes a bare ref name: `FROM main`, not `FROM BRANCH main`.
+
+## Merge
 
 ```sql
-DROP TAG v1;
-```
-
-Tags are immutable by design; deleting and recreating is the only way to “move” one.
-
----
-
-## 8. Merging branches
-
-### Merge into the current branch
-
-If you are on `main`:
-
-```sql
-MERGE BRANCH dev;
-```
-
-### Explicit target branch
-
-```sql
-MERGE BRANCH dev INTO main;
-```
-
-### Dry-run merge
-
-```sql
-MERGE DRY BRANCH dev INTO main;
-```
-
-### Merge behaviors
-
-```sql
-MERGE BRANCH dev INTO main BEHAVIOR NORMAL;
+MERGE DRY BRANCH dev INTO main;     -- simulate, changes nothing
+MERGE BRANCH dev INTO main;         -- without INTO: into the current ref
 MERGE BRANCH dev INTO main BEHAVIOR FORCE;
-MERGE BRANCH dev INTO main BEHAVIOR DROP;
 ```
 
-Behavior meanings:
+Behaviors: `NORMAL` (default, fail on conflict), `FORCE` (the source wins), `DROP` (the source's change
+is dropped). `BEHAVIORS <key> = <kind> AND …` sets them per table.
 
-* **NORMAL**: fail on conflicts
-* **FORCE**: source wins
-* **DROP**: drop conflicting keys
+## Rollback: reassign a ref
 
----
-
-## 9. Assigning references (advanced / dangerous)
-
-### Move a branch pointer
+`ASSIGN` moves a branch or a tag to another state. Nothing is copied.
 
 ```sql
-ASSIGN BRANCH dev TO BRANCH main;
+ASSIGN BRANCH main TO release-120000;           -- main back to a tag
+ASSIGN BRANCH main TO main AT COMMIT <hash>;    -- main back to a commit
+ASSIGN TAG release-manual TO main;              -- move a tag to main's head
 ```
 
-### Assign a tag to a specific commit
+## Commit messages
+
+Commits written through Iceberg REST (PyIceberg, dbt) get generated messages
+(`Update ICEBERG_TABLE raw.orders`). Merges, tags and assignments are the catalog operations that
+carry meaning. See [Commits](082-nessie-pyiceberg-and-commits.md).
+
+## Quit
 
 ```sql
-ASSIGN TAG v1 TO BRANCH dev AT COMMIT <hash>;
+EXIT;
 ```
-
-Use with care — this rewrites reference pointers.
-
----
-
-## 10. Commit messages (important clarification)
-
-* Commits created by **engines (PyIceberg via REST)** have **auto-generated messages**
-* Examples:
-
-  * `Update ICEBERG_TABLE ooo.taxi_dataset`
-  * `delete namespace ooo`
-
-Human-authored messages belong to **catalog operations** (merge, assign, tag) performed in the CLI.
-
----
-
-## 11. Operational discipline (recommended)
-
-* Use **PyIceberg** only for data mutations
-* Use **Nessie CLI** for:
-
-  * branching strategy
-  * merges
-  * tagging meaningful states
-* Treat Nessie commits as the authoritative timeline
-
----
-
-## Final rule to remember
-
-> **If a command is not visible via `HELP`, it does not exist.**
-
-This rule prevents 99% of mistakes when working with th

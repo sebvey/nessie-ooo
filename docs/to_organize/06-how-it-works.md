@@ -1,42 +1,59 @@
-# How Nessie + Iceberg + MinIO work together
+# How the pieces work together
 
-This explains the control plane (Nessie) versus the data plane (Iceberg files on disk or MinIO) and how Spark interacts with both.
+Who knows what, and what happens on a read and a write, with Nessie used as an Iceberg REST catalog.
 
 ## Roles
-- **Spark (compute engine):** Reads/writes data files and Iceberg metadata files (manifests, metadata.json). Knows the warehouse location (e.g., `s3a://iceberg-warehouse` for MinIO).
-- **Iceberg (table format):** Defines how table metadata and data files are organized. Metadata files live in the warehouse you set.
-- **Nessie (catalog + version control):** Stores *pointers* to Iceberg table metadata files per branch/tag. It never stores data files; it stores references to the table’s current metadata.json per ref, and the commit graph (branches/tags).
-- **MinIO (object storage):** Holds Iceberg data/metadata files when you set the warehouse to `s3a://...`. If you use local FS, MinIO is not involved.
+
+- **Engine** (PyIceberg, dbt-duckdb through its plugins): plans reads and writes, writes Parquet data
+  files and manifests.
+- **Iceberg** (table format): the layout of `metadata.json`, manifest lists, manifests and data
+  files.
+- **Nessie** (catalog and version control): maps each table to its current `metadata.json`, per
+  branch; writes the `metadata.json` files when a commit arrives through Iceberg REST; keeps the
+  commit graph in Postgres.
+- **Silo** (S3 storage): holds every Iceberg file. Nessie and the engines both talk to it.
 
 ## Who knows the warehouse?
-- Spark knows the warehouse via `spark.sql.catalog.nessie.warehouse` (e.g., `s3a://iceberg-warehouse`).
-- Nessie does **not** store the warehouse path for you; it stores the *resulting Iceberg metadata location* after a write (e.g., `s3a://iceberg-warehouse/nessie/demo_weather/metadata/<uuid>.metadata.json`), per branch/tag.
 
-## Typical read path
-1) Spark is configured with the Nessie catalog: `spark.sql.catalog.nessie = org.apache.iceberg.nessie.NessieCatalog`, `uri = http://localhost:19120/api/v2`, `ref = main`, `warehouse = s3a://iceberg-warehouse`.
-2) Spark asks Nessie for table `nessie.demo_weather` on ref `main`.
-3) Nessie returns the current metadata pointer for that table/ref (a path to the Iceberg metadata file in the warehouse).
-4) Spark reads the Iceberg metadata and then the data files from MinIO (or local FS).
+Nessie does: the warehouse location and its S3 settings are server configuration
+(`nessie.catalog.warehouses.warehouse.location=s3://iceberg-warehouse/`). Clients only need the
+catalog URI and S3 access. Nessie announces the default warehouse in `/v1/config`, and its
+`external-endpoint` setting (`http://127.0.0.1:29000`) is the S3 address meant for clients. The demo's
+clients set their S3 endpoint themselves anyway (`settings.py`, `profiles.yml`).
 
-## Typical write path
-1) Spark writes new data files and a new Iceberg metadata.json into the warehouse (MinIO/local).
-2) Spark sends a commit to Nessie on the active ref (`spark.sql.catalog.nessie.ref`), updating the pointer to the new metadata.json.
-3) Nessie records that commit on the branch, preserving history (old metadata pointers remain reachable via history/refs).
+## Read path
 
-## Branches and tags
-- Branches/tags live only in Nessie’s version store. They select which metadata pointer is considered “current.”
-- Switching branches in Spark = change `spark.sql.catalog.nessie.ref` (config at session start or `spark.conf.set(...)`).
-- Tags are immutable pointers to a specific commit/metadata pointer; you can set ref to a tag for reproducible reads.
+1. The engine opens the catalog `http://localhost:19120/iceberg/<branch>` and calls `/v1/config`:
+   Nessie returns the prefix (`<branch>`) and the base URI to use.
+2. The engine loads `raw.orders`: Nessie returns the table's current metadata, read from the
+   `metadata.json` its pointer names on that branch.
+3. The engine reads the manifest list, the manifests, then only the Parquet files it needs, from Silo.
 
-## What happens if the warehouse changes?
-- Nessie will still point to whatever metadata path was committed. If you move or delete data/metadata files from MinIO/local disk, reads will fail because Iceberg files are missing. Nessie does not relocate data.
+## Write path
 
-## MinIO versus local filesystem
-- MinIO is only involved because Spark writes to `s3a://...`. Nessie doesn’t talk to MinIO directly; it just stores the metadata paths Spark produced.
-- If `warehouse` is `file:/tmp/iceberg-warehouse`, paths in Nessie commits point to local files instead.
+1. The engine writes new Parquet files and manifests to Silo.
+2. It sends a commit to Nessie for that table and branch, with its requirements ("the table is still
+   at the state I read").
+3. Nessie checks them, writes the new `metadata.json` to Silo, and records a commit on the branch
+   that points the table to it.
 
-## Summary mental model
-- Nessie = versioned pointers (control plane) + commit graph.
-- Iceberg = table format and metadata layout.
-- Spark = reads/writes data/metadata and tells Nessie which metadata pointer is current on a branch/tag.
-- MinIO/local FS = where Iceberg stores files; Nessie never stores data files.
+`main` and every other branch are untouched until a merge.
+
+## Branches
+
+A branch is only a pointer in Nessie. Creating one copies no file: both branches point to the same
+`metadata.json` until one of them writes. Merging moves pointers on the target; no file is copied
+either.
+
+## If files disappear
+
+Nessie keeps pointing to whatever `metadata.json` was committed. If those files, or the manifests and
+data files they reference, are deleted from Silo, reads fail. That's why cleanup has to go through
+Nessie GC (see [Nessie details](../concepts/080-nessie-details.md#cleanup-maintenance)).
+
+## Mental model
+
+- Nessie: versioned pointers and the commit graph, plus `metadata.json` writing.
+- Iceberg: the file layout.
+- Engines: read and write data files.
+- Silo: stores the files.

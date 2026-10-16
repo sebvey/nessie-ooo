@@ -1,8 +1,10 @@
-Good intro to what is iceberg: https://www.youtube.com/watch?v=TsmhRZElPvM
+# Apache Iceberg metadata model
 
-# Apache Iceberg metadata model (quick guide)
+How Iceberg stores table metadata, manifests and data files. Everything described here lives in the
+warehouse (`s3://iceberg-warehouse` on Silo in this repo). This is plain Iceberg; what changes under
+Nessie is in [Iceberg snapshots under Nessie](081-nessie-iceberg-and-snapshots.md).
 
-This explains how Iceberg stores table metadata, manifests, and data files. Manifests remain in your warehouse (MinIO/local FS).
+Video intro: https://www.youtube.com/watch?v=TsmhRZElPvM
 
 ## Concepts: metadata, table states, snapshots, commits, travel
 - **Current metadata:** The active `metadata.json` file (latest table metadata file).
@@ -63,7 +65,7 @@ flowchart TD
 ## Writes and compaction
 - Appends add data files and update manifests; a new snapshot is created.
 - Compaction/rewrite can produce new manifests and data files; the root `metadata.json` changes and gets committed.
-- Expired snapshots may orphan older manifests/data files; a `DELETE` job or `expire_snapshots` can clean them up.
+- Expired snapshots may orphan older manifests/data files; with a classic catalog, `expire_snapshots` and `remove_orphan_files` clean them up. Under Nessie, don't: use Nessie GC (see [Nessie details](080-nessie-details.md)).
 
 ## Partitioning
 - Partition specs live in `metadata.json` (multiple over time, each with a spec ID). Changing the spec adds a new ID; old files keep their original spec ID.

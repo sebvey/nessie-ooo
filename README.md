@@ -51,7 +51,7 @@ Autres commandes :
 
 ```bash
 mise run branches              # liste les branches et tags Nessie
-mise run cli                   # REPL Nessie (voir presentation/demo-cli.md)
+mise run cli                   # REPL Nessie (voir docs/presentation/demo-cli.md)
 mise run notebook              # notebook marimo pour explorer une branche
 mise run dbt-inspect <branche> # rejoue dbt sur une branche (ex. la branche -bad conservée)
 mise run stack-down            # arrête la stack (garde les données)
@@ -79,8 +79,8 @@ Changer de branche recharge tout. Une branche sans table affiche « Aucune table
 
 ## Déroulé de présentation
 
-Notes à suivre en live : [`presentation/demo-scenario.md`](presentation/demo-scenario.md) (les trois
-actes) et [`presentation/demo-cli.md`](presentation/demo-cli.md) (parcours du REPL, rollback compris).
+Notes à suivre en live : [`docs/presentation/demo-scenario.md`](docs/presentation/demo-scenario.md) (les trois
+actes) et [`docs/presentation/demo-cli.md`](docs/presentation/demo-cli.md) (parcours du REPL, rollback compris).
 
 ## Ce qui se passe sous le capot
 
@@ -122,7 +122,7 @@ actes) et [`presentation/demo-cli.md`](presentation/demo-cli.md) (parcours du RE
    └─ tests/                   # test singulier : montant ≥ 0
 
 notebooks/explore.mo.py  — notebook marimo
-presentation/            — slides (iceberg.html, presentation.html) et notes de démo
+docs/presentation/       — slides (iceberg.html, presentation.html) et notes de démo
 docs/                    — fiches d'apprentissage Nessie/Iceberg (conservées de l'exploration initiale)
 ```
 

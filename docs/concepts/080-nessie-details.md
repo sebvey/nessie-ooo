@@ -1,48 +1,67 @@
-# Nessie details: concepts and behavior
+# Nessie details: behavior and operations
 
-Nessie is a Git-like catalog layer for tables. It tracks versioned pointers to table metadata (e.g., Iceberg `metadata.json`) per branch/tag, but does not store data or manifests. Use this to understand what Nessie is, what it isn’t, and how its concepts map to catalog operations.
+## What Nessie is, and is not
 
-## What Nessie is
-- A catalog/version-control service: stores references from table identifiers (content keys) to current table metadata, plus a commit graph with branches/tags.
-- API/clients: REST API (`/api/v2`), SDKs, Spark/Trino/Flint connectors, CLI (`pynessie`).
-- Backends: pluggable version stores (RocksDB, JDBC DBs, DynamoDB, etc.); Nessie itself is stateless when using external storage.
+- It is a catalog with version control: content keys (`raw.orders`) point to table metadata, and
+  every change is a commit on a branch.
+- It is not storage: data and metadata files live in the warehouse (S3, Silo here).
+- It is not a compute engine: PyIceberg, dbt/DuckDB, Spark, Trino… read and write the files.
+  Through Iceberg REST, Nessie does write the `metadata.json` files itself.
 
-## What Nessie is not
-- Not a data lake: it never stores data files or manifests.
-- Not a storage system: your warehouse (S3/MinIO/local FS/HDFS) holds data/metadata files.
-- Not a compute engine: Spark/Trino/etc. perform reads/writes; Nessie only tracks pointers and history.
+## Content keys and commits
 
-## Key concepts
-- **Catalog**: logical namespace mapping content keys (e.g., `nessie.demo_weather`) to table metadata pointers.
-- **Content key**: the identifier for an entry (table, view, etc.). For Iceberg, the value is a pointer to `metadata.json`.
-- **Commit**: a change to one or more content keys; updates pointers to new table metadata paths and adds to the commit graph.
-- **Branch**: mutable ref that advances with commits and can be merged or deleted; default is typically `main`.
-- **Tag**: immutable ref pointing to a specific commit; good for releases/audits.
-- **Ref**: generic term for branches and tags.
-- **Merge**: apply changes from one branch to another, resolving conflicts if needed.
-- **Cherry-pick/transplant**: apply specific commit(s) from one ref to another without merging the entire branch history.
-- **Version store backend**: storage for the commit graph and content pointers (RocksDB/JDBC/DynamoDB). Nessie server uses this; data files stay in your warehouse.
-- **Endpoint**: Nessie REST base, e.g., `http://localhost:19120/api/v2`.
+- A **content key** identifies an entry: namespace, Iceberg table, Iceberg view.
+- A **commit** updates one or more keys atomically. Engines going through Iceberg REST produce one
+  commit per table operation, with a generated message (`Update ICEBERG_TABLE raw.orders`). A merge
+  produces a single commit on the target, whatever the number of tables.
+- Each commit has a hash and a parent; a brand-new `main` sits on the "no ancestor" hash
+  (`2e1cfa82…`), and Nessie refuses to merge into a branch without history ("No common ancestor").
+  That's why `mise run stack-up` creates the namespaces on `main` first.
 
-## How Nessie works with Iceberg (pointers, not data)
-1) Engine (e.g., Spark) is configured with the Nessie Iceberg catalog: `spark.sql.catalog.nessie.*`.
-2) Write: Iceberg creates data files, manifests, manifest list, and a new `metadata.json` in the warehouse. The catalog commit updates the Nessie content key to point to that new `metadata.json` on the active ref.
-3) Read: Engine asks Nessie for the content key on a ref; Nessie returns the current `metadata.json` path. Engine reads manifests/data from the warehouse.
-4) Branching: change `spark.sql.catalog.nessie.ref` (or CLI) to switch refs; each ref has its own pointer to the table metadata.
-5) Rollback/time travel (catalog-level): move the ref to an older commit to restore the pointer to an older `metadata.json`. Within that metadata, Iceberg time travel still applies while snapshots/files exist.
+## Refs
 
-## Operations and behavior
-- **Commits**: catalog-level; can update one or many content keys atomically. Most engines commit per table, but multi-table commits are allowed.
-- **Branches/Tags**: lightweight; stored in the version store. Tags are immutable; branches are mutable.
-- **Conflict handling**: Nessie enforces optimistic concurrency. If the base commit you assumed differs from the current head when committing/merging, you must resolve/retry.
-- **Merges/Cherry-picks/Transplants**: apply commits across refs; underlying data files are not moved—only pointers change.
-- **Deletion**: removing a table entry removes the pointer; files may remain in the warehouse unless separately cleaned by the engine/maintenance.
+- **Branch**: mutable, moves with commits, can be merged, reassigned or dropped.
+- **Tag**: points to a commit; reassigning one is possible (`ASSIGN TAG`) but meant to be
+  exceptional.
+- Reading a tag or a commit hash gives a reproducible view of every table at once.
 
-## Lifecycle and cleanup considerations
-- Catalog history lives in the version store; data/metadata files live in the warehouse. Deleting a ref does not delete files.
-- Safe cleanup requires coordination: do not delete Iceberg snapshots/metadata files that are still referenced by any Nessie ref. Drop/merge refs, then run Iceberg snapshot expiration and orphan cleanup.
+## Merge and conflicts
 
-## Mental model
-- Nessie = commit graph + refs + pointers to table metadata.
-- Warehouse = data/metadata files (e.g., `metadata.json`, manifest lists, manifests, data/delete files).
-- Engine = reads/writes files, asks Nessie for the current pointer on a ref, and commits pointer updates.
+- Optimistic concurrency: a merge fails if a key changed on both the source and the target since
+  their common ancestor. Verified here: two branches appending to `raw.orders`, the second merge is
+  rejected with `REFERENCE_CONFLICT` ("The following keys have been changed in conflict:
+  'raw.orders'"). Nessie never merges the rows of an Iceberg table: the fix is to rebuild the second
+  branch from the new `main`.
+- Merge behaviors (per merge or per key): `NORMAL` (fail on conflict), `FORCE` (the source wins),
+  `DROP` (the source's change is dropped, the target keeps its version).
+- Transplant (cherry-pick) applies chosen commits to another branch.
+
+## Rollback
+
+- `ASSIGN BRANCH main TO release-…` (or `TO main AT COMMIT <hash>`) moves `main` back. Nothing is
+  copied: `main` simply points to an older commit, hence to older `metadata.json` files.
+- This is catalog-level time travel. Iceberg snapshot time travel doesn't apply under Nessie (see
+  [Iceberg snapshots under Nessie](081-nessie-iceberg-and-snapshots.md)).
+
+## Cleanup (maintenance)
+
+- Dropping a table or a branch removes pointers, not files.
+- Don't run Iceberg's `expire_snapshots` or `remove_orphan_files` on Nessie tables: each
+  `metadata.json` only knows its current snapshot, so these procedures would delete files that other
+  commits or branches still use.
+- Use **Nessie GC** (garbage collector), a separate program (jar or `ghcr.io/projectnessie/nessie-gc`
+  image, with its own JDBC database). It reads every ref through the Nessie API, marks the files still
+  reachable, then sweeps the rest. Retention is a cutoff policy, per ref if needed (`--default-cutoff`,
+  `--cutoff <regex>=<policy>`). The Nessie docs present it as the replacement for expire snapshots and
+  orphan file removal.
+- Compaction (rewriting small files) is an ordinary Iceberg write: done on a branch, it's a commit
+  like any other.
+
+## Access control
+
+- `nessie.server.authentication.enabled` and `nessie.server.authorization.enabled`, then rules
+  `nessie.server.authorization.rules.<id>=<CEL expression>` on the operation, ref, role and path.
+- A merge into `main` is checked like a direct commit to `main` (`canCommitChangeAgainstReference`):
+  you can't allow "merges only". Protecting `main` means restricting who can write to it at all, for
+  example only the pipeline's identity.
+- Both are disabled in the local stack.
