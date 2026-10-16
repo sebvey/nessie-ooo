@@ -30,6 +30,4 @@ What we built and how to use it:
 
 - [`iceberg.html`](presentation/iceberg.html): Iceberg refresher deck.
 - [`presentation.html`](presentation/presentation.html): Nessie demo deck.
-- [`plan.md`](presentation/plan.md): outline and speaker notes.
-- [`demo-scenario.md`](presentation/demo-scenario.md): the three acts of the live demo.
 - [`demo-cli.md`](presentation/demo-cli.md): guided REPL walkthrough, rollback included.
