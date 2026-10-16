@@ -33,6 +33,7 @@ Versions, release status and issue status written in docs and tickets are dated.
 - Stack: `mise run stack-up`, `stack-down`, `stack-reset` (deletes all data: Nessie history and Iceberg files).
 - The local stack is disposable, except refs the developer created. Before `stack-reset`, or before dropping a branch or tag, list the refs (`curl -s http://localhost:19120/api/v2/trees`): if any wasn't created during your session (by you or by a pipeline run you launched), ask first. Say in your report when you reset the stack.
 - End-to-end check after a change: `mise run stack-reset`, `stack-up`, then `uv run pipeline --no-pause` and `uv run pipeline --bad --no-pause` (through `mise exec --`). The `-bad` run must end with no merge and `main` unchanged.
+- Dependencies: adding, upgrading or bounding one follows `docs/project/dependency-policy.md` (floors equal to the locked versions, `uv lock --upgrade-package` one package at a time).
 - The Nessie CLI (`mise run cli`) is for humans (it needs a TTY). Programmatic actions and checks go through the Nessie API: `src/nessie_demo/nessie.py` or `curl http://localhost:19120/api/v2/...`.
 
 ## Tickets

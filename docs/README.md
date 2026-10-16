@@ -18,6 +18,7 @@ What we built and how to use it:
 - [The pipeline](project/pipeline.md): branch, ingest, dbt build, merge or alert, step by step.
 - [Working on your own branch](project/working-on-a-branch.md): run dbt on a personal Nessie branch through `mise.local.toml`.
 - [Nessie CLI](project/nessie-cli.md): REPL commands (refs, history, merge, rollback).
+- [Dependency policy](project/dependency-policy.md): version specifiers for an application and for a library, upgrade procedure, vulnerability check.
 - [DuckDB 2.0](project/duckdb-2.0.md): test results and plan to drop the PyIceberg detour.
 
 ## Presentation (French)

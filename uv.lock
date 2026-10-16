@@ -1279,19 +1279,19 @@ explore = [
 
 [package.metadata]
 requires-dist = [
-    { name = "dbt-duckdb", specifier = ">=1.10.0" },
+    { name = "dbt-duckdb", specifier = ">=1.10.1" },
     { name = "duckdb", specifier = ">=1.4.3" },
-    { name = "numpy", specifier = ">=2.0" },
+    { name = "numpy", specifier = ">=2.4.0" },
     { name = "pandas", specifier = ">=3.0.3" },
-    { name = "pyarrow", specifier = ">=17.0" },
-    { name = "pydantic-settings", specifier = ">=2.14.2" },
+    { name = "pyarrow", specifier = ">=24.0.0" },
+    { name = "pydantic-settings", specifier = ">=2.16.0" },
     { name = "pyiceberg", extras = ["s3fs", "pyarrow"], specifier = ">=0.10.0" },
-    { name = "requests", specifier = ">=2.33.0" },
-    { name = "rich", specifier = ">=14" },
+    { name = "requests", specifier = ">=2.34.2" },
+    { name = "rich", specifier = ">=14.2.0" },
 ]
 
 [package.metadata.requires-dev]
-explore = [{ name = "marimo", extras = ["sql"], specifier = ">=0.25" }]
+explore = [{ name = "marimo", extras = ["sql"], specifier = ">=0.25.1" }]
 
 [[package]]
 name = "networkx"

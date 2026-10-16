@@ -5,15 +5,15 @@ description = "Nessie + Iceberg + dbt (DuckDB) branch->test->merge demo"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
-    "dbt-duckdb>=1.10.0",
+    "dbt-duckdb>=1.10.1",
     "duckdb>=1.4.3",
-    "numpy>=2.0",
-    "pyarrow>=17.0",
+    "numpy>=2.4.0",
+    "pyarrow>=24.0.0",
     "pyiceberg[s3fs,pyarrow]>=0.10.0",
-    "pydantic-settings>=2.14.2",
-    "requests>=2.33.0",
+    "pydantic-settings>=2.16.0",
+    "requests>=2.34.2",
     "pandas>=3.0.3",
-    "rich>=14",
+    "rich>=14.2.0",
 ]
 
 [project.scripts]
@@ -27,5 +27,5 @@ build-backend = "uv_build"
 
 [dependency-groups]
 explore = [
-    "marimo[sql]>=0.25",
+    "marimo[sql]>=0.25.1",
 ]
