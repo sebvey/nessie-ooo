@@ -1,8 +1,7 @@
 # Apache Iceberg metadata model
 
 How Iceberg stores table metadata, manifests and data files. Everything described here lives in the
-warehouse (`s3://iceberg-warehouse` on Silo in this repo). This is plain Iceberg; what changes under
-Nessie is in [Iceberg snapshots under Nessie](081-nessie-iceberg-and-snapshots.md).
+warehouse. This is plain Iceberg; what changes under Nessie is in [history](nessie-history.md).
 
 Video intro: https://www.youtube.com/watch?v=TsmhRZElPvM
 
@@ -43,7 +42,7 @@ Details:
   - Reference a partition spec ID; readers use specs in `metadata.json` to interpret partition tuples.
   - Immutable per snapshot; new snapshots may reuse or replace manifests (e.g., after compaction). Stored in the warehouse alongside data and manifest lists.
 - **Data files / delete files**
-  - Parquet/ORC/Avro data and position/equality delete files stored in the warehouse (MinIO/local).
+  - Parquet/ORC/Avro data and position/equality delete files stored in the warehouse.
   - Written/removed by the engine; manifests record their presence.
 
 ```mermaid
@@ -65,7 +64,7 @@ flowchart TD
 ## Writes and compaction
 - Appends add data files and update manifests; a new snapshot is created.
 - Compaction/rewrite can produce new manifests and data files; the root `metadata.json` changes and gets committed.
-- Expired snapshots may orphan older manifests/data files; with a classic catalog, `expire_snapshots` and `remove_orphan_files` clean them up. Under Nessie, don't: use Nessie GC (see [Nessie details](080-nessie-details.md)).
+- Expired snapshots may orphan older manifests/data files; with a classic catalog, `expire_snapshots` and `remove_orphan_files` clean them up. Under Nessie, don't: use Nessie GC (see [operations](nessie-operations.md#cleanup)).
 
 ## Partitioning
 - Partition specs live in `metadata.json` (multiple over time, each with a spec ID). Changing the spec adds a new ID; old files keep their original spec ID.

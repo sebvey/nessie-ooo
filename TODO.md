@@ -115,4 +115,11 @@ Retours du test (implémentés) :
       - DuckDB `2.0.0.dev2610011535` (préversion PyPI) : **lecture OK** sur la branche ;
         `CREATE TABLE AS`, `INSERT`, `DELETE`, `DROP` OK avec `SET iceberg_use_metadata_log = false` ;
         `CREATE OR REPLACE` toujours refusé (#784) → passer par DROP + CREATE.
-      - Mode d'emploi et plan d'intégration dans dbt : [`DUCKDB-2.0.md`](DUCKDB-2.0.md).
+      - Mode d'emploi et plan d'intégration dans dbt : [`docs/project/duckdb-2.0.md`](docs/project/duckdb-2.0.md).
+
+## Tri et réorganisation (branche `repo-cleanup`)
+
+- [x] `presentation/` déplacé dans `docs/presentation/`.
+- [x] Docs obsolètes supprimés (nix, MinIO, Spark, pynessie, doublon CLI), le reste mis à jour en anglais.
+- [x] Structure : `docs/concepts/` (général), `docs/project/` (ce qu'on a construit),
+      `docs/presentation/` (talk, en français), index `docs/README.md`. README racine en anglais.

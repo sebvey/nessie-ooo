@@ -1,4 +1,4 @@
-# Nessie CLI (REPL) reference
+# Nessie CLI (REPL)
 
 The Nessie CLI is a SQL-like REPL on top of the Nessie API. Reference:
 https://projectnessie.org/nessie-latest/cli/. When in doubt, `HELP;` and `HELP <COMMAND>;` inside the
@@ -10,6 +10,9 @@ Start it connected to `main`:
 mise run cli                          # interactive
 mise run cli -c "LIST REFERENCES;"    # one command (needs a terminal)
 ```
+
+The talk's guided REPL walkthrough (in French) is
+[`presentation/demo-cli.md`](../presentation/demo-cli.md).
 
 Every command ends with `;`. `<ref>` is a branch or tag name; `BRANCH` / `TAG` keywords are only
 needed where shown.
@@ -75,7 +78,7 @@ ASSIGN TAG release-manual TO main;              -- move a tag to main's head
 
 Commits written through Iceberg REST (PyIceberg, dbt) get generated messages
 (`Update ICEBERG_TABLE raw.orders`). Merges, tags and assignments are the catalog operations that
-carry meaning. See [Commits](082-nessie-pyiceberg-and-commits.md).
+carry meaning. See [history](../concepts/nessie-history.md).
 
 ## Quit
 

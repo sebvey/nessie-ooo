@@ -1,134 +1,65 @@
-# Démo Nessie — pipeline *branch → test → merge* sur un lakehouse Iceberg
+# Nessie demo: a *branch, test, merge* pipeline on an Iceberg lakehouse
 
-Démo pour présenter **Project Nessie** : un catalogue de tables **versionné « à la Git »**.
-Elle met en scène une pipeline data qui traite les données **sur une branche isolée**, les
-**teste avec dbt**, et ne les **merge sur `main`** que si les tests passent — sinon la mauvaise
-donnée reste confinée sur la branche et une **alerte** est levée. `main` n'est jamais pollué.
+A demo of **Project Nessie**, a Git-like versioned catalog for Iceberg tables. A data pipeline
+processes new data **on an isolated branch**, **tests it with dbt**, and **merges into `main`** only if
+the tests pass. Otherwise the bad data stays on its branch and an **alert** is raised: `main` never
+sees it.
 
+```text
+open branch  ->  ingest  ->  dbt build (transform + test)  ->  green? -> MERGE + TAG on main
+pipeline-HHMMSS  raw.orders  marts.daily_orders                 red?   -> no merge + ALERT
+                                                                          (branch pipeline-HHMMSS-bad kept)
 ```
-ouvre branche  ──►  ingère données  ──►  dbt build (transform + test)  ──►  tests verts ? ──► MERGE + TAG sur main ✅
-pipeline-HHMMSS      (raw.orders)        (marts.daily_orders)                    │      release-HHMMSS
-       ▲                                                                        └─ tests rouges ? ──► PAS de merge + ALERTE ⛔
-       └── créée depuis main                                                        (branche pipeline-HHMMSS-bad conservée)
-```
 
-## La stack
+Everything runs locally: Nessie, PostgreSQL (version store) and Silo (S3 storage, community fork of
+MinIO) in docker compose; PyIceberg, dbt and DuckDB in Python. Details in
+[`docs/project/architecture.md`](docs/project/architecture.md).
 
-| Rôle | Techno | Pourquoi |
-|---|---|---|
-| Catalogue versionné (branches/merge) | **Nessie** | le sujet de la démo — Git pour les tables |
-| Format de table | **Apache Iceberg** | tables ouvertes, snapshots |
-| Stockage objet | **Silo** (S3, fork communautaire de MinIO) | fichiers de données/métadonnées Iceberg |
-| Version store de Nessie | **PostgreSQL** | persiste l'historique des commits/branches |
-| Moteur de transformation + tests | **dbt** sur **DuckDB** | léger |
-| Accès catalogue + **branches** | **PyIceberg** | seul chemin propre pour cibler une branche Nessie |
-| Orchestration + porte de qualité | **pipeline.py** (Python) | enchaîne les étapes, merge si vert, alerte sinon |
-| Control plane (branch/merge/tag) | **API REST Nessie** (Python) | opérations Git *hors* dbt |
+## Prerequisites
 
-> **Pourquoi ce découpage ?** Nessie sépare deux plans. Le *control plane* (créer/merger une
-> branche) est propre à Nessie et vit dans l'orchestrateur Python. Le *data plane* (lire/écrire
-> des tables **sur une branche**) passe par PyIceberg : la branche est encodée dans l'URI REST
-> (`/iceberg/<branche>`). DuckDB ne sert que de moteur de calcul SQL : jusqu'à sa version 1.5.6,
-> son accès REST natif **ne sait pas cibler une branche Nessie ≠ main**
-> ([duckdb-iceberg#1145](https://github.com/duckdb/duckdb-iceberg/issues/1145), corrigé dans
-> l'extension mais pas encore publié). D'où PyIceberg pour le catalogue.
+- Docker with compose
+- [mise](https://mise.jdx.dev): env vars in `mise.toml`, tasks in `tasks.toml`; it installs
+  [uv](https://docs.astral.sh/uv/)
 
-## Prérequis
-
-- Docker (+ compose)
-- [`mise`](https://mise.jdx.dev) (variables d'environnement dans `mise.toml`, tâches dans `tasks.toml`)
-- [`uv`](https://docs.astral.sh/uv/) (installé par mise)
-
-## Démarrage
+## Quick start
 
 ```bash
-mise run stack-up      # démarre Nessie + Postgres + Silo, crée le bucket et les namespaces raw / marts
-mise run pipeline-ok   # pipeline nominale : branche → ingest → dbt build (vert) → MERGE sur main ✅
-mise run pipeline-ko   # pipeline en échec : mauvaise donnée → tests rouges → PAS de merge + ALERTE ⛔
+mise run stack-up      # start Nessie + Postgres + Silo, create the bucket and the raw / marts namespaces
+mise run pipeline-ok   # nominal run: branch -> ingest -> dbt build (green) -> merge into main
+mise run pipeline-ko   # failing run: bad data -> red tests -> no merge + alert
 ```
 
-Autres commandes :
+Other tasks:
 
 ```bash
-mise run branches              # liste les branches et tags Nessie
-mise run cli                   # REPL Nessie (voir docs/presentation/demo-cli.md)
-mise run notebook              # notebook marimo pour explorer une branche
-mise run dbt-inspect <branche> # rejoue dbt sur une branche (ex. la branche -bad conservée)
-mise run stack-down            # arrête la stack (garde les données)
-mise run stack-reset           # arrête et efface tout (repart de zéro)
+mise run branches              # list Nessie branches and tags
+mise run cli                   # Nessie REPL connected to main
+mise run notebook              # marimo notebook to explore a branch
+mise run dbt-inspect <branch>  # replay dbt build on a branch (e.g. the kept -bad branch)
+mise run stack-down            # stop the stack, keep the data
+mise run stack-reset           # stop and delete everything
 ```
 
-- Nessie API : http://localhost:19120
-- Console Silo : http://localhost:29090 (`minioadmin` / `8qqR90Az`)
+- Nessie API: http://localhost:19120
+- Silo console: http://localhost:29090 (`minioadmin` / `8qqR90Az`)
 
-## Explorer les données (notebook marimo)
+## Explore the data
 
-```bash
-mise run notebook   # ouvre notebooks/explore.mo.py dans marimo
-```
+`mise run notebook` opens `notebooks/explore.mo.py` in marimo:
+- pick a Nessie branch (branches only, not tags);
+- every table of every namespace becomes a DuckDB view named `<namespace>_<table>`
+  (`raw.orders` -> `raw_orders`). PyIceberg asks Nessie for each table's current `metadata.json` and
+  DuckDB reads it with `iceberg_scan`: nothing is loaded in advance;
+- query them in the SQL cell (`SELECT * FROM raw_orders WHERE amount < 0`).
 
-Explorateur de données **réactif** :
-- un **sélecteur de branche**, alimenté par l'API Nessie (branches seulement, pas les tags) ;
-- une **vue DuckDB par table** de chaque namespace de la branche, nommée `<namespace>_<table>`
-  (`raw.orders` -> `raw_orders`). PyIceberg demande à Nessie le `metadata.json` courant de chaque
-  table, puis DuckDB le lit avec `iceberg_scan` : rien n'est chargé à l'avance, les fichiers Parquet
-  sont lus dans Silo au moment de la requête ;
-- une **cellule SQL DuckDB** pour interroger ces tables (`SELECT * FROM raw_orders`).
-
-Changer de branche recharge tout. Une branche sans table affiche « Aucune table sur cette branche ».
-
-## Déroulé de présentation
-
-Notes à suivre en live : [`docs/presentation/demo-scenario.md`](docs/presentation/demo-scenario.md) (les trois
-actes) et [`docs/presentation/demo-cli.md`](docs/presentation/demo-cli.md) (parcours du REPL, rollback compris).
-
-## Ce qui se passe sous le capot
-
-- **mise en place** (`stack-up`, `bootstrap.py`) — démarre la stack puis crée les namespaces `raw`
-  et `marts` sur `main` : un `main` sans commit ne peut pas recevoir de merge (« No common ancestor »).
-- **0. état de départ** — hash de `main` et contenu des tables, lus via l'API Nessie et les
-  métadonnées Iceberg.
-- **1. branche** — `Nessie.create_branch("pipeline-HHMMSS", from_ref="main")` (API REST Nessie).
-- **2. ingestion** — `ingest.py` génère 5 commandes synthétiques et les ajoute à `raw.orders`
-  **sur la branche** via PyIceberg (`--bad` injecte un montant négatif et un client `null`).
-- **3. dbt build** — `NESSIE_BRANCH=<branche> dbt build` :
-  - lit `raw.orders` sur la branche (plugin iceberg de lecture),
-  - construit `stg_orders` (vue) puis `marts.daily_orders`, **matérialisé en table Iceberg sur la
-    branche** via un petit plugin dbt-duckdb custom (`iceberg_write`),
-  - lance les **tests** (`not_null`, `unique`, montant ≥ 0…).
-- **4. décision** — tests verts → `Nessie.merge(branche → main)` (atomique), tag `release-HHMMSS`,
-  branche supprimée ; tests rouges → pas de merge, `alert()`, branche conservée.
-
-## Arborescence
-
-```
-├─ docker-compose.yml          # Nessie + Postgres + Silo (MinIO) + init bucket
-├─ mise.toml                   # outils + variables d'environnement
-├─ tasks.toml                  # tâches : stack-up / pipeline-ok / pipeline-ko / branches / stack-reset …
-├─ src/nessie_demo/
-│  ├─ settings.py              # config (URIs Nessie, S3) — défauts locaux
-│  ├─ nessie.py                # client Nessie v2 : branch / merge / tag / delete / list
-│  ├─ catalog.py               # catalogue PyIceberg scopé à une branche
-│  ├─ ingest.py                # dataset synthétique → raw.orders (--bad pour l'échec)
-│  ├─ bootstrap.py             # mise en place (stack-up) : stack + namespaces sur main
-│  ├─ pipeline.py              # orchestrateur : les étapes 0 à 4 ci-dessus
-│  ├─ display.py               # sortie console narrée (étapes, pauses, tableaux)
-│  ├─ alert.py                 # alerte (console + webhook Slack optionnel)
-│  └─ dbt_plugins/iceberg_write.py  # plugin dbt-duckdb : écrit un modèle en Iceberg sur la branche
-└─ dbt/
-   ├─ profiles.yml             # dbt-duckdb, branche = env NESSIE_BRANCH
-   ├─ models/staging/          # sources.yml, stg_orders (+ tests)
-   ├─ models/marts/            # daily_orders (table Iceberg) (+ tests)
-   └─ tests/                   # test singulier : montant ≥ 0
-
-notebooks/explore.mo.py  — notebook marimo
-docs/presentation/       — slides (iceberg.html, presentation.html) et notes de démo
-docs/                    — fiches d'apprentissage Nessie/Iceberg (conservées de l'exploration initiale)
-```
-
-## Alerte Slack (optionnel)
+## Slack alert (optional)
 
 ```bash
 export SLACK_WEBHOOK_URL=https://hooks.slack.com/services/…
-mise run pipeline-ko   # l'alerte est aussi postée sur Slack
+mise run pipeline-ko   # the alert is also posted to Slack
 ```
+
+## Documentation
+
+[`docs/README.md`](docs/README.md): Iceberg and Nessie concepts, the project's architecture and
+pipeline, the Nessie CLI, and the talk's slides and notes (in French).
