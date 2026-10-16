@@ -1,6 +1,6 @@
 # Dependency policy
 
-How to write version specifiers in `pyproject.toml` and how to upgrade. The rules differ between an **application**, installed from its lock, and a **library**, installed by someone else's resolver. This repo is an application; the library rules are for a package extracted from it, such as a standalone Nessie client (T005).
+How to write version specifiers in `pyproject.toml` and how to upgrade. Why: [ADR001](../adr/ADR001-lock-is-the-source-of-truth.md). The rules differ between an **application**, installed from its lock, and a **library**, installed by someone else's resolver. This repo is an application; the library rules are for a package extracted from it, such as a standalone Nessie client (T005).
 
 ## Rules for both
 
@@ -20,7 +20,7 @@ How to write version specifiers in `pyproject.toml` and how to upgrade. The rule
 - **The floor moves with the lock**: every deliberate upgrade raises it to the new locked version, in the same commit.
 - **Exception: `[build-system]`.** The build backend isn't in the lock, so it keeps the upper bound uv recommends for its own backend (`uv_build>=0.9.21,<0.10.0`).
 - **The application has no version of its own.** `version = "0.1.0"` stays as it is: nobody installs the repo by version. A git tag marks a state worth coming back to, such as the one shown in a talk.
-- **No dependency cooldown** (`[tool.uv] exclude-newer = "1 week"`, which ignores releases younger than the duration). An arbitrary choice, not investigated: to be recorded and challenged in an ADR (T009).
+- **No dependency cooldown** (`[tool.uv] exclude-newer = "1 week"`, which ignores releases younger than the duration). An arbitrary choice, not investigated, open to challenge: [ADR002](../adr/ADR002-no-dependency-cooldown.md).
 
 ## Library (a package others install)
 

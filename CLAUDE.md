@@ -9,7 +9,21 @@ Demo of Project Nessie (Git-like catalog for Iceberg tables): a pipeline works o
   - `docs/concepts/`: Iceberg and Nessie knowledge, valid outside this repo.
   - `docs/project/`: what we built (architecture, pipeline, CLI, DuckDB 2.0 plan).
   - `docs/presentation/`: the talk's slides and notes.
+  - `docs/adr/`: architecture decision records, why things are the way they are (rules in `docs/adr/README.md`).
 - `00-tracking/`: tickets, one file each, foldered by status (rules in `00-tracking/README.md`).
+
+## Decisions
+
+- Before changing something an ADR in `docs/adr/` covers, read it. If the work would contradict an accepted ADR, stop and ask.
+- When a ticket takes a decision that passes the three tests in `docs/adr/README.md`, draft the ADR (status `proposed`) on the ticket branch and say so in the report.
+- Never edit an accepted ADR beyond its status line: a changed decision is a new ADR that supersedes it.
+
+## Say how solid it is
+
+- A recommendation, decision or finding states its basis, in the ADR words: **investigated** (how: test run, source read), **quick look** (what was checked, what wasn't), or **arbitrary** (a default picked without examining it).
+- A report lists what wasn't verified, even when everything went well. "Not checked" is a finding, not a failure.
+- When you change your mind, say so and why, instead of quietly rewording.
+- Don't round up: a guess isn't "should work", an untested path isn't "supported".
 
 ## Language
 
@@ -19,7 +33,7 @@ Markdown: no hard wrapping. One line per paragraph or list item; let the editor 
 
 ## Memory
 
-The repo is the source of truth: anything about the project (architecture, decisions, conventions, status) goes in the docs, `CLAUDE.md` or a ticket, never in the agent's memory. Memory is only for the developer's personal working preferences that don't belong in the repo. When memory and the repo disagree, the repo wins: fix or delete the memory.
+The repo is the source of truth: anything about the project (architecture, decisions, conventions, status) goes in the docs, an ADR, `CLAUDE.md` or a ticket, never in the agent's memory. Memory is only for the developer's personal working preferences that don't belong in the repo. When memory and the repo disagree, the repo wins: fix or delete the memory.
 
 ## Facts that age
 
@@ -44,5 +58,5 @@ Tickets live in `00-tracking/`, one file per ticket, foldered by status. How to 
 - **Refining** a backlog ticket (scope, acceptance criteria) is a discussion: propose, and only move it to `01-ready/` once the user agrees.
 - **What to work on**: only a ticket from `01-ready/`, unless the user asks otherwise.
 - **Starting**: check the working tree is clean, switch to an up-to-date `main` if needed, create a branch named like the ticket file without `.md` (`T004-refactor-dbt-project`), and move the ticket to `02-in-progress/` on that branch.
-- **Finishing**: check every acceptance criterion, report, and **wait for the user's validation**. Then move the ticket to `03-done/` (criteria ticked, Outcome filled), squash the branch into one commit `T004 <title>` rebased on `main`, and fast-forward `main`.
+- **Finishing**: check every acceptance criterion, report, and **wait for the user's validation**. Then move the ticket to `03-done/` (criteria ticked, Outcome filled), set the ticket's `proposed` ADRs to `accepted`, squash the branch into one commit `T004 <title>` rebased on `main`, and fast-forward `main`.
 - **References**: name tickets by ID (`T004`) in commits, branches and docs.

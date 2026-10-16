@@ -21,6 +21,10 @@ What we built and how to use it:
 - [Dependency policy](project/dependency-policy.md): version specifiers for an application and for a library, upgrade procedure, vulnerability check.
 - [DuckDB 2.0](project/duckdb-2.0.md): test results and plan to drop the PyIceberg detour.
 
+## Decisions
+
+[Architecture decision records](adr/README.md): what was decided, why, what was ruled out. Selection criteria, template and lifecycle in the same file.
+
 ## Presentation (French)
 
 - [`iceberg.html`](presentation/iceberg.html): Iceberg refresher deck.

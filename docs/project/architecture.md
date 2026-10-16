@@ -51,6 +51,8 @@ Other branches, `main` included, are untouched until a merge. Creating a branch 
 
 ## Why PyIceberg, and not DuckDB directly
 
+Decision and alternatives: [ADR003](../adr/ADR003-pyiceberg-as-the-data-plane.md).
+
 DuckDB's Iceberg extension can attach an Iceberg REST catalog, but up to DuckDB 1.5 it ignores the `overrides.uri` Nessie returns and calls `/iceberg/<branch>/v1/<branch>/…`: it only works on `main` (duckdb-iceberg#1145, fixed on the extension's main branch, not in a stable release yet). So:
 
 - PyIceberg talks to the catalog, with the branch in its URI.
@@ -66,7 +68,7 @@ Plan to drop the detour once DuckDB 2.0 ships: [DuckDB 2.0](duckdb-2.0.md).
 | Runtime | docker compose, Nessie `0.106.0` | One command, everything local |
 | Version store | Postgres (`JDBC2`) | Durable across restarts, same model as production: stateless Nessie, external database |
 | Warehouse | Silo (`s3://iceberg-warehouse`) | S3 API locally; official MinIO images are gone |
-| Engines | PyIceberg, dbt-duckdb | Light, no JVM |
+| Engines | PyIceberg, dbt-duckdb | Light, no JVM ([ADR003](../adr/ADR003-pyiceberg-as-the-data-plane.md)) |
 | Nessie operations | `nessie.py` (API v2), Nessie CLI | `pynessie` is API v1 and unmaintained |
 | Tasks and env | mise (`mise.toml`, `tasks.toml`) | Tools, env vars and tasks in one place |
 

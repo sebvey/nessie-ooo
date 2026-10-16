@@ -14,7 +14,7 @@ One Markdown file per ticket. The folder a ticket sits in is its status.
 ## Changing a status
 
 - Move the file with `git mv`; it keeps its name.
-- To `03-done/`: tick the acceptance criteria and add the Outcome (what changed, where, anything left aside).
+- To `03-done/`: tick the acceptance criteria and add the Outcome (what changed, where, anything left aside, and what wasn't verified).
 - Never delete a ticket: an abandoned one goes to `03-done/` with an Outcome saying why.
 
 ## Ticket file
@@ -39,6 +39,8 @@ ID: the highest existing one, across all folders, plus one. Since tickets are ne
 ## Outcome
 
 <Filled when the ticket moves to 03-done/.>
+
+- Not verified: <what, or "nothing">
 ```
 
 In `00-backlog/` a ticket may skip the acceptance criteria. From `01-ready/` on they're required.

@@ -6,12 +6,13 @@ The risk is a dump of every choice. The selection criteria below are the core of
 
 ## Acceptance criteria
 
-- [ ] `docs/adr/README.md` gives the selection criteria, the template, the lifecycle and the naming below, and says what goes elsewhere (ticket, doc, `CLAUDE.md`, code comment).
-- [ ] Three ADRs are backfilled with status `accepted`: ADR001, ADR002, ADR003 below. Each fits on one screen and names its ticket(s) and the doc it explains.
-- [ ] ADR002 (cooldown) says its basis is arbitrary, what wasn't examined, and what should make us revisit it.
-- [ ] The docs link to the ADRs instead of repeating the reasoning: `docs/project/dependency-policy.md` (ADR001, ADR002) and the "Why PyIceberg" section of `docs/project/architecture.md` (ADR003).
-- [ ] `docs/README.md` indexes `docs/adr/`.
-- [ ] `CLAUDE.md` lists `docs/adr/` under "Where to read" and gives the agent rules below; the ticket workflow mentions the ADR step when finishing a ticket.
+- [x] `docs/adr/README.md` gives the selection criteria, the template, the lifecycle and the naming below, and says what goes elsewhere (ticket, doc, `CLAUDE.md`, code comment).
+- [x] Three ADRs are backfilled with status `accepted`: ADR001, ADR002, ADR003 below. Each fits on one screen and names its ticket(s) and the doc it explains.
+- [x] ADR002 (cooldown) says its basis is arbitrary, what wasn't examined, and what should make us revisit it.
+- [x] The docs link to the ADRs instead of repeating the reasoning: `docs/project/dependency-policy.md` (ADR001, ADR002) and the "Why PyIceberg" section of `docs/project/architecture.md` (ADR003).
+- [x] `docs/README.md` indexes `docs/adr/`.
+- [x] `CLAUDE.md` lists `docs/adr/` under "Where to read" and gives the agent rules below; the ticket workflow mentions the ADR step when finishing a ticket.
+- [x] `CLAUDE.md` has a "Say how solid it is" section using the ADR basis words, and the ticket template's Outcome has a mandatory "Not verified" line (added during the ticket, 2026-10-16).
 
 ## Design
 
@@ -70,3 +71,12 @@ Ruled out of the backfill: JDBC2 on Postgres (T003: JDBC was deprecated, the loc
 - ADR003 will likely be superseded by T001 when DuckDB 2.0 ships: a good first test of the lifecycle.
 
 ## Outcome
+
+Done on 2026-10-16.
+
+- `docs/adr/README.md`: the three selection tests, what goes elsewhere, lifecycle (naming, `proposed` then `accepted` at validation, never edited, superseded), template with a `Basis` field, list of records.
+- Backfilled, status `accepted`: ADR001 (lock as the source of truth, floors), ADR002 (no dependency cooldown, basis arbitrary, with what wasn't examined and when to revisit), ADR003 (PyIceberg as the data plane until DuckDB 2.0).
+- Links: `docs/project/dependency-policy.md` and the "Why PyIceberg" section and "Choices" table of `docs/project/architecture.md` point to the ADRs; `docs/README.md` indexes `docs/adr/`.
+- `CLAUDE.md`: `docs/adr/` under "Where to read", a "Decisions" section with the agent rules, the ADR step in "Finishing", and a "Say how solid it is" section. Added during the ticket at the developer's request: that section and the mandatory "Not verified" line in the ticket template (`00-tracking/README.md`).
+- Location changed when refining: `docs/adr/` instead of `00-adr/`.
+- Not verified: ADR003's dated facts were not re-checked beyond DuckDB's latest stable release on PyPI (still 1.5.6 on 2026-10-16); duckdb-iceberg#1230 and #784 are as recorded on 2026-10-15. Whether the new `CLAUDE.md` rules change the agent's behaviour can only be seen over the next tickets.
