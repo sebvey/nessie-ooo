@@ -4,6 +4,7 @@
 - Date: 2026-10-16
 - Tickets: T007, T008
 - Basis: investigated
+- Amended: 2026-10-16: removed how to annotate an upper bound, a procedure detail now in dependency-policy.md (T014)
 
 ## Context
 
@@ -13,7 +14,7 @@ This repo is an application: nobody installs it as a dependency, `uv sync` insta
 
 - `uv.lock` is committed and is the source of truth for what runs.
 - Each direct dependency in `pyproject.toml` (dependencies and groups) has a `>=` floor equal to its locked version, copied in full. Every deliberate upgrade raises the floor in the same commit.
-- No upper bound, except for an observed incompatibility, with a comment naming the ticket. `[build-system]` keeps its bound because the lock doesn't cover the build backend.
+- No upper bound, except for an observed incompatibility (how to annotate it: [dependency-policy.md](../project/dependency-policy.md)). `[build-system]` keeps its bound because the lock doesn't cover the build backend.
 - Upgrades go one package at a time (`uv lock --upgrade-package`), procedure in [dependency-policy.md](../project/dependency-policy.md).
 
 ## Alternatives ruled out

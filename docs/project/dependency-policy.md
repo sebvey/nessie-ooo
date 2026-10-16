@@ -9,7 +9,7 @@ How to write version specifiers in `pyproject.toml` and how to upgrade. Why: [AD
   - `pyarrow` ships a major at every release (24, 25, 26): `~=24.0` blocks every upgrade.
   - `fsspec` and `s3fs` use calendar versions (2026.9.0): `~=2026.9` blocks at the turn of the year.
   - `pyiceberg` is 0.x: a minor may break, a major doesn't exist yet.
-- **An upper bound only for an observed incompatibility**, with a comment naming the ticket, removed when the ticket is closed. A preventive cap blocks fixes for everyone downstream. In T007, `dbt-core` 1.11.12 declared `sqlparse<0.6` and blocked the `sqlparse` security fix until dbt-core 1.11.14 lifted the cap.
+- **An upper bound only for an observed incompatibility**, with a comment stating the incompatibility (what breaks, from which version), removed once it's fixed. A preventive cap blocks fixes for everyone downstream. In T007, `dbt-core` 1.11.12 declared `sqlparse<0.6` and blocked the `sqlparse` security fix until dbt-core 1.11.14 lifted the cap.
 - **`requires-python`**: a floor, no cap (`>=3.13`).
 
 ## Application (this repo)
@@ -55,7 +55,7 @@ mise run audit-python
 The task exports `uv.lock` (every package, all dependency groups) as a standard `pylock.toml` (PEP 751) to a temporary directory, since pip-audit can't read `uv.lock`, and audits it with `pip-audit --locked` against the OSV database. It exits non-zero when a vulnerability is found. It needs the network, so it's not part of the end-to-end check: run it in the upgrade procedure and when finishing a ticket that changes `uv.lock`.
 
 - OSV rather than pip-audit's default PyPI service: on the lock from before T007, OSV reported 109 vulnerabilities and PyPI 100, in the same 12 packages (2026-10-16).
-- No vulnerability is ignored. To accept one that has no fix, add `--ignore-vuln <ID>` to the task in `tasks.toml`, with a comment naming the ticket that accepted it.
+- No vulnerability is ignored. To accept one that has no fix, add `--ignore-vuln <ID>` to the task in `tasks.toml`, with a comment giving the reason (no fix released, not reachable from our code…).
 
 The Red Hat Dependency Analytics extension in VS Code uses its own sources and may report differently; T007 used both.
 

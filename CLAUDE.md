@@ -16,7 +16,7 @@ Demo of Project Nessie (Git-like catalog for Iceberg tables): a pipeline works o
 
 - Before changing something an ADR in `docs/adr/` covers, read it. If the work would contradict an accepted ADR, stop and ask.
 - When a ticket takes a decision that passes the three tests in `docs/adr/README.md`, draft the ADR (status `proposed`) on the ticket branch and say so in the report.
-- Never edit an accepted ADR beyond its status line: a changed decision is a new ADR that supersedes it.
+- An accepted ADR changes only through the rules in `docs/adr/README.md`: a new ADR when the substance changes, an `Amended` edit for form only. Propose either, never apply it without the developer's validation.
 
 ## Say how solid it is
 
@@ -59,4 +59,4 @@ Tickets live in `00-tracking/`, one file per ticket, foldered by status. How to 
 - **What to work on**: only a ticket from `01-ready/`, unless the user asks otherwise.
 - **Starting**: check the working tree is clean, switch to an up-to-date `main` if needed, create a branch named like the ticket file without `.md` (`T004-refactor-dbt-project`), and move the ticket to `02-in-progress/` on that branch.
 - **Finishing**: check every acceptance criterion, report, and **wait for the user's validation**. Then move the ticket to `03-done/` (criteria ticked, Outcome filled), set the ticket's `proposed` ADRs to `accepted`, squash the branch into one commit `T004 <title>` rebased on `main`, and fast-forward `main`.
-- **References**: name tickets by ID (`T004`) in commits, branches and docs.
+- **References**: name tickets by ID (`T004`) in tickets, commits, branches, docs and ADRs. **Never in code or config** (comments, task descriptions, console output): tickets are a separate concern and will leave the repo. Write the reason itself instead ("dbt-core 1.11.12 rejects sqlparse 0.6", not "see T007"); a link to an upstream issue is fine.
