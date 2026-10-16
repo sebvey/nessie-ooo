@@ -1,7 +1,6 @@
 # Démo CLI Nessie, pas à pas
 
-Parcours guidé du REPL Nessie pour l'acte 3. Prérequis : la stack tourne (`mise run stack-up`), au moins un
-`mise run pipeline-ok` puis un `mise run pipeline-ko` ont été lancés.
+Parcours guidé du REPL Nessie pour l'acte 3. Prérequis : la stack tourne (`mise run stack-up`), au moins un `mise run pipeline-ok` puis un `mise run pipeline-ko` ont été lancés.
 
 ```bash
 mise run cli
@@ -44,9 +43,7 @@ LIST CONTENTS;
 SHOW LOG;
 ```
 
-**À voir** : le plus récent en haut. Un commit `Merged pipeline-… into main` avec **deux parents**
-(un vrai merge, comme dans Git), puis plus bas les commits `update namespace raw/marts` qui ont
-initialisé `main`.
+**À voir** : le plus récent en haut. Un commit `Merged pipeline-… into main` avec **deux parents** (un vrai merge, comme dans Git), puis plus bas les commits `update namespace raw/marts` qui ont initialisé `main`.
 
 ## 5. Passer sur la branche fautive
 
@@ -73,8 +70,7 @@ MERGE DRY BRANCH pipeline-HHMMSS-bad INTO main;
 ```
 
 **À voir** : Nessie dit si le merge serait possible, sans l'appliquer.
-**À dire** : la pipeline a refusé de merger parce que les tests dbt étaient rouges ; Nessie, lui,
-l'aurait accepté. C'est la pipeline qui décide de la qualité, Nessie apporte l'isolation.
+**À dire** : la pipeline a refusé de merger parce que les tests dbt étaient rouges ; Nessie, lui, l'aurait accepté. C'est la pipeline qui décide de la qualité, Nessie apporte l'isolation.
 
 ## 7. Créer une branche à la main
 
@@ -83,8 +79,7 @@ CREATE BRANCH demo FROM main;
 LIST REFERENCES;
 ```
 
-**À dire** : la branche est créée instantanément. Aucune donnée n'est copiée, on a juste un
-nouveau pointeur.
+**À dire** : la branche est créée instantanément. Aucune donnée n'est copiée, on a juste un nouveau pointeur.
 
 ## 8. Rollback (le point fort)
 
@@ -97,8 +92,7 @@ SHOW LOG;
 ```
 
 **À voir** : `main` revient à l'état de ce tag.
-**À dire** : rollback en une seule opération. Comme pour un `git reset`, les commits plus récents
-restent accessibles par leur tag.
+**À dire** : rollback en une seule opération. Comme pour un `git reset`, les commits plus récents restent accessibles par leur tag.
 
 ## 9. Nettoyer et quitter
 

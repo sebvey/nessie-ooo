@@ -1,7 +1,6 @@
 # Working on your own branch
 
-Run your `dbt build` on a Nessie branch of your own, without touching `main`. Prerequisite: the stack
-is running (`mise run stack-up`).
+Run your `dbt build` on a Nessie branch of your own, without touching `main`. Prerequisite: the stack is running (`mise run stack-up`).
 
 ## 1. Create the branch
 
@@ -32,9 +31,7 @@ mise exec -- uv run dbt build
 
 Check the active branch: `mise env | grep NESSIE_BRANCH`.
 
-Without `NESSIE_BRANCH`, `dbt/profiles.yml` falls back to `main`: dbt then writes straight to `main`.
-The pipeline (`pipeline-ok`, `pipeline-ko`) and `dbt-inspect` set the variable themselves, so
-`mise.local.toml` doesn't affect them.
+Without `NESSIE_BRANCH`, `dbt/profiles.yml` falls back to `main`: dbt then writes straight to `main`. The pipeline (`pipeline-ok`, `pipeline-ko`) and `dbt-inspect` set the variable themselves, so `mise.local.toml` doesn't affect them.
 
 The notebook ignores this variable: pick the branch in its selector.
 

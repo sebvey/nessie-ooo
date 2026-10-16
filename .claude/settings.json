@@ -1,0 +1,37 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mise exec -- git log *)",
+      "Bash(mise exec -- git log)",
+      "Bash(mise exec -- git status *)",
+      "Bash(mise exec -- git status)",
+      "Bash(mise exec -- git diff *)",
+      "Bash(mise exec -- git diff)",
+      "Bash(mise exec -- git branch)",
+      "Bash(mise exec -- git branch --show-current)",
+      "Bash(mise exec -- git grep *)",
+      "Bash(mise exec -- git show *)",
+      "Bash(mise exec -- git rev-parse *)",
+      "Bash(mise exec -- git check-ignore *)",
+      "Bash(mise exec -- git ls-files *)",
+      "Bash(mise exec -- git ls-files)",
+      "Bash(printenv)",
+      "Bash(printenv *)",
+      "Bash(mise env)",
+      "Bash(mise env *)",
+      "Bash(aws s3 ls *)",
+      "Bash(docker compose ps)",
+      "Bash(docker compose ps *)",
+      "Bash(docker compose config *)",
+      "Bash(docker compose logs *)",
+      "Bash(mise run branches)",
+      "mcp__tavily__tavily_search",
+      "mcp__tavily__tavily_extract",
+      "mcp__context7__query-docs",
+      "mcp__context7__resolve-library-id",
+      "mcp__Claude_Browser__find",
+      "mcp__Claude_Browser__get_page_text",
+      "mcp__terminal__read_terminal"
+    ]
+  }
+}

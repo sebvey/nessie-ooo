@@ -1,7 +1,6 @@
 # Apache Iceberg metadata model
 
-How Iceberg stores table metadata, manifests and data files. Everything described here lives in the
-warehouse. This is plain Iceberg; what changes under Nessie is in [history](nessie-history.md).
+How Iceberg stores table metadata, manifests and data files. Everything described here lives in the warehouse. This is plain Iceberg; what changes under Nessie is in [history](nessie-history.md).
 
 Video intro: https://www.youtube.com/watch?v=TsmhRZElPvM
 

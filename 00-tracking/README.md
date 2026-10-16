@@ -1,7 +1,6 @@
 # Tracking
 
-How tickets are kept. When to take one and how to deliver it is the workflow, in
-[`CLAUDE.md`](../CLAUDE.md#tickets).
+How tickets are kept. When to take one and how to deliver it is the workflow, in [`CLAUDE.md`](../CLAUDE.md#tickets).
 
 One Markdown file per ticket. The folder a ticket sits in is its status.
 
@@ -15,16 +14,14 @@ One Markdown file per ticket. The folder a ticket sits in is its status.
 ## Changing a status
 
 - Move the file with `git mv`; it keeps its name.
-- To `03-done/`: tick the acceptance criteria and add the Outcome (what changed, where, anything left
-  aside).
+- To `03-done/`: tick the acceptance criteria and add the Outcome (what changed, where, anything left aside).
 - Never delete a ticket: an abandoned one goes to `03-done/` with an Outcome saying why.
 
 ## Ticket file
 
 Name: `T<nnn>-<short-kebab-case-title>.md`, e.g. `T004-refactor-dbt-project.md`.
 
-ID: the highest existing one, across all folders, plus one. Since tickets are never deleted, an ID
-is never reused. Other tickets, commits and docs refer to a ticket by its ID: `T004`.
+ID: the highest existing one, across all folders, plus one. Since tickets are never deleted, an ID is never reused. Other tickets, commits and docs refer to a ticket by its ID: `T004`.
 
 ```markdown
 # T<nnn> <Title>
