@@ -25,7 +25,7 @@ def header(title: str) -> None:
 
 
 def step(n: int, title: str, tool: str, total: int = 4) -> None:
-    if n > 0:  # l'étape 0 suit directement le lancement
+    if n > 0:  # step 0 follows the launch directly
         pause(title)
     console.print()
     t = Table.grid(expand=True)
@@ -38,8 +38,8 @@ def step(n: int, title: str, tool: str, total: int = 4) -> None:
 def rows(n: int | None) -> str:
     """Row count of a table, or the fact that it doesn't exist yet."""
     if n is None:
-        return "n'existe pas encore"
-    return f"{n} ligne" if n <= 1 else f"{n} lignes"
+        return "doesn't exist yet"
+    return f"{n} row" if n <= 1 else f"{n} rows"
 
 
 def line(text: str = "") -> None:
@@ -50,9 +50,9 @@ def pause(next_step: str) -> None:
     """Wait for Enter, announcing what comes next."""
     if not PAUSE or not sys.stdin.isatty():
         return
-    console.print(f"\n[dim]      ⏎  Entrée pour la suite : {next_step[0].lower() + next_step[1:]}[/]", end="")
+    console.print(f"\n[dim]      ⏎  Enter for the next step: {next_step[0].lower() + next_step[1:]}[/]", end="")
     input()
-    # efface la ligne du prompt pour garder une sortie propre
+    # erase the prompt line to keep the output clean
     sys.stdout.write("\x1b[1A\x1b[2K")
     sys.stdout.flush()
 
@@ -61,10 +61,10 @@ def orders_table(data: pa.Table) -> None:
     """The freshly ingested rows, dirty values in red."""
     t = Table(box=None, padding=(0, 2), pad_edge=False, header_style="dim")
     t.add_column("order_id", justify="right")
-    t.add_column("client")
-    t.add_column("produit")
-    t.add_column("montant", justify="right")
-    t.add_column("qté", justify="right")
+    t.add_column("customer")
+    t.add_column("product")
+    t.add_column("amount", justify="right")
+    t.add_column("qty", justify="right")
     for row in data.to_pylist():
         client = row["customer_id"] if row["customer_id"] is not None else "[bold red]∅ (null)[/]"
         amount = f"{row['amount']:.2f}"

@@ -18,7 +18,7 @@ the next step.
 `src/nessie_demo/bootstrap.py` starts the stack, shows that `main` sits on the "no ancestor" commit,
 then creates the `raw` (raw data, as ingested) and `marts` (transformed and tested data) namespaces on
 `main`. A `main` without commits can't receive a merge ("No common ancestor"); the pipeline refuses
-to start until this is done. Running it again is harmless ("déjà en place").
+to start until this is done. Running it again is harmless ("already there").
 
 ## Steps
 

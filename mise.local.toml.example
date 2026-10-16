@@ -1,0 +1,9 @@
+# Copy to mise.local.toml (ignored by git) and fill in the values.
+[env]
+# Nessie branch dbt reads from and writes to (see docs/project/working-on-a-branch.md)
+NESSIE_BRANCH = "main"
+
+# Postgres credentials of the Nessie version store, read by docker-compose.yml.
+# Changing the password needs `mise run stack-reset` (Postgres only reads it on first start).
+NESSIE_PG_USER = "nessie"
+NESSIE_PG_PASSWORD = "change-me"

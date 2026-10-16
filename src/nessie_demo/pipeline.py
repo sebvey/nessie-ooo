@@ -38,15 +38,15 @@ MART_TABLE = "marts.daily_orders"
 
 # How dbt nodes read on screen.
 MODEL_LABELS = {
-    "stg_orders": ("stg_orders", "vue DuckDB"),
-    "daily_orders": ("daily_orders", "table Iceberg écrite sur la branche"),
+    "stg_orders": ("stg_orders", "DuckDB view"),
+    "daily_orders": ("daily_orders", "Iceberg table written on the branch"),
 }
 TEST_LABELS = {
-    "not_null_stg_orders_order_id": "order_id non null",
+    "not_null_stg_orders_order_id": "order_id not null",
     "unique_stg_orders_order_id": "order_id unique",
-    "not_null_stg_orders_customer_id": "customer_id non null",
-    "assert_amount_non_negative": "montant ≥ 0",
-    "not_null_daily_orders_order_date": "order_date non null",
+    "not_null_stg_orders_customer_id": "customer_id not null",
+    "assert_amount_non_negative": "amount ≥ 0",
+    "not_null_daily_orders_order_date": "order_date not null",
     "unique_daily_orders_order_date": "order_date unique",
 }
 
@@ -69,7 +69,7 @@ def run_dbt(branch: str, verbose: bool = False) -> bool:
     results_file = DBT_DIR / "target" / "run_results.json"
     if result.returncode not in (0, 1) or not results_file.exists():
         # dbt itself crashed (not a test failure): show what it said.
-        line("[bold red]dbt a échoué avant la fin du build :")
+        line("[bold red]dbt failed before the end of the build:")
         display.console.print(result.stdout or "", result.stderr or "")
         return False
 
@@ -83,11 +83,11 @@ def run_dbt(branch: str, verbose: bool = False) -> bool:
         if kind == "model":
             label, detail = MODEL_LABELS.get(name, (name, ""))
             if ok is None:
-                detail = "non construit : des tests en amont ont échoué"
+                detail = "not built: upstream tests failed"
             check(ok, label, detail)
         else:
             label = "  " + TEST_LABELS.get(name, name)
-            detail = f"{r['failures']} ligne(s) en échec" if ok is False and r.get("failures") else ""
+            detail = f"{r['failures']} failing row(s)" if ok is False and r.get("failures") else ""
             check(ok, label, detail)
     colour = "green" if n_ok == len(results) else "red"
     line(f"[bold {colour}]{n_ok}/{len(results)} OK")
@@ -99,9 +99,10 @@ def mart(catalog) -> str:
     try:
         data = catalog.load_table(MART_TABLE).scan(selected_fields=("n_orders",)).to_arrow()
     except NoSuchTableError:
-        return "n'existe pas encore"
+        return "doesn't exist yet"
     days = data.num_rows
-    return f"{days} jour{'s' if days > 1 else ''}, {sum(data['n_orders'].to_pylist())} commandes"
+    orders = sum(data['n_orders'].to_pylist())
+    return f"{days} day{'s' if days > 1 else ''}, {orders} order{'s' if orders > 1 else ''}"
 
 
 def tables(catalog) -> list[str]:
@@ -120,78 +121,78 @@ def run_pipeline(bad: bool = False, keep: bool = False, verbose: bool = False) -
     display.header(f"Pipeline Nessie · {branch}")
 
     # --- 0. starting point
-    step(0, "État de départ", "API Nessie")
+    step(0, "Starting point", "Nessie API")
     main_before = nessie.ref_hash(MAIN)
     if main_before == nessie.no_ancestor_hash():
         # A main without history can't be a merge target ("No common ancestor").
-        line("[bold red]main n'a encore aucun commit : lance d'abord `mise run stack-up`.")
+        line("[bold red]main has no commit yet: run `mise run stack-up` first.")
         return 2
     line(f"main @ [bold]{short(main_before)}[/]")
     for t in tables(main_catalog):
         line(t)
 
     # --- 1. branch
-    step(1, "Ouverture d'une branche pour la pipeline", "API Nessie")
+    step(1, "Opening a branch for the pipeline", "Nessie API")
     if nessie.branch_exists(branch):
         nessie.delete_branch(branch)
     nessie.create_branch(branch, from_ref=MAIN)
-    line(f"[bold]{branch}[/] créée depuis main @ {short(main_before)}")
-    line("[dim]aucune donnée copiée : un nouveau pointeur sur le même commit")
+    line(f"[bold]{branch}[/] created from main @ {short(main_before)}")
+    line("[dim]no data copied: a new pointer to the same commit")
 
     # --- 2. ingest
-    step(2, "Ingestion des commandes sur la branche", "PyIceberg")
+    step(2, "Ingesting orders onto the branch", "PyIceberg")
     data = ingest(branch, bad=bad)
-    line(f"+{data.num_rows} commandes dans {RAW_TABLE}" + (" [bold red](dont des lignes sales)" if bad else ""))
+    line(f"+{data.num_rows} orders in {RAW_TABLE}" + (" [bold red](some of them dirty)" if bad else ""))
     display.orders_table(data)
     branch_rows = row_count(branch_catalog(branch), RAW_TABLE)
     main_rows = row_count(main_catalog, RAW_TABLE)
-    line(f"{RAW_TABLE} : branche = [bold]{rows(branch_rows)}[/] · main = {rows(main_rows)} [dim](inchangé)")
+    line(f"{RAW_TABLE}: branch = [bold]{rows(branch_rows)}[/] · main = {rows(main_rows)} [dim](unchanged)")
     line(f"[dim]{branch} @ {short(nessie.ref_hash(branch))} (+1 commit) · main @ {short(nessie.ref_hash(MAIN))}")
 
     # --- 3. dbt build
-    step(3, "Transformation et tests de la branche", "dbt + DuckDB")
+    step(3, "Transforming and testing the branch", "dbt + DuckDB")
     ok = run_dbt(branch, verbose=verbose)
     if ok:
-        line(f"{MART_TABLE} : branche = [bold]{mart(branch_catalog(branch))}[/] · main = {mart(main_catalog)} [dim](inchangé)")
+        line(f"{MART_TABLE}: branch = [bold]{mart(branch_catalog(branch))}[/] · main = {mart(main_catalog)} [dim](unchanged)")
 
     # --- 4. decide
     if ok:
-        step(4, "Merge dans main et tag (tests verts)", "API Nessie")
+        step(4, "Merging into main and tagging (tests green)", "Nessie API")
         nessie.merge(branch, into=MAIN)
         main_after = nessie.ref_hash(MAIN)
-        line(f"merge {branch} → main     main : {short(main_before)} → [bold]{short(main_after)}")
+        line(f"merge {branch} → main     main: {short(main_before)} → [bold]{short(main_after)}")
         tag = f"release-{datetime.now():%H%M%S}"  # HHMMSS -> a distinct tag per run
         if nessie.branch_exists(tag):  # same-second re-run -> move the tag to the new state
             nessie.delete_tag(tag)
         nessie.create_tag(tag, from_ref=MAIN)
-        line(f"tag [bold]{tag}[/] → {short(main_after)} [dim](immuable)")
+        line(f"tag [bold]{tag}[/] → {short(main_after)} [dim](marks this release)")
         if keep:
-            line(f"branche {branch} conservée (--keep)")
+            line(f"branch {branch} kept (--keep)")
         else:
             nessie.delete_branch(branch)
-            line(f"branche {branch} supprimée")
-        display.pause("Bilan")
-        display.success("main mis à jour", tables(main_catalog))
+            line(f"branch {branch} deleted")
+        display.pause("Summary")
+        display.success("main updated", tables(main_catalog))
         return 0
 
-    step(4, "Pas de merge, branche conservée (tests rouges)", "API Nessie")
+    step(4, "No merge, branch kept (tests red)", "Nessie API")
     main_now = nessie.ref_hash(MAIN)
-    unchanged = "inchangé" if main_now == main_before else "[bold red]a bougé ![/]"
+    unchanged = "unchanged" if main_now == main_before else "[bold red]moved![/]"
     line(f"main @ [bold]{short(main_now)}[/] ({unchanged})")
     for t in tables(main_catalog):
         line(t)
-    line(f"branche [bold]{branch}[/] conservée pour l'enquête")
-    display.pause("Alerte")
+    line(f"branch [bold]{branch}[/] kept for investigation")
+    display.pause("Alert")
     display.console.print()
     alert(
-        title=f"Pipeline en échec sur {branch}",
+        title=f"Pipeline failed on {branch}",
         message=(
-            f"Tests dbt rouges : la mauvaise donnée reste isolée sur sa branche.\n"
-            f"Rien n'a été mergé dans {MAIN}.\n\n"
-            f"Pour enquêter : mise run dbt-inspect {branch}"
+            f"dbt tests red: the bad data stays isolated on its branch.\n"
+            f"Nothing was merged into {MAIN}.\n\n"
+            f"To investigate: mise run dbt-inspect {branch}"
         ),
     )
-    display.failure("main est resté propre : la mauvaise donnée ne l'a jamais touché")
+    display.failure("main stayed clean: the bad data never touched it")
     return 1
 
 

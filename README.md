@@ -24,6 +24,7 @@ MinIO) in docker compose; PyIceberg, dbt and DuckDB in Python. Details in
 ## Quick start
 
 ```bash
+cp mise.local.toml.example mise.local.toml   # then set NESSIE_PG_PASSWORD
 mise run stack-up      # start Nessie + Postgres + Silo, create the bucket and the raw / marts namespaces
 mise run pipeline-ok   # nominal run: branch -> ingest -> dbt build (green) -> merge into main
 mise run pipeline-ko   # failing run: bad data -> red tests -> no merge + alert

@@ -34,8 +34,11 @@ has commits and can receive merges.
 
 ## Nessie configuration
 
-- **Version store**: `nessie.version.store.type=JDBC` on Postgres. `JDBC` is deprecated for removal
-  in favor of `JDBC2`; switching needs a fresh store or a migration with the Nessie Server Admin Tool.
+- **Version store**: `nessie.version.store.type=JDBC2` on Postgres, through the Quarkus datasource
+  named `postgresql` (`nessie.version.store.persist.jdbc.datasource`, `quarkus.datasource.postgresql.*`).
+  Nessie creates its two tables at startup: `refs2` (branches and tags, like `.git/refs`) and `objs2`
+  (commits, content values and internal objects, each serialized in `obj_value`, like `.git/objects`).
+  Nessie itself is stateless: restarting it loses nothing.
 - **Warehouse**: `s3://iceberg-warehouse/`, declared as the default warehouse. Nessie announces it in
   `/v1/config` and writes the `metadata.json` files there.
 - **S3 endpoints**: Nessie reaches Silo at `http://minio:9000` (compose network); its
@@ -79,7 +82,7 @@ Plan to drop the detour once DuckDB 2.0 ships: [DuckDB 2.0](duckdb-2.0.md).
 | Concern | Choice | Why |
 |---|---|---|
 | Runtime | docker compose, Nessie `0.106.0` | One command, everything local |
-| Version store | Postgres (`JDBC`) | Durable across restarts, close to a production setup |
+| Version store | Postgres (`JDBC2`) | Durable across restarts, same model as production: stateless Nessie, external database |
 | Warehouse | Silo (`s3://iceberg-warehouse`) | S3 API locally; official MinIO images are gone |
 | Engines | PyIceberg, dbt-duckdb | Light, no JVM |
 | Nessie operations | `nessie.py` (API v2), Nessie CLI | `pynessie` is API v1 and unmaintained |
@@ -87,9 +90,12 @@ Plan to drop the detour once DuckDB 2.0 ships: [DuckDB 2.0](duckdb-2.0.md).
 
 ## Credentials
 
-Local demo values, also exported by `mise.toml` (`AWS_*`) for S3 clients:
-- Silo: `minioadmin` / `8qqR90Az` (console at http://localhost:29090)
-- Postgres: `nessie` / `nessie`
+- Postgres (version store): `NESSIE_PG_USER` / `NESSIE_PG_PASSWORD` in `mise.local.toml` (ignored by
+  git, template in `mise.local.toml.example`). `docker-compose.yml` reads them for both the `postgres`
+  and `nessie` services and refuses to start without them, so run compose through mise. Changing the
+  password needs `mise run stack-reset`: Postgres only reads it on first start.
+- Silo: `minioadmin` / `8qqR90Az` (console at http://localhost:29090), still hardcoded in several
+  files and exported by `mise.toml` (`AWS_*`) for S3 clients.
 
 ## Checks
 

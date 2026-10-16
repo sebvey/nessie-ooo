@@ -40,10 +40,10 @@ class Plugin(BasePlugin):
             table = self._catalog.load_table(identifier)
         except NoSuchTableError:
             table = self._catalog.create_table(identifier, schema=arrow.schema)
-        # Le modèle a gagné des colonnes : on les ajoute au schéma Iceberg (commit sur la branche).
+        # The model gained columns: add them to the Iceberg schema (a commit on the branch).
         with table.update_schema() as update:
             update.union_by_name(arrow.schema)
         with warnings.catch_warnings():
-            # 1er run : overwrite sur une table vide -> "Delete operation did not match any records".
+            # First run: overwrite on an empty table -> "Delete operation did not match any records".
             warnings.filterwarnings("ignore", message="Delete operation did not match any records")
             table.overwrite(arrow)

@@ -17,7 +17,9 @@
 | `MONGODB2`, `CASSANDRA2`, `BIGTABLE`, `DYNAMODB2` | Managed or distributed backends |
 
 `JDBC`, `MONGODB` and `CASSANDRA` (without the `2`) are deprecated for removal; the Nessie Server Admin
-Tool migrates their data.
+Tool migrates their data. The `2` variants are new implementations of the same backend with less
+storage overhead: with `JDBC2`, each object is one serialized value (`objs2.obj_value`) instead of a
+wide table with one column per field.
 
 ## Storage
 

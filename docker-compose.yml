@@ -12,22 +12,17 @@ services:
       minio-setup:
         condition: service_completed_successfully
     environment:
-      # Version store settings -> JDBC with Postgres
-      - nessie.version.store.type=JDBC
-      - nessie.version.store.jdbc.url=jdbc:postgresql://postgres:5432/nessie
-      - nessie.version.store.jdbc.username=nessie
-      - nessie.version.store.jdbc.password=nessie
-      # Quarkus datasource configuration for Nessie
-      - quarkus.datasource.db-kind=postgresql
-      - quarkus.datasource.jdbc.url=jdbc:postgresql://postgres:5432/nessie
-      - quarkus.datasource.username=nessie
-      - quarkus.datasource.password=nessie
-      - quarkus.datasource.jdbc.driver=org.postgresql.Driver
+      # Version store -> JDBC2 on Postgres, through the Quarkus datasource named "postgresql"
+      - nessie.version.store.type=JDBC2
+      - nessie.version.store.persist.jdbc.datasource=postgresql
+      - quarkus.datasource.postgresql.jdbc.url=jdbc:postgresql://postgres:5432/nessie
+      - quarkus.datasource.postgresql.username=${NESSIE_PG_USER:?set in mise.local.toml, run through mise}
+      - quarkus.datasource.postgresql.password=${NESSIE_PG_PASSWORD:?set in mise.local.toml, run through mise}
       # Authentication Settings - disabled -> everyone can access nessie
       - nessie.server.authentication.enabled=false
       # Authorization Settings -> disabled -> all rights on nessie namespaces
       - nessie.server.authorization.enabled=false
-      ## Object Store Settings (warehouse) -> MinIO
+      ## Object Store Settings (warehouse) -> Silo
       - nessie.catalog.default-warehouse=warehouse
       - nessie.catalog.warehouses.warehouse.location=s3://iceberg-warehouse/
       - nessie.catalog.service.s3.default-options.region=us-east-1
@@ -35,9 +30,9 @@ services:
       - nessie.catalog.service.s3.default-options.access-key=urn:nessie-secret:quarkus:nessie.catalog.secrets.access-key
       - nessie.catalog.secrets.access-key.name=minioadmin
       - nessie.catalog.secrets.access-key.secret=8qqR90Az
-        # MinIO endpoint for Nessie server
+        # Silo endpoint for the Nessie server
       - nessie.catalog.service.s3.default-options.endpoint=http://minio:9000/
-        # MinIO endpoint for clients (on the Podman/Docker host)
+        # Silo endpoint for clients (on the Docker host)
       - nessie.catalog.service.s3.default-options.external-endpoint=http://127.0.0.1:29000/
     healthcheck:
       # healthcheck is executed from within the container’s own network namespace
@@ -51,26 +46,26 @@ services:
     container_name: nessie-postgres
     environment:
       - POSTGRES_DB=nessie
-      - POSTGRES_USER=nessie
-      - POSTGRES_PASSWORD=nessie
+      - POSTGRES_USER=${NESSIE_PG_USER:?set in mise.local.toml, run through mise}
+      - POSTGRES_PASSWORD=${NESSIE_PG_PASSWORD:?set in mise.local.toml, run through mise}
     ports:
       - "35432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U nessie"]
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER}"]
       interval: 5s
       timeout: 3s
       retries: 10
 
   minio:
-    image: pgsty/minio:RELEASE.2026-08-04T00-00-00Z  # fork communautaire : les images officielles MinIO ne sont plus publiques
+    image: pgsty/minio:RELEASE.2026-08-04T00-00-00Z  # Silo, community fork: the official MinIO images are no longer published
     container_name: minio
     command: server /data
     ports:
     # API port
     - "29000:9000"
-    # MinIO UI
+    # Silo console
     - "29090:9090"
     volumes:
     - minio_data:/data
@@ -98,8 +93,8 @@ services:
       echo 'bucket iceberg-warehouse ready'
       "
 
-  # Nessie CLI (REPL), lancé à la demande : `mise run cli`. Sur le réseau compose, donc il
-  # joint Nessie par son nom de service (pas besoin de --network host).
+  # Nessie CLI (REPL), started on demand: `mise run cli`. On the compose network, so it reaches
+  # Nessie by its service name (no need for --network host).
   nessie-cli:
     image: ghcr.io/projectnessie/nessie-cli:0.106.0
     profiles: [tools]

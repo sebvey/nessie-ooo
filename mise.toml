@@ -2,11 +2,11 @@
 uv = "latest"
 
 [env]
-# dbt : le projet et ses profils sont dans dbt/ (prend le pas sur le DBT_PROFILES_DIR du workspace).
+# dbt: the project and its profiles live in dbt/ (overrides the workspace's DBT_PROFILES_DIR).
 DBT_PROJECT_DIR = "{{config_root}}/dbt"
 DBT_PROFILES_DIR = "{{config_root}}/dbt"
 
-# AWS CLI -> MinIO local (ex. `aws s3 ls s3://iceberg-warehouse --recursive`).
+# AWS CLI -> local Silo (e.g. `aws s3 ls s3://iceberg-warehouse --recursive`).
 AWS_ACCESS_KEY_ID = "minioadmin"
 AWS_SECRET_ACCESS_KEY = "8qqR90Az"
 AWS_ENDPOINT_URL = "http://localhost:29000"
@@ -14,9 +14,9 @@ AWS_REGION = "us-east-1"
 AWS_S3_ADDRESSING_STYLE = "path"
 AWS_EC2_METADATA_DISABLED = "true"
 
-# Garde l'ordre des logs pipeline / dbt quand la sortie est redirigée.
+# Keeps pipeline / dbt logs in order when the output is redirected.
 PYTHONUNBUFFERED = "1"
 
 [task_config]
-# Les tâches de la démo sont dans tasks.toml.
+# The demo tasks live in tasks.toml.
 includes = ["tasks.toml"]

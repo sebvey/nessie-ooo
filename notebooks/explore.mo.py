@@ -24,7 +24,7 @@ def _(Nessie, mo):
     branch = mo.ui.dropdown(
         options=_branches,
         value="main" if "main" in _branches else _branches[0],
-        label="Branche Nessie",
+        label="Nessie branch",
     )
     branch
     return (branch,)
@@ -32,9 +32,9 @@ def _(Nessie, mo):
 
 @app.cell(hide_code=True)
 def _(branch, branch_catalog, duckdb, mo, settings, urlparse):
-    # Une vue DuckDB par table de la branche, nommée <namespace>_<table> (ex. raw.orders -> raw_orders).
-    # Nessie ne donne que le pointeur (le metadata.json courant de chaque table) ; DuckDB lit les
-    # fichiers Parquet dans Silo au moment de la requête, sans rien charger à l'avance.
+    # One DuckDB view per table of the branch, named <namespace>_<table> (e.g. raw.orders -> raw_orders).
+    # Nessie only gives the pointer (each table's current metadata.json); DuckDB reads the Parquet
+    # files from Silo at query time, without loading anything in advance.
     con = duckdb.connect()
     con.sql("INSTALL httpfs; LOAD httpfs; INSTALL iceberg; LOAD iceberg")
     con.sql(f"""
@@ -52,15 +52,15 @@ def _(branch, branch_catalog, duckdb, mo, settings, urlparse):
             _snapshot = _table.current_snapshot()
             con.sql(f"CREATE VIEW {_name} AS SELECT * FROM iceberg_scan('{_table.metadata_location}')")
             _views.append({
-                "vue": _name,
-                "lignes": int(_snapshot.summary.get("total-records", 0)) if _snapshot else 0,
-                "colonnes": len(_table.schema().fields),
+                "view": _name,
+                "rows": int(_snapshot.summary.get("total-records", 0)) if _snapshot else 0,
+                "columns": len(_table.schema().fields),
                 "metadata.json": _table.metadata_location.rsplit("/", 1)[-1],
             })
 
     mo.vstack([
-        mo.md(f"**{len(_views)} table(s)** sur la branche `{branch.value}`"),
-        mo.ui.table(_views, selection=None) if _views else mo.md("_Aucune table sur cette branche._"),
+        mo.md(f"**{len(_views)} table(s)** on branch `{branch.value}`"),
+        mo.ui.table(_views, selection=None) if _views else mo.md("_No table on this branch._"),
     ])
     return (con,)
 
