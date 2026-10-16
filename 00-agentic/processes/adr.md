@@ -50,7 +50,7 @@ One screen at most: the self-standing facts are a few lines, not the evidence.
 - Status: proposed | accepted | superseded by <ID>
 - Date: <YYYY-MM-DD>
 - Tickets: <ticket references>
-- Basis: investigated | arbitrary (<what wasn't examined>)
+- Basis: investigated (<how: test run, source read>) | quick look (<what was checked, what wasn't>) | arbitrary (<what wasn't examined>)
 - Supersedes: <ID> (only when it replaces an earlier ADR)
 - Amended: <YYYY-MM-DD>: <what changed> (optional, one line per amendment)
 
