@@ -20,12 +20,13 @@ What we built and how to use it:
 - [Nessie CLI](project/nessie-cli.md): REPL commands (refs, history, merge, rollback).
 - [dbt on Iceberg](project/dbt-on-iceberg.md): how dbt-duckdb materializes the models on the attached Nessie catalog, the SQL sent, the commits left on the branch.
 - [Dependency policy](project/dependency-policy.md): version specifiers for an application and for a library, upgrade procedure, vulnerability check and the OSV database.
+- [Agent setup](project/agent-setup.md): the coding agent's permissions, MCP servers, mise, and the instructions it follows from outside the repo.
 
 ## Decisions
 
 [Architecture decision records](adr/README.md): what was decided about the demo, why, what was ruled out. The ADR process (selection tests, lifecycle, template) is part of the agentic layer: [`00-agentic/processes/adr.md`](../00-agentic/processes/adr.md).
 
-How we work with the agent on this repo is the agentic layer, in [`00-agentic/`](../00-agentic/): working agreements imported by `CLAUDE.md`, processes, ticket backends.
+How we work with the agent on this repo is the agentic layer, in [`00-agentic/`](../00-agentic/): working agreements imported by `CLAUDE.md`, processes, ticket backends. This project's side of it: [Agent setup](project/agent-setup.md).
 
 ## Presentation (French)
 

@@ -12,7 +12,7 @@ Tickets live in `00-tracking/`, one Markdown file each, foldered by status, sinc
 
 ## Decision
 
-Tickets stay Markdown files in `00-tracking/` for now, with the process in [`processes/tickets.md`](../processes/tickets.md). Everything is written so the move stays cheap: no ticket ID in code or config, an `Area` line that maps to a label.
+Tickets stay Markdown files in `00-tracking/` for now, with the process in [`processes/tickets.md`](../../processes/tickets.md). Everything is written so the move stays cheap: no ticket ID in code or config, an `Area` line that maps to a label.
 
 ## Alternatives ruled out
 

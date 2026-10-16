@@ -4,7 +4,7 @@ How the operations of the ticket workflow ([`agreements/tickets.md`](../agreemen
 
 ## Where tickets live
 
-- `00-tracking/`, one Markdown file per ticket, in one subfolder per status. The folder is local: listed in `.gitignore`, never committed, with no history and no backup but the developer's own. A ticket's changes are file edits and moves, never commits.
+- `00-tracking/`, one Markdown file per ticket, in one subfolder per status (created when first needed). The folder is local: the line `00-tracking/` in `.gitignore`, never committed, with no history and no backup but the developer's own. A ticket's changes are file edits and moves, never commits.
 - From a git worktree, where ignored files are absent, read and write tickets in the main checkout's `00-tracking/`, by absolute path.
 
 | Status | Folder |

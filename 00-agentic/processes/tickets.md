@@ -39,4 +39,4 @@ In Backlog a ticket may skip the acceptance criteria. From Ready on they're requ
 
 ## Area
 
-A project may tag tickets with an `Area: <name>` line under the first paragraph, to filter them (a label in a backend that has labels). The areas, if any, are named where the project's instructions define them.
+A project may tag tickets with an `Area: <name>` line under the first paragraph, to filter them (a label in a backend that has labels). The areas, if any, are named in the project's `CLAUDE.md`, or in the instructions of the part they concern.

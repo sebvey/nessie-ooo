@@ -1,6 +1,6 @@
-# Infra
+# Agent setup
 
-What the agent runs on and with. Facts dated 2026-10-16.
+What the coding agent runs on and with in this project. Facts dated 2026-10-16. The agentic layer itself (working agreements, processes, ticket backends) is in [`00-agentic/`](../../00-agentic/); this page is this project's side of it.
 
 ## Claude Code
 
@@ -36,7 +36,7 @@ Every tool runs through mise (`mise run <task>`, `mise exec -- <command>`): it p
 
 ## Outside the repo
 
-The layer depends on instructions that are not in the repo and are not copied here:
+The agent also follows instructions that are not in the repo and are not copied here:
 
 - **The developer's global `CLAUDE.md`** (`~/.claude/CLAUDE.md`): personal working environment, notably running git and dev tools through `mise exec`.
 - **The organization's instructions** (Ippon Technologies), set by the administrator in Claude: posture, writing style, language. They take precedence over user preferences.

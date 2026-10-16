@@ -11,7 +11,7 @@ Claude Code keeps a memory across sessions, in files on the developer's machine.
 
 ## Decision
 
-Anything about the project or the agentic layer (architecture, decisions, conventions, status) goes in the repo: docs, ADRs, `CLAUDE.md`, `00-agentic/`, tickets. The memory only holds the developer's personal working preferences. When memory and repo disagree, the repo wins and the memory is fixed or deleted. Rule: [`agreements/memory.md`](../agreements/memory.md).
+Anything about the project or the agentic layer (architecture, decisions, conventions, status) goes in the repo: docs, ADRs, `CLAUDE.md`, `00-agentic/`, tickets. The memory only holds the developer's personal working preferences. When memory and repo disagree, the repo wins and the memory is fixed or deleted. Rule: [`agreements/memory.md`](../../agreements/memory.md).
 
 ## Alternatives ruled out
 

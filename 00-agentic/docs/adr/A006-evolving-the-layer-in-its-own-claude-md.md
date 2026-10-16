@@ -11,7 +11,7 @@ The agent has two missions in this repo: implementing the Nessie demo, and evolv
 
 ## Decision
 
-The instructions for evolving the layer (boundary test, the `A` series, `Area: agentic`, docs to keep in sync) live in `00-agentic/CLAUDE.md`. The root `CLAUDE.md` is about the project and plugs the layer by imports only. What a project uses (`agreements/`, `processes/`, `ticket-backends/`) never points to what only serves evolving the layer (`00-agentic/CLAUDE.md`, `README.md`, `layer.md`, `infra.md`, `adr/`), so that part can be removed without breaking the rest.
+The instructions for evolving the layer (boundary test, the `A` series, `Area: agentic`, docs to keep in sync) live in `00-agentic/CLAUDE.md`. The root `CLAUDE.md` is about the project and plugs the layer by imports only. What a project uses (`agreements/`, `processes/`, `ticket-backends/`) never points to what only serves evolving the layer (`00-agentic/CLAUDE.md`, `README.md`, `docs/`), so that part can be removed without breaking the rest.
 
 ## Alternatives ruled out
 

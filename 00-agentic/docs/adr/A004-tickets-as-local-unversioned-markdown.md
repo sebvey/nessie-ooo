@@ -13,7 +13,7 @@ Since A001, tickets were Markdown files in `00-tracking/`, versioned with the co
 
 ## Decision
 
-`00-tracking/` stays as it is (one file per ticket, foldered by status, same template), but is listed in `.gitignore` and removed from the index: tickets are local files, edited and moved without commits. Only the work is committed. How the local backend works is in [`ticket-backends/local.md`](../ticket-backends/local.md); the format, in [`processes/tickets.md`](../processes/tickets.md).
+`00-tracking/` stays as it is (one file per ticket, foldered by status, same template), but is listed in `.gitignore` and removed from the index: tickets are local files, edited and moved without commits. Only the work is committed. How the local backend works is in [`ticket-backends/local.md`](../../ticket-backends/local.md); the format, in [`processes/tickets.md`](../../processes/tickets.md).
 
 ## Alternatives ruled out
 

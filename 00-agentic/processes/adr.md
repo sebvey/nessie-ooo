@@ -38,6 +38,7 @@ What goes elsewhere:
 - **Substance or form.** Test: could someone who agreed with the old version disagree with the new one?
   - **Substance** (the decision, an alternative or the basis changes): a new ADR that supersedes the old one. The two are linked both ways: the new one gets `Supersedes: <old ID>`, the old one's status becomes `superseded by <new ID>`, and it stays. Never deleted.
   - **Form** (wording, a dead link, a procedure detail that doesn't touch the decision): edit in place and add an `Amended` line to the header, with the date and what changed.
+  - **Mechanical fix** (a link or path updated after a file moved, a typo): edit in place, no `Amended` line; it changes nothing for the reader.
   - An amendment is proposed and validated like a ticket: never applied alone.
 - **Dated facts** (versions, issue status) are true on the ADR's date. Re-check them before relying on them; if they changed the decision, write a new ADR.
 

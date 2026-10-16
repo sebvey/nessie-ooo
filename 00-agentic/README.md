@@ -1,37 +1,31 @@
 # Agentic layer
 
-How we work with a coding agent (Claude Code) on this repo: the rules it follows, the processes it runs, the infra it runs on, and the decisions behind them. This layer is documented and tracked here, apart from the Nessie demo, because it will live outside the repo at some point. Working on it has its own instructions, [`CLAUDE.md`](CLAUDE.md), which Claude Code loads when it works in this folder ([`layer.md`](layer.md), "Two missions").
+A set of working agreements, processes and ticket backends for working on a repository with a coding agent (Claude Code). A project imports it from its `CLAUDE.md`; the agent then follows the same workflow in every project that uses it.
 
-## Boundary with the project
+## Principles
 
-| Agentic layer (here) | Project (elsewhere) |
-|---|---|
-| Working agreements: tickets workflow, decisions, honesty, memory, writing, boundaries | What the repo is, the stack, how to run it: `CLAUDE.md`, `README.md` |
-| Processes: tickets, ADRs; ticket backends | The tickets themselves (`00-tracking/`, local, ignored by git) and which backend stores them (an import in `CLAUDE.md`) |
-| Agent infra: Claude Code permissions, MCP servers, external instructions | Project ADRs: `docs/adr/` |
-| Decisions on the layer: `adr/` | Project docs: `docs/` |
+- **The agent proposes, the developer decides**: tickets are filed, made ready and closed with the developer's agreement; nothing reaches `main` without the developer's validation.
+- **Tickets with checkable criteria**: each criterion is ticked when verified, with how, and reported one by one with what wasn't verified.
+- **Decisions are recorded**: the ones that pass three tests get an ADR, with its basis stated.
+- **Say how solid it is**: every finding states its basis (investigated, quick look, arbitrary); "not checked" is a finding.
+- **The repo is the source of truth**, not the agent's memory.
+- **The developer's setup is theirs**, and nothing created by someone else is destroyed without asking.
 
-Test: would this still hold for another repo worked on the same way? Then it belongs here.
+## What's in it
 
-## Contents
+| Folder | For | Content |
+|---|---|---|
+| `agreements/` | projects | The rules, imported by the project's `CLAUDE.md` |
+| `processes/` | projects | Ticket statuses and template, ADR process and template |
+| `ticket-backends/` | projects | One file per way of storing tickets; a project imports one |
+| `docs/` | adopters, maintainers | Adopting the layer, how it is built, its dependencies, its decisions |
+| `CLAUDE.md` | maintainers | Instructions for an agent evolving the layer |
 
-- [`CLAUDE.md`](CLAUDE.md): instructions for evolving the layer, loaded on demand.
-- [`layer.md`](layer.md): the two missions, the components and how they fit.
-- [`infra.md`](infra.md): Claude Code setup and what the layer depends on outside the repo.
-- [`agreements/`](agreements/): the working agreements between the developer and the agent, imported by `CLAUDE.md` (`@00-agentic/agreements/…`).
-  - [`tickets.md`](agreements/tickets.md): the ticket workflow and references.
-  - [`decisions.md`](agreements/decisions.md): reading and proposing ADRs.
-  - [`honesty.md`](agreements/honesty.md): say how solid it is, facts that age.
-  - [`memory.md`](agreements/memory.md): the repo, not the agent's memory, is the source of truth.
-  - [`writing.md`](agreements/writing.md): English, unwrapped Markdown.
-  - [`boundaries.md`](agreements/boundaries.md): the developer's setup, destructive actions.
-- [`processes/`](processes/): reference for humans and the agent, read when needed.
-  - [`tickets.md`](processes/tickets.md): statuses, template, `Area` line.
-  - [`adr.md`](processes/adr.md): what deserves an ADR, lifecycle, template.
-- [`ticket-backends/`](ticket-backends/): how tickets are stored, one file per backend; a project imports one in its `CLAUDE.md`.
-  - [`local.md`](ticket-backends/local.md): local Markdown files, ignored by git (naming, IDs, operations).
-- [`adr/`](adr/README.md): decisions on the agentic layer (`A001`…).
+## Two paths
 
-## Tracking
+- **Adopting it in a project**: [docs/adopting.md](docs/adopting.md) (steps, the contract with the project's `CLAUDE.md`, assumptions), then [docs/dependencies.md](docs/dependencies.md).
+- **Evolving it**: [docs/layer.md](docs/layer.md) (how the parts fit, the two missions), [docs/adr/](docs/adr/README.md) (decisions on the layer, `A001`…), and [CLAUDE.md](CLAUDE.md) (the rules an agent follows when changing the layer).
 
-Work on this layer is tracked like the rest, in the project's ticket backend, with an `Area: agentic` line in the ticket.
+## Status
+
+Developed inside a host project for now, and meant to be extracted; the form it will take (plugin, template, shared config) isn't chosen. Until then, it is used by importing its files from `00-agentic/`.

@@ -1,6 +1,6 @@
 # Agentic layer ADRs
 
-Decisions on how we work with the agent: rules, processes, agent infra. Same process as the project ADRs ([`processes/adr.md`](../processes/adr.md)), own series: `A001`, `A002`…
+Decisions on how we work with the agent: rules, processes, agent infra. Same process as the project ADRs ([`processes/adr.md`](../../processes/adr.md)), own series: `A001`, `A002`…
 
 ## Records
 
