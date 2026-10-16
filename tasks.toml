@@ -47,13 +47,7 @@ run = "NESSIE_BRANCH=${usage_branch?} uv run dbt build || true"
 
 [audit-python]
 description = "Audit the locked Python dependencies for known vulnerabilities (OSV). Container images are not audited"
-# pip-audit can't read uv.lock: export it as a standard pylock.toml (PEP 751) to a temporary
-# directory, removed on exit, and audit that lock. pip-audit exits non-zero on a vulnerability.
-quiet = true
-run = '''
-set -e
-tmp=$(mktemp -d)
-trap 'rm -rf "$tmp"' EXIT
-uv export --frozen --no-emit-project --all-groups --quiet --format pylock.toml -o "$tmp/pylock.toml"
-uvx pip-audit --locked --vulnerability-service osv "$tmp"
-'''
+# uv audit reads uv.lock and audits every dependency group by default. It is a preview command:
+# the flag silences the warning printed at every run. Exit 1 on a vulnerability, 2 on a usage
+# error (an option a uv upgrade renamed or removed).
+run = "uv audit --frozen --preview-features audit-command"

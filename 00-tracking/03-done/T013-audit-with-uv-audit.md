@@ -4,11 +4,11 @@ uv has its own audit command, `uv audit` (preview, in the installed uv 0.12.19).
 
 ## Acceptance criteria
 
-- [ ] `mise run audit-python` runs `uv audit` on `uv.lock`, with no `pylock.toml` export and no pip-audit, and prints no preview warning.
-- [ ] The task exits 0 on the current lock, and non-zero on the lock from before T007, reporting the same 12 packages as pip-audit did.
-- [ ] Same scope as before: all dependency groups, the same packages as `uv export --all-groups`.
-- [ ] The "Vulnerability check" section of `docs/project/dependency-policy.md` describes `uv audit` against OSV, how to accept a vulnerability (`--ignore` or `--ignore-until-fixed`, with a comment giving the reason), and the preview risk with uv kept on `latest`.
-- [ ] The dated facts of this ticket (latest uv version, preview status of `uv audit`) are re-verified against the uv release notes when the ticket is finished.
+- [x] `mise run audit-python` runs `uv audit` on `uv.lock`, with no `pylock.toml` export and no pip-audit, and prints no preview warning.
+- [x] The task exits 0 on the current lock, and non-zero on the lock from before T007, reporting the same 12 packages as pip-audit did.
+- [x] Same scope as before: all dependency groups, the same packages as `uv export --all-groups`.
+- [x] The "Vulnerability check" section of `docs/project/dependency-policy.md` describes `uv audit` against OSV, how to accept a vulnerability (`--ignore` or `--ignore-until-fixed`, with a comment giving the reason), and the preview risk with uv kept on `latest`.
+- [x] The dated facts of this ticket (latest uv version, preview status of `uv audit`) are re-verified against the uv release notes when the ticket is finished.
 
 ## Decisions (refinement, 2026-10-16)
 
@@ -29,3 +29,9 @@ uv has its own audit command, `uv audit` (preview, in the installed uv 0.12.19).
 - To update: the task in `tasks.toml`, the "Vulnerability check" section of `docs/project/dependency-policy.md`.
 
 ## Outcome
+
+- `audit-python` in `tasks.toml` now runs `uv audit --frozen --preview-features audit-command`; the `pylock.toml` export and `uvx pip-audit` are gone. The "Vulnerability check" section of `docs/project/dependency-policy.md` is rewritten accordingly (preview risk, `--ignore-until-fixed` / `--ignore`, the pip-audit comparison kept as history).
+- Checked on 2026-10-16 with uv 0.12.19: exit 0 and 111 packages on the current lock, no warning; exit 1 on the lock from before T007, with the same 109 vulnerabilities in the same 12 packages as `pip-audit` against OSV (both compared as JSON); exit 2 on an unknown option.
+- Re-verified on 2026-10-16: latest uv is 0.13.1 (2026-10-14), and `uv audit` is still a preview feature (release notes of 0.12.22, 0.12.24, 0.13.0, 0.13.1). The task runs unchanged with uv 0.13.1 (run through `uvx --from uv==0.13.1`).
+- Left aside: mise still resolves `uv = "latest"` to the installed 0.12.19; upgrading uv is the developer's call.
+- Not verified: the audited package names one by one (`uv audit` only reports counts, matched at 111 with the export); the behaviour of `--ignore` and `--ignore-until-fixed` (read from `uv audit --help`, not run); platform coverage beyond the 111 count on linux, windows and macos with `colorama` included.

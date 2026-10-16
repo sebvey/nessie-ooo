@@ -52,10 +52,11 @@ When: before each talk, on a vulnerability alert, or for a feature you need. Eac
 mise run audit-python
 ```
 
-The task exports `uv.lock` (every package, all dependency groups) as a standard `pylock.toml` (PEP 751) to a temporary directory, since pip-audit can't read `uv.lock`, and audits it with `pip-audit --locked` against the OSV database. It exits non-zero when a vulnerability is found. It needs the network, so it's not part of the end-to-end check: run it in the upgrade procedure and when finishing a ticket that changes `uv.lock`.
+The task runs `uv audit`, which reads `uv.lock` directly and checks every package of every dependency group, on all platforms, against the OSV database. It exits 1 when a vulnerability is found, 2 on a usage error. It needs the network, so it's not part of the end-to-end check: run it in the upgrade procedure and when finishing a ticket that changes `uv.lock`.
 
-- OSV rather than pip-audit's default PyPI service: on the lock from before T007, OSV reported 109 vulnerabilities and PyPI 100, in the same 12 packages (2026-10-16).
-- No vulnerability is ignored. To accept one that has no fix, add `--ignore-vuln <ID>` to the task in `tasks.toml`, with a comment giving the reason (no fix released, not reachable from our code…).
+- **Preview command.** `uv audit` is experimental in uv (still the case in uv 0.13.1, 2026-10-16); the task passes `--preview-features audit-command` to silence the warning printed at every run. uv stays on `latest` in `mise.toml`: if an upgrade changes the interface, the task fails with exit 2 and gets fixed then. A change of behaviour without an error (what gets audited by default, for instance) would go unnoticed: check the "Preview features" section of the uv release notes when the task's output looks different.
+- Before T013, the task exported the lock to `pylock.toml` and ran `pip-audit` against OSV. On the lock from before T007, both tools reported the same 109 vulnerabilities in the same 12 packages (2026-10-16). OSV rather than pip-audit's default PyPI service, which reported 100.
+- No vulnerability is ignored. To accept one, add an option to the task in `tasks.toml`, with a comment giving the reason (no fix released, not reachable from our code…): `--ignore-until-fixed <ID>` while no fix exists (the audit fails again once one is released), `--ignore <ID>` to accept it for good.
 
 The Red Hat Dependency Analytics extension in VS Code uses its own sources and may report differently; T007 used both.
 
