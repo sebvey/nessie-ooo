@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-The agentic layer: working agreements, processes and ticket backends for working on a repository with a coding agent. This folder is a project of its own, which adopts its own layer; for now it sits inside a host project (see "Coexistence").
+vierbein, an agentic layer: working agreements, processes and ticket backends for working on a repository with a coding agent. This folder is a project of its own, which adopts its own layer; for now it sits inside a host project (see "Coexistence").
 
 ## Where to read
 

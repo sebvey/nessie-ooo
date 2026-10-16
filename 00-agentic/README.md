@@ -1,6 +1,10 @@
-# Agentic layer
+# vierbein
 
-A set of working agreements, processes and ticket backends for working on a repository with a coding agent (Claude Code). A project imports it from its `CLAUDE.md`; the agent then follows the same workflow in every project that uses it.
+An agentic layer: a set of working agreements, processes and ticket backends for working on a repository with a coding agent (Claude Code). A project imports it from its `CLAUDE.md`; the agent then follows the same workflow in every project that uses it.
+
+## The name
+
+In general relativity, a vierbein (German for "four legs", also called a tetrad) is a local frame attached to each point of spacetime: it lets physics be written in the simple local terms of that point, while staying tied to the laws that hold everywhere. The layer does the same for projects. Each project has its local frame, set in its own `CLAUDE.md` (ticket backend, ticket prefix, ADR series, setup), and through it the agent applies the same agreements and the same workflow as everywhere else.
 
 ## Principles
 
