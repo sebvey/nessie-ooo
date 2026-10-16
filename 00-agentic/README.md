@@ -19,7 +19,8 @@ A set of working agreements, processes and ticket backends for working on a repo
 | `processes/` | projects | Ticket statuses and template, ADR process and template |
 | `ticket-backends/` | projects | One file per way of storing tickets; a project imports one |
 | `docs/` | adopters, maintainers | Adopting the layer, how it is built, its dependencies, its decisions |
-| `CLAUDE.md` | maintainers | Instructions for an agent evolving the layer |
+| `CLAUDE.md` | maintainers | The layer as a project: its own bindings (ticket prefix `t`, ADR series `A`), checks, rules for evolving it |
+| `scripts/` | maintainers | `check-links.py`: relative links in the layer's Markdown |
 
 ## Two paths
 
@@ -28,4 +29,4 @@ A set of working agreements, processes and ticket backends for working on a repo
 
 ## Status
 
-Developed inside a host project for now, and meant to be extracted; the form it will take (plugin, template, shared config) isn't chosen. Until then, it is used by importing its files from `00-agentic/`.
+Developed inside a host project for now, as a project of its own (its `CLAUDE.md`, its local tickets, its ADRs), and meant to be extracted to its own repository; the form projects will use it in (plugin, template, shared config) isn't chosen. Until then, a project imports its files from the folder it sits in.
