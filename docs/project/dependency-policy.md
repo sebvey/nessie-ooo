@@ -42,15 +42,22 @@ When: before each talk, on a vulnerability alert, or for a feature you need. Eac
 2. Upgrade one package at a time, never everything at once: `mise exec -- uv lock --upgrade-package <pkg>`. A transitive dependency can be upgraded the same way. To stay on a release line, name the version: `--upgrade-package dbt-core==1.11.16`.
 3. Read what uv changed (`Updated`, `Added`, `Removed` lines). A new dependency or a major you didn't ask for is a reason to stop and choose.
 4. Raise the floors in `pyproject.toml` to the new locked versions, then `mise exec -- uv lock` (no version may change).
-5. Check for vulnerabilities (below), then run the end-to-end check from [`CLAUDE.md`](../../CLAUDE.md#running-things).
+5. Check for vulnerabilities (`mise run audit-python`, below), then run the end-to-end check from [`CLAUDE.md`](../../CLAUDE.md#running-things).
 
 ## Vulnerability check
 
+**Scope: the Python dependencies only.** The container images the stack runs (Nessie, Nessie CLI, Postgres, Silo, mc) are not audited by anything in this repo: see T011.
+
 ```bash
-mise exec -- uv export --frozen --no-hashes --no-emit-project --all-groups > /tmp/requirements.txt
-mise exec -- uvx pip-audit --no-deps --disable-pip -r /tmp/requirements.txt
+mise run audit-python
 ```
 
-`pip-audit` reads the PyPA advisory database (OSV). The Red Hat Dependency Analytics extension in VS Code uses its own sources and may report differently; T007 used both.
+The task exports `uv.lock` (every package, all dependency groups, with hashes) to a temporary directory and runs `pip-audit` on it against the OSV database. It exits non-zero when a vulnerability is found. It needs the network, so it's not part of the end-to-end check: run it in the upgrade procedure and when finishing a ticket that changes `uv.lock`.
+
+- OSV rather than pip-audit's default PyPI service: on the lock from before T007, OSV reported 109 vulnerabilities and PyPI 100, in the same 12 packages (2026-10-16).
+- The warning that hashes are only checked for presence with OSV is harmless: uv checks them at install.
+- No vulnerability is ignored. To accept one that has no fix, add `--ignore-vuln <ID>` to the task in `tasks.toml`, with a comment naming the ticket that accepted it.
+
+The Red Hat Dependency Analytics extension in VS Code uses its own sources and may report differently; T007 used both.
 
 The same extension suggests Red Hat Trusted Libraries, an index where Red Hat rebuilds popular packages from source with signed provenance. It's useful where supply-chain provenance is a requirement; here it would tie installs to a Red Hat account for the same code, so the repo stays on PyPI.

@@ -44,3 +44,17 @@ run = "uv run --group explore marimo edit notebooks/explore.mo.py"
 description = "Replay dbt build on a branch, e.g. mise run dbt-inspect pipeline-120000-bad"
 usage = 'arg "<branch>" help="Nessie branch to inspect"'
 run = "NESSIE_BRANCH=${usage_branch?} uv run dbt build || true"
+
+[audit-python]
+description = "Audit the locked Python dependencies for known vulnerabilities (OSV). Container images are not audited (T011)"
+# Exported with hashes so pip-audit checks exactly the locked files; the export goes to a temporary
+# directory, removed on exit. pip-audit exits non-zero when it finds a vulnerability. With OSV it
+# warns that hashes are only checked for presence: harmless here, uv checks them at install.
+quiet = true
+run = '''
+set -e
+tmp=$(mktemp -d)
+trap 'rm -rf "$tmp"' EXIT
+uv export --frozen --no-emit-project --all-groups --quiet -o "$tmp/requirements.txt"
+uvx pip-audit --disable-pip --require-hashes --vulnerability-service osv -r "$tmp/requirements.txt"
+'''

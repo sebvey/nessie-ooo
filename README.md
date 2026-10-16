@@ -34,6 +34,7 @@ mise run notebook              # marimo notebook to explore a branch
 mise run dbt-inspect <branch>  # replay dbt build on a branch (e.g. the kept -bad branch)
 mise run stack-down            # stop the stack, keep the data
 mise run stack-reset           # stop and delete everything
+mise run audit-python          # known vulnerabilities in the locked Python dependencies (not the images)
 ```
 
 - Nessie API: http://localhost:19120
