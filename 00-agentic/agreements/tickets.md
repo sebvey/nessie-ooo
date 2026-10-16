@@ -2,7 +2,9 @@
 
 Tickets live in `00-tracking/`, one file per ticket, foldered by status. The folder is local: ignored by git, never committed, so a ticket's changes are file edits and moves, not commits. From a git worktree, where ignored files are absent, read and write tickets in the main checkout's `00-tracking/`, by absolute path. How to write and file them (statuses, naming, IDs, template): `00-agentic/processes/tickets.md`. The workflow:
 
-- **Entry point**: a new idea, follow-up or problem found along the way becomes a ticket in `00-backlog/`. Don't widen the ticket in progress.
+- **Entry point**: a new idea, follow-up or problem found along the way becomes a ticket in `00-backlog/`, never a widening of the ticket in progress. The agent proposes it (a title and a few lines of why) and files it only once the developer agrees; a request from the developer to file one is that agreement.
+  - In a discussion with the developer (refining, a question): propose it in the conversation, when it comes up.
+  - While implementing on its own: note it at once in the current ticket's Notes (`Follow-up to propose: …`), and propose it in the finishing report, after the criteria.
 - **Refining** a backlog ticket (scope, acceptance criteria) is a discussion: propose, and only move it to `01-ready/` once the user agrees.
 - **What to work on**: only a ticket from `01-ready/`, unless the user asks otherwise.
 - **Starting**: check the working tree is clean, switch to an up-to-date `main` if needed, create a branch named like the ticket file without `.md` (`T004-refactor-dbt-project`), and move the ticket to `02-in-progress/`.
