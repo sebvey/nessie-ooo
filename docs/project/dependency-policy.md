@@ -52,7 +52,7 @@ When: before each talk, on a vulnerability alert, or for a feature you need. Eac
 mise run audit-python
 ```
 
-The task runs `uv audit`, which reads `uv.lock` directly and checks every package of every dependency group, on all platforms, against the OSV database. It exits 1 when a vulnerability is found, 2 on a usage error. It needs the network, so it's not part of the end-to-end check: run it in the upgrade procedure and when finishing a ticket that changes `uv.lock`.
+The task runs `uv audit`, which reads `uv.lock` directly and checks every package of every dependency group, on all platforms, against the [OSV database](#the-osv-database). It exits 1 when a vulnerability is found, 2 on a usage error. It needs the network, so it's not part of the end-to-end check: run it in the upgrade procedure and when finishing a ticket that changes `uv.lock`.
 
 - **Preview command.** `uv audit` is experimental in uv (still the case in uv 0.13.1, 2026-10-16); the task passes `--preview-features audit-command` to silence the warning printed at every run. uv stays on `latest` in `mise.toml`: if an upgrade changes the interface, the task fails with exit 2 and gets fixed then. A change of behaviour without an error (what gets audited by default, for instance) would go unnoticed: check the "Preview features" section of the uv release notes when the task's output looks different.
 - Before T013, the task exported the lock to `pylock.toml` and ran `pip-audit` against OSV. On the lock from before T007, both tools reported the same 109 vulnerabilities in the same 12 packages (2026-10-16). OSV rather than pip-audit's default PyPI service, which reported 100.
@@ -61,3 +61,25 @@ The task runs `uv audit`, which reads `uv.lock` directly and checks every packag
 The Red Hat Dependency Analytics extension in VS Code uses its own sources and may report differently; T007 used both.
 
 The same extension suggests Red Hat Trusted Libraries, an index where Red Hat rebuilds popular packages from source with signed provenance. It's useful where supply-chain provenance is a requirement; here it would tie installs to a Red Hat account for the same code, so the repo stays on PyPI.
+
+### The OSV database
+
+OSV (Open Source Vulnerabilities) names two things:
+
+- **The OSV format**: a JSON schema describing a vulnerability by package and affected or fixed versions. Maintained by the OpenSSF Vulnerability Disclosures Working Group ([ossf/osv-schema](https://github.com/ossf/osv-schema)); the OpenSSF is a Linux Foundation project.
+- **[osv.dev](https://osv.dev)**: the database `uv audit` queries. It writes no advisories: it aggregates the databases that publish in the OSV format, and serves them through a free API with no account and no rate limit ([FAQ](https://google.github.io/osv.dev/faq/)). Google launched it in 2021; its code lives under the `google` GitHub organization and runs on GCP ([google/osv.dev](https://github.com/google/osv.dev)), but the docs name no operating team.
+
+For Python packages, the main sources aggregated (list in [`source.yaml`](https://github.com/google/osv.dev/blob/master/source.yaml)):
+
+| Source | IDs | Kept by | Content |
+|---|---|---|---|
+| [PyPA Advisory Database](https://github.com/pypa/advisory-database) | `PYSEC-` | the PyPA community | Mostly NVD CVEs mapped to PyPI packages by a tool, then triaged by hand; contributions by pull request |
+| [GitHub Advisory Database](https://github.com/github/advisory-database) | `GHSA-` | GitHub | Advisories reviewed by GitHub; the database behind Dependabot |
+| [PSF Advisory Database](https://github.com/psf/advisory-database) | `PSF-` | Python Software Foundation | CPython, pip |
+| [OpenSSF Malicious Packages](https://github.com/ossf/malicious-packages) | `MAL-` | OpenSSF | Malicious packages |
+
+These sources overlap: many entries trace back to the same NVD CVEs, and one vulnerability often carries several IDs (`aliases`). PyPI's own JSON API shows OSV data too, `PYSEC` entries only as far as its example shows ([docs](https://docs.pypi.org/api/json/)), which likely explains why pip-audit's PyPI service reported fewer vulnerabilities than OSV (not checked entry by entry).
+
+Free alternatives (Trivy, Grype, OSV-Scanner) draw on the same upstream sources for Python; databases with their own research (Snyk, Safety, Sonatype OSS Index, the Red Hat extension above) need an account. Trivy and Grype also scan container images, a lead for T011.
+
+Checked on 2026-10-16 against the linked pages, except: the license of the osv.dev data (not found) and the sources of Trivy, Grype and the commercial databases (from memory).
