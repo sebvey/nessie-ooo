@@ -14,7 +14,8 @@ One Markdown file per ticket. The folder a ticket sits in is its status.
 ## Changing a status
 
 - Move the file with `git mv`; it keeps its name.
-- To `03-done/`: tick the acceptance criteria and add the Outcome (what changed, where, anything left aside, and what wasn't verified).
+- While in `02-in-progress/`: tick each acceptance criterion when it is verified (workflow in [`agreements/tickets.md`](../agreements/tickets.md)).
+- To `03-done/`: every criterion ticked (or the gap stated in the Outcome), and the Outcome added (what changed, where, anything left aside, and what wasn't verified).
 - Never delete a ticket: an abandoned one goes to `03-done/` with an Outcome saying why.
 
 ## Ticket file

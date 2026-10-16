@@ -14,7 +14,7 @@ The components of the agentic layer and how they fit. The working agreements the
 1. An idea or a problem becomes a ticket in `00-tracking/00-backlog/`, never a widening of the ticket in progress.
 2. Refining (goal, acceptance criteria) is a discussion with the developer, who decides when it moves to `01-ready/`.
 3. The agent starts a ready ticket on a branch named after it and moves it to `02-in-progress/`.
-4. It checks every criterion, reports what was verified and what wasn't, and waits for the developer's validation.
+4. It ticks each criterion in the ticket as soon as it's verified, then reports them one by one (state, how verified, what wasn't) and waits for the developer's validation.
 5. On validation: ticket to `03-done/` with its Outcome, one squashed commit `T<nnn> <title>` on `main`, fast-forward. Pushing is the developer's.
 
 Small work without a ticket follows the same discipline, lighter: an `X666-<object>` branch, merged into `main` only after the developer's explicit validation.
