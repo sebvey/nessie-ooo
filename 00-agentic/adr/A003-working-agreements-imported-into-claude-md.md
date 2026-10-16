@@ -4,10 +4,11 @@
 - Date: 2026-10-16
 - Tickets: T015
 - Basis: investigated (`@path` imports in `CLAUDE.md` are documented in the Claude Code changelog; a fresh `claude -p` session on 2026-10-16 quoted the imported rules without reading any file)
+- Amended: 2026-10-16: Context corrected, subdirectory `CLAUDE.md` files load on demand (found in T027); the decision is unchanged
 
 ## Context
 
-`CLAUDE.md` mixed project facts (stack, commands, end-to-end check) with the agent's working rules (tickets, decisions, honesty, memory). The rules belong to the agentic layer, which will leave the repo; Claude Code only loads `CLAUDE.md` from the root.
+`CLAUDE.md` mixed project facts (stack, commands, end-to-end check) with the agent's working rules (tickets, decisions, honesty, memory). The rules belong to the agentic layer, which will leave the repo; Claude Code loads the root `CLAUDE.md` at every session; a subdirectory's `CLAUDE.md` only when it works on a file in that subdirectory (checked on 2.1.281, 2026-10-16). Rules needed in every session must be reachable from the root one.
 
 ## Decision
 
