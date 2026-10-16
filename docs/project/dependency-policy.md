@@ -52,10 +52,9 @@ When: before each talk, on a vulnerability alert, or for a feature you need. Eac
 mise run audit-python
 ```
 
-The task exports `uv.lock` (every package, all dependency groups, with hashes) to a temporary directory and runs `pip-audit` on it against the OSV database. It exits non-zero when a vulnerability is found. It needs the network, so it's not part of the end-to-end check: run it in the upgrade procedure and when finishing a ticket that changes `uv.lock`.
+The task exports `uv.lock` (every package, all dependency groups) as a standard `pylock.toml` (PEP 751) to a temporary directory, since pip-audit can't read `uv.lock`, and audits it with `pip-audit --locked` against the OSV database. It exits non-zero when a vulnerability is found. It needs the network, so it's not part of the end-to-end check: run it in the upgrade procedure and when finishing a ticket that changes `uv.lock`.
 
 - OSV rather than pip-audit's default PyPI service: on the lock from before T007, OSV reported 109 vulnerabilities and PyPI 100, in the same 12 packages (2026-10-16).
-- The warning that hashes are only checked for presence with OSV is harmless: uv checks them at install.
 - No vulnerability is ignored. To accept one that has no fix, add `--ignore-vuln <ID>` to the task in `tasks.toml`, with a comment naming the ticket that accepted it.
 
 The Red Hat Dependency Analytics extension in VS Code uses its own sources and may report differently; T007 used both.

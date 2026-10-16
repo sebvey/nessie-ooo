@@ -47,14 +47,13 @@ run = "NESSIE_BRANCH=${usage_branch?} uv run dbt build || true"
 
 [audit-python]
 description = "Audit the locked Python dependencies for known vulnerabilities (OSV). Container images are not audited (T011)"
-# Exported with hashes so pip-audit checks exactly the locked files; the export goes to a temporary
-# directory, removed on exit. pip-audit exits non-zero when it finds a vulnerability. With OSV it
-# warns that hashes are only checked for presence: harmless here, uv checks them at install.
+# pip-audit can't read uv.lock: export it as a standard pylock.toml (PEP 751) to a temporary
+# directory, removed on exit, and audit that lock. pip-audit exits non-zero on a vulnerability.
 quiet = true
 run = '''
 set -e
 tmp=$(mktemp -d)
 trap 'rm -rf "$tmp"' EXIT
-uv export --frozen --no-emit-project --all-groups --quiet -o "$tmp/requirements.txt"
-uvx pip-audit --disable-pip --require-hashes --vulnerability-service osv -r "$tmp/requirements.txt"
+uv export --frozen --no-emit-project --all-groups --quiet --format pylock.toml -o "$tmp/pylock.toml"
+uvx pip-audit --locked --vulnerability-service osv "$tmp"
 '''
