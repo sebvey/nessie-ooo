@@ -11,4 +11,9 @@ T010 audits the Python dependencies only. The rest of what runs is not audited: 
 - **One task or several**: a `mise run audit` running every audit, or one task per part.
 - Whether a decision here deserves an ADR (`docs/adr/README.md`).
 
+## Notes
+
+- Lead to compare first: **OSV-Scanner** (Google), which reads `uv.lock` and, since v2, scans container images too ([guide](https://appsecsanta.com/osv-scanner)); one tool could cover both parts. Trivy also reads `uv.lock` and images but excludes dev dependencies ([Trivy docs](https://trivy.dev/docs/dev/coverage/language/python/)). Neither was tested (2026-10-16).
+- The Python part may move to `uv audit` first (T013).
+
 ## Outcome
