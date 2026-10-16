@@ -10,8 +10,8 @@ dependencies = [
     "numpy>=2.0",
     "pyarrow>=17.0",
     "pyiceberg[s3fs,pyarrow]>=0.10.0",
-    "pydantic-settings>=2.0",
-    "requests>=2.31",
+    "pydantic-settings>=2.14.2",
+    "requests>=2.33.0",
     "pandas>=3.0.3",
     "rich>=14",
 ]
