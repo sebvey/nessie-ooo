@@ -4,6 +4,8 @@ Tickets are Markdown files in `00-tracking/`, kept there temporarily until they 
 
 Area: agentic
 
+Depends on T026 (workflow independent of the backend): this ticket then adds a GitHub backend, documented as a reusable setup guide, and migrates.
+
 ## Notes
 
 Analysis, 2026-10-16. Basis: quick look (repo state and `gh` checked, GitHub docs read for the plan limits; nothing tested: no issue created, no Project, no auto-close). It builds on an earlier exploration done for another project (GitHub docs read on 2026-09-29), whose main objections (code on GitLab, client data outside the EU) don't apply here.
