@@ -3,11 +3,12 @@
 - Status: accepted
 - Date: 2026-10-16
 - Tickets: T014, T015
-- Basis: arbitrary (the choice predates the ADRs and its reasons weren't written down; GitHub issues were not compared)
+- Basis: arbitrary (the simplest way to start, locally; GitHub issues were not compared)
+- Amended: 2026-10-16: added the reason, given by the developer after the ADR was written
 
 ## Context
 
-Tickets live in `00-tracking/`, one Markdown file each, foldered by status, since 2026-10-16 (before that, a single `backlog.md`). The developer has said they are kept there temporarily and will move to GitHub or similar (T014).
+Tickets live in `00-tracking/`, one Markdown file each, foldered by status, since 2026-10-16 (before that, a single `backlog.md`). It was chosen as the simplest way to start, locally: no tool, no account, nothing to set up. The developer has said they are kept there temporarily and will move to GitHub or similar (T014).
 
 ## Decision
 
