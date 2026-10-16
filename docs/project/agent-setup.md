@@ -1,6 +1,14 @@
 # Agent setup
 
-What the coding agent runs on and with in this project. Facts dated 2026-10-16. The agentic layer itself (working agreements, processes, ticket backends) is in [`00-agentic/`](../../00-agentic/); this page is this project's side of it.
+What the coding agent runs on and with in this project. Facts dated 2026-10-16, the vierbein section 2026-10-17. The agentic layer itself (working agreements, processes, ticket backends) is vierbein, a separate repository; this page is this project's side of it.
+
+## vierbein
+
+`CLAUDE.md` imports the layer's agreements and ticket backend from a sibling folder: `@../vierbein/…` (decision: [ADR005](../adr/ADR005-vierbein-imported-from-a-sibling-folder.md)).
+
+- **Checkout**: vierbein must be cloned next to this repository, as `../vierbein/`. Without it, the agent works without the working agreements.
+- **One-time approval**: these imports are outside the project's folder, so Claude Code loads them only after the developer approved external imports for this folder, once, in an interactive `claude` session in a terminal (a dialog at start). Before that, `claude -p` drops them silently, and so does the Claude desktop app, which doesn't offer the approval (checked on 2026-10-17); after it, both load them. The approval is stored per folder in the user's Claude Code config.
+- **Git worktrees** of this repository don't see `../vierbein/` at the right place, and are new folders for the approval: a session in a worktree has no working agreements. Work in the main checkout.
 
 ## Claude Code
 
