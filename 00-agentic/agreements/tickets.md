@@ -1,6 +1,6 @@
 # Tickets
 
-The ticket workflow, whatever stores the tickets. Where tickets live and how each operation is done (filing, changing status, ticking a criterion, closing), the ticket reference and how it shows in branch names and commit subjects: the backend file the project imports in its `CLAUDE.md`. Statuses and the ticket template: `00-agentic/processes/tickets.md`.
+The ticket workflow, whatever stores the tickets. Where tickets live and how each operation is done (filing, changing status, ticking a criterion, closing), the ticket reference and how it shows in branch names and commit subjects: the backend file the project imports in its `CLAUDE.md`. Statuses and the ticket template: [`processes/tickets.md`](../processes/tickets.md), in the layer's folder.
 
 - **Entry point**: a new idea, follow-up or problem found along the way becomes a ticket in Backlog, never a widening of the ticket in progress. The agent proposes it (a title and a few lines of why) and files it only once the developer agrees; a request from the developer to file one is that agreement.
   - In a discussion with the developer (refining, a question): propose it in the conversation, when it comes up.

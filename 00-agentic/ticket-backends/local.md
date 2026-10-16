@@ -1,11 +1,11 @@
 # Ticket backend: local Markdown files
 
-How the operations of the ticket workflow ([`agreements/tickets.md`](../agreements/tickets.md)) are done when tickets are local Markdown files. A project uses this backend by importing this file in its `CLAUDE.md`.
+How the operations of the ticket workflow ([`agreements/tickets.md`](../agreements/tickets.md)) are done when tickets are local Markdown files. A project uses this backend by importing this file in its `CLAUDE.md`. The project's root is the folder of that `CLAUDE.md`; paths below are relative to it.
 
 ## Where tickets live
 
-- `00-tracking/`, one Markdown file per ticket, in one subfolder per status (created when first needed). The folder is local: the line `00-tracking/` in `.gitignore`, never committed, with no history and no backup but the developer's own. A ticket's changes are file edits and moves, never commits.
-- From a git worktree, where ignored files are absent, read and write tickets in the main checkout's `00-tracking/`, by absolute path.
+- `00-tracking/` at the project's root, one Markdown file per ticket, in one subfolder per status (created when first needed). The folder is local: the line `00-tracking/` in the project's `.gitignore`, never committed, with no history and no backup but the developer's own. A ticket's changes are file edits and moves, never commits.
+- From a git worktree, where ignored files are absent, read and write tickets in the project's `00-tracking/` in the main checkout, by absolute path.
 
 | Status | Folder |
 |---|---|
@@ -16,16 +16,17 @@ How the operations of the ticket workflow ([`agreements/tickets.md`](../agreemen
 
 ## Reference
 
-- ID: `T<nnn>`, the highest existing one across all folders plus one. Tickets are never deleted, so an ID is never reused.
-- File name: `T<nnn>-<short-kebab-case-title>.md`, e.g. `T004-refactor-dbt-project.md`. The file starts with `# T<nnn> <Title>`, then the template's sections.
+- Prefix: set in the project's `CLAUDE.md` (`T` if it says nothing). It tells the project's tickets apart in branch names and commits, e.g. when two projects share a repo. Case matters: `t` and `T` are different prefixes.
+- ID: `<prefix><nnn>`, the highest existing ID with that prefix, across all folders, plus one. Tickets with another prefix (kept from another project) keep their ID and don't count. Tickets are never deleted, so an ID is never reused.
+- File name: `<ID>-<short-kebab-case-title>.md`, e.g. `T004-refactor-dbt-project.md`. The file starts with `# <ID> <Title>`, then the template's sections.
 - Branch: the file name without `.md` (`T004-refactor-dbt-project`).
-- Commit subject: `T<nnn> <title>` (`T004 Refactor the dbt project`).
+- Commit subject: `<ID> <title>` (`T004 Refactor the dbt project`).
 
 ## Operations
 
 | Operation | How |
 |---|---|
-| File a ticket | Create the file in `00-backlog/`, with the next ID. |
+| File a ticket | Create the file in `00-tracking/00-backlog/`, with the next ID. |
 | Read, list by status | Read the file; list the status folder. |
 | Change status | Move the file to the status folder (`mv`); it keeps its name. |
 | Tick or untick a criterion | Edit the checkbox in the file. |

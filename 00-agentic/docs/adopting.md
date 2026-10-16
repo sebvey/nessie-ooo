@@ -4,7 +4,7 @@ How to use the layer in a project: what to put where, what the project's `CLAUDE
 
 ## Steps
 
-1. Put the layer at `00-agentic/` in the project (the agreements and processes cite that path). The repo needs a first commit on `main`: the workflow branches from it.
+1. Put the layer in a folder of the project, `00-agentic/` by convention; the layer refers to its own files relative to itself, and the project's `CLAUDE.md` imports them from that folder. The repo needs a first commit on `main`: the workflow branches from it.
 2. Keep what a project uses: `agreements/`, `processes/`, `ticket-backends/`. The rest (`CLAUDE.md`, `README.md`, `docs/`) serves evolving the layer and can be left out.
 3. Write the project's `CLAUDE.md` with the contract below.
 4. Set up the chosen ticket backend, as its file says (the local backend needs only the line `00-tracking/` in `.gitignore`).
@@ -21,6 +21,7 @@ The layer is written so that the project's `CLAUDE.md` fills these slots. Anythi
 | The project's ADR series: folder and ID prefix | `agreements/decisions.md` and `processes/adr.md` refer to it | `docs/adr/`, `ADR001`, `ADR002`… |
 | Exceptions to "English everywhere", if any | `agreements/writing.md` sets English as the default and points here for exceptions | slides in French |
 | Setup the agent must not do itself: files and commands | `agreements/boundaries.md` says the developer owns the setup and the project names it | trusting a config, a local secrets file, starting Docker; how to set a value for one command |
+| Ticket ID prefix, if not the backend's default | Branch names and commit subjects carry it; two projects sharing a repo need different ones | `Ticket prefix: t` (the local backend defaults to `T`) |
 | Ticket areas, if any | `processes/tickets.md` allows an `Area: <name>` line, named in the project's `CLAUDE.md` | `Area: frontend` |
 
 Template:
@@ -43,7 +44,7 @@ Template:
 @00-agentic/agreements/writing.md
 @00-agentic/agreements/boundaries.md
 
-Ticket backend:
+Ticket backend, ticket prefix `T`:
 
 @00-agentic/ticket-backends/local.md
 

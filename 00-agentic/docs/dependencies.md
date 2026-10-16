@@ -5,7 +5,7 @@ What the layer relies on, whatever the project. Facts checked on 2026-10-16 with
 ## Claude Code
 
 - **`@` imports in `CLAUDE.md`**, loaded at the start of every session: the agreements and the ticket backend reach the agent this way ([A003](adr/A003-working-agreements-imported-into-claude-md.md)). A fresh `claude -p` session quoted imported rules without reading any file.
-- **Subdirectory `CLAUDE.md` loaded on demand**, when the agent works on a file in that subdirectory: `00-agentic/CLAUDE.md`, the instructions for evolving the layer, reaches the agent this way ([A006](adr/A006-evolving-the-layer-in-its-own-claude-md.md)). A project that only uses the layer doesn't need it.
+- **Subdirectory `CLAUDE.md` loaded on demand**, when the agent works on a file in that subdirectory: the layer's own `CLAUDE.md`, the instructions for evolving it, reaches the agent this way while the layer sits inside a host project ([A006](adr/A006-evolving-the-layer-in-its-own-claude-md.md)). A project that only uses the layer doesn't need it.
 
 Another agent tool would need its own way to load the agreements; nothing in them is specific to Claude Code beyond these two mechanisms.
 

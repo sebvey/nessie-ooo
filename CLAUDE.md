@@ -20,7 +20,7 @@ Demo of Project Nessie (Git-like catalog for Iceberg tables): a pipeline works o
 @00-agentic/agreements/writing.md
 @00-agentic/agreements/boundaries.md
 
-Ticket backend:
+Ticket backend, ticket prefix `T`:
 
 @00-agentic/ticket-backends/local.md
 
