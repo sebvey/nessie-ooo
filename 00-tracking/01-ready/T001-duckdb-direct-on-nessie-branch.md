@@ -1,11 +1,26 @@
-# T001 Drop PyIceberg with DuckDB 2.0
+# T001 DuckDB reads and writes Iceberg directly on a Nessie branch
 
-DuckDB would read and write directly on a Nessie branch (`ATTACH` with the branch in the catalog URI), without the PyIceberg detour described in [architecture](../../docs/project/architecture.md#why-pyiceberg-and-not-duckdb-directly) and [ADR003](../../docs/adr/ADR003-pyiceberg-as-the-data-plane.md). The fix (duckdb-iceberg#1230) won't be in a stable release before DuckDB 2.0.
+DuckDB would read and write directly on a Nessie branch (`ATTACH` with the branch in the catalog URI), without the PyIceberg detour described in [architecture](../../docs/project/architecture.md#why-pyiceberg-and-not-duckdb-directly) and [ADR003](../../docs/adr/ADR003-pyiceberg-as-the-data-plane.md). The fix (duckdb-iceberg#1230) won't be in a stable release before DuckDB 2.0. This is a POC: a DuckDB 2.0 pre-release is acceptable.
+
+Scope: the dbt project and the notebook move to DuckDB. PyIceberg stays for ingestion and for the row counts in `catalog.py`. The slides are out of scope.
+
+## Acceptance criteria
+
+- [ ] `duckdb` is `>=2.0`, a pre-release if 2.0 isn't out yet, and `mise run audit-python` passes.
+- [ ] `uv run pipeline --no-pause` merges; `uv run pipeline --bad --no-pause` doesn't merge and `main` is unchanged.
+- [ ] dbt reads `raw.orders` and writes `marts.daily_orders` through an `ATTACH` on the branch, with no dbt plugin; `src/nessie_demo/dbt_plugins/` is deleted.
+- [ ] Two `dbt build` in a row on the same branch both succeed, and the second replaces the model's data.
+- [ ] The notebook reads the selected branch through an `ATTACH`.
+- [ ] A new ADR (status `proposed`) supersedes ADR003; `architecture.md` describes the new data path.
+- [ ] A doc in `docs/` explains how dbt-duckdb's `table` and `incremental` materializations run on an attached Iceberg catalog: the SQL statements issued, and the Nessie commits each run leaves on the branch.
+- [ ] A backlog ticket exists to update the slides (slide 05 "Le détour par PyIceberg", the "Maturité" slide, the PyIceberg and plugin cards).
+- [ ] If DuckDB 2.0 stable isn't out when the ticket closes: a backlog ticket exists to move from the pre-release to the stable release.
 
 ## Notes
 
-- **Facts below are dated 2026-10-15.** Before refining, re-check DuckDB's latest release (is 2.0 out?), the status of duckdb-iceberg #1230 and #784, and whether dbt-duckdb supports DuckDB 2.0.
-- Overlaps with [T004](T004-refactor-dbt-project.md): the `iceberg_write` plugin may go.
+- **Facts re-checked on 2026-10-16**: latest stable DuckDB is 1.5.6; 2.0.0 is planned for 2026-10-21 and 2.0.1 for 2026-11-18 (duckdb.org release calendar, tentative dates); duckdb-iceberg#1230 merged on 2026-07-26; #784 still open; dbt-duckdb 1.11.0 requires `duckdb>=1.0.0` with no upper bound (whether it works with 2.0 is not tested).
+- **Materialization** (quick look, 2026-10-16: dbt-duckdb macros read in `.venv`, nothing run on Iceberg). dbt-duckdb's `table` materialization never issues `CREATE OR REPLACE`: it runs `create table <model>__dbt_tmp as …`, renames the existing table to `<model>__dbt_backup`, renames the temporary table to the model, commits, then drops the backup. So duckdb-iceberg#784 doesn't block it; what is untested is `ALTER TABLE … RENAME` on an Iceberg table through Nessie's REST catalog (needed from the first run) and `BEGIN`/`COMMIT` around several statements. Each statement likely becomes a Nessie commit (about 4 per run), a noisier `SHOW LOG` than today. First step of the ticket: test `RENAME`. If it works, keep `table`; otherwise, `incremental` with `delete+insert` (its intermediate table is a local DuckDB temporary table; `DELETE` and `INSERT` are tested), or a custom `DROP` + `CREATE AS` materialization. The `CREATE OR REPLACE` limitation itself is tracked in T017.
+- **Configuration as-is**: credentials and endpoints stay where they are today (hardcoded in `dbt/profiles.yml`). Moving them out is [T006](../00-backlog/T006-configuration-and-secrets.md); the rest of the dbt clean-up is [T004](../00-backlog/T004-refactor-dbt-project.md). T001 comes first, and T004 no longer has to decide the `iceberg_write` plugin's future.
 
 ### Status (tests of 2026-10-15)
 
@@ -85,7 +100,7 @@ To see the URLs DuckDB calls, add `c.sql("CALL enable_logging('HTTP')")` after `
 
 ### Integration plan
 
-Nothing below is tested. Suggested order, each step validated before the next.
+Nothing below is tested. Suggested order, each step validated before the next. Step 6 is out of scope (follow-up ticket).
 
 1. **Dependencies.** In `pyproject.toml`, pin `duckdb` to the pre-release (`duckdb==2.0.0.dev2610011535`) and allow pre-releases for uv (`[tool.uv] prerelease = "allow"`). Check first: **does dbt-duckdb accept DuckDB 2.0?** If `uv sync` or `dbt debug` fails, stop there.
 
@@ -115,7 +130,7 @@ Nothing below is tested. Suggested order, each step validated before the next.
 3. **Sources and models.**
    - `sources.yml`: the `raw` source points to `lake.raw` (`database: lake`), no more `meta.plugin`.
    - `daily_orders`: `table` materialization in `lake.marts` instead of `external` + plugin.
-   - **Main risk**: dbt-duckdb's `table` materialization recreates the table on every run (temporary table then rename, or `CREATE OR REPLACE`). The Iceberg extension doesn't support `CREATE OR REPLACE`, and rename isn't tested. Plan B: an `incremental` model (`delete+insert` strategy), or a custom materialization doing `DROP` then `CREATE TABLE AS`.
+   - **Main risk**: the materialization, see the Materialization note above.
 
 4. **Notebook.** Replace the `iceberg_scan` views with a single `ATTACH` on the selected branch.
 

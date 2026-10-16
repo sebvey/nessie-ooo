@@ -24,7 +24,7 @@ A Red Hat Dependency Analytics scan (VS Code extension, 2026-10-16) reports vuln
 
 - Every direct dependency is behind its latest release (`uv tree --depth 1 --outdated`, 2026-10-16): `dbt-duckdb` 1.10.1 -> 1.11.0, `duckdb` 1.4.3 -> 1.5.6, `pyiceberg` 0.10.0 -> 0.12.0, `requests` 2.32.5 -> 2.34.2, `pydantic-settings` 2.12.0 -> 2.16.0, `rich` 14.2.0 -> 15.0.0, `pyarrow` 24.0.0 -> 26.0.0, `numpy` 2.4.0 -> 2.5.4, `pandas` 3.0.3 -> 3.0.6.
 - Approach agreed: upgrade per package (`uv lock --upgrade-package <pkg>`), not `uv lock --upgrade`; `duckdb` isn't in the scan and stays put (T001's ground). Then the end-to-end check from `CLAUDE.md`. Watch the majors (`rich` 15) and the pyiceberg / dbt-duckdb plugins, which rely on internal APIs (`target_to_df`, `union_by_name`).
-- Related: [T001](T001-drop-pyiceberg-with-duckdb-2.md) changes the DuckDB version; [T005](T005-refactor-python-package.md) reviews the dependency list (`pandas`, `numpy`). Fixing vulnerabilities shouldn't wait for either.
+- Related: [T001](T001-duckdb-direct-on-nessie-branch.md) changes the DuckDB version; [T005](T005-refactor-python-package.md) reviews the dependency list (`pandas`, `numpy`). Fixing vulnerabilities shouldn't wait for either.
 - No CI scan for now: re-run the scan in VS Code at the end of the ticket.
 
 ## Outcome
