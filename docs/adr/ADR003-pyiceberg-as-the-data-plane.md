@@ -3,8 +3,9 @@
 - Status: superseded by ADR004
 - Date: 2026-10-15
 - Tickets: T001
-- Basis: investigated (tests of 2026-10-15, recorded in T001)
+- Basis: investigated (tests of 2026-10-15, recorded in `docs/project/duckdb-2.0.md`, removed since and readable in git: `git show 5129fe4:docs/project/duckdb-2.0.md`)
 - Amended: 2026-10-16: the basis pointed to `docs/project/duckdb-2.0.md`, whose test results moved to T001
+- Amended: 2026-10-16: the basis points back to the doc, in git history, since tickets are no longer in the repo (a ticket can't be the only place the evidence lives)
 
 ## Context
 
