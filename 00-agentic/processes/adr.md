@@ -34,6 +34,7 @@ What goes elsewhere:
 
 - **Naming**: `<prefix><nnn>-<short-kebab-case-title>.md` in the series' folder (`ADR001-…`). The ID is the highest existing one in the series plus one, never reused.
 - **Written on the branch of the ticket that takes the decision**, with status `proposed`. It becomes `accepted` when the developer validates the ticket, in the ticket's squashed commit.
+- **Index**: each series' folder has a `README.md` listing its ADRs (ID, decision, status). Add the row when drafting the ADR, and update its status there whenever the ADR's status changes.
 - **Substance or form.** Test: could someone who agreed with the old version disagree with the new one?
   - **Substance** (the decision, an alternative or the basis changes): a new ADR that supersedes the old one. The two are linked both ways: the new one gets `Supersedes: <old ID>`, the old one's status becomes `superseded by <new ID>`, and it stays. Never deleted.
   - **Form** (wording, a dead link, a procedure detail that doesn't touch the decision): edit in place and add an `Amended` line to the header, with the date and what changed.
