@@ -9,54 +9,32 @@ Demo of Project Nessie (Git-like catalog for Iceberg tables): a pipeline works o
   - `docs/concepts/`: Iceberg and Nessie knowledge, valid outside this repo.
   - `docs/project/`: what we built (architecture, pipeline, CLI, DuckDB 2.0 plan).
   - `docs/presentation/`: the talk's slides and notes.
-  - `docs/adr/`: architecture decision records, why things are the way they are (rules in `docs/adr/README.md`).
-- `00-tracking/`: tickets, one file each, foldered by status (rules in `00-tracking/README.md`).
+  - `docs/adr/`: architecture decision records, why things are the way they are.
+- `00-tracking/`: tickets, one file each, foldered by status.
+- `00-agentic/`: the agentic layer, how we work with the agent (working agreements, processes, infra, its own ADRs). It will leave the repo at some point.
 
-## Decisions
+## Working agreements
 
-- Before changing something an ADR in `docs/adr/` covers, read it. If the work would contradict an accepted ADR, stop and ask.
-- When a ticket takes a decision that passes the three tests in `docs/adr/README.md`, draft the ADR (status `proposed`) on the ticket branch and say so in the report.
-- An accepted ADR changes only through the rules in `docs/adr/README.md`: a new ADR when the substance changes, an `Amended` edit for form only. Propose either, never apply it without the developer's validation.
+The working agreements between the developer and the agent live in `00-agentic/agreements/` and are imported here:
 
-## Say how solid it is
-
-- A recommendation, decision or finding states its basis, in the ADR words: **investigated** (how: test run, source read), **quick look** (what was checked, what wasn't), or **arbitrary** (a default picked without examining it).
-- A report lists what wasn't verified, even when everything went well. "Not checked" is a finding, not a failure.
-- When you change your mind, say so and why, instead of quietly rewording.
-- Don't round up: a guess isn't "should work", an untested path isn't "supported".
+@00-agentic/agreements/tickets.md
+@00-agentic/agreements/decisions.md
+@00-agentic/agreements/honesty.md
+@00-agentic/agreements/memory.md
+@00-agentic/agreements/writing.md
+@00-agentic/agreements/boundaries.md
 
 ## Language
 
-Everything in the repo is in **English**: code, comments, docstrings, console output, docs, backlog, and commit messages (older commits are in French; leave them). The only exception is `docs/presentation/`, which stays in French.
-
-Markdown: no hard wrapping. One line per paragraph or list item; let the editor wrap.
-
-## Memory
-
-The repo is the source of truth: anything about the project (architecture, decisions, conventions, status) goes in the docs, an ADR, `CLAUDE.md` or a ticket, never in the agent's memory. Memory is only for the developer's personal working preferences that don't belong in the repo. When memory and the repo disagree, the repo wins: fix or delete the memory.
-
-## Facts that age
-
-Versions, release status and issue status written in docs and tickets are dated. Re-verify them against a primary source (release notes, the issue itself) before relying on them, and update the doc or ticket when they changed.
+English everywhere (rule in `00-agentic/agreements/writing.md`), with two exceptions: `docs/presentation/` stays in French, and older commits are in French (leave them).
 
 ## Running things
 
 - Run tools through mise: `mise run <task>` (see `tasks.toml`) or `mise exec -- <command>`. Env vars come from `mise.toml` and `mise.local.toml`.
 - `mise.local.toml` is ignored by git and holds local values and secrets (template: `mise.local.toml.example`). `docker-compose.yml` refuses to start without them.
-- Setup is the developer's job, not the agent's: if mise reports an untrusted config, `mise.local.toml` is missing, or Docker isn't running, stop and ask the developer to run `mise trust`, create `mise.local.toml` from the example, or start Docker (Colima). Never create or edit `mise.local.toml` yourself; to target another branch, set the variable on the command line (`NESSIE_BRANCH=<branch> mise exec -- ...`).
+- Setup (rule in `00-agentic/agreements/boundaries.md`): if mise reports an untrusted config, `mise.local.toml` is missing, or Docker isn't running, ask the developer to run `mise trust`, create `mise.local.toml` from the example, or start Docker (Colima). Never edit `mise.local.toml`; to target another branch, `NESSIE_BRANCH=<branch> mise exec -- ...`.
 - Stack: `mise run stack-up`, `stack-down`, `stack-reset` (deletes all data: Nessie history and Iceberg files).
-- The local stack is disposable, except refs the developer created. Before `stack-reset`, or before dropping a branch or tag, list the refs (`curl -s http://localhost:19120/api/v2/trees`): if any wasn't created during your session (by you or by a pipeline run you launched), ask first. Say in your report when you reset the stack.
+- The local stack is disposable, except refs the developer created (rule in `00-agentic/agreements/boundaries.md`). Before `stack-reset`, or before dropping a branch or tag, list the refs: `curl -s http://localhost:19120/api/v2/trees`.
 - End-to-end check after a change: `mise run stack-reset`, `stack-up`, then `uv run pipeline --no-pause` and `uv run pipeline --bad --no-pause` (through `mise exec --`). The `-bad` run must end with no merge and `main` unchanged.
 - Dependencies: adding, upgrading or bounding one follows `docs/project/dependency-policy.md` (floors equal to the locked versions, `uv lock --upgrade-package` one package at a time). After any change to `uv.lock`, run `mise run audit-python` (Python dependencies only; container images aren't audited).
 - The Nessie CLI (`mise run cli`) is for humans (it needs a TTY). Programmatic actions and checks go through the Nessie API: `src/nessie_demo/nessie.py` or `curl http://localhost:19120/api/v2/...`.
-
-## Tickets
-
-Tickets live in `00-tracking/`, one file per ticket, foldered by status. How to write and file them (statuses, naming, IDs, template): `00-tracking/README.md`. The workflow:
-
-- **Entry point**: a new idea, follow-up or problem found along the way becomes a ticket in `00-backlog/`. Don't widen the ticket in progress.
-- **Refining** a backlog ticket (scope, acceptance criteria) is a discussion: propose, and only move it to `01-ready/` once the user agrees.
-- **What to work on**: only a ticket from `01-ready/`, unless the user asks otherwise.
-- **Starting**: check the working tree is clean, switch to an up-to-date `main` if needed, create a branch named like the ticket file without `.md` (`T004-refactor-dbt-project`), and move the ticket to `02-in-progress/` on that branch.
-- **Finishing**: check every acceptance criterion, report, and **wait for the user's validation**. Then move the ticket to `03-done/` (criteria ticked, Outcome filled), set the ticket's `proposed` ADRs to `accepted`, squash the branch into one commit `T004 <title>` rebased on `main`, and fast-forward `main`.
-- **References**: name tickets by ID (`T004`) in tickets, commits, branches, docs and ADRs. **Never in code or config** (comments, task descriptions, console output): tickets are a separate concern and will leave the repo. Write the reason itself instead ("dbt-core 1.11.12 rejects sqlparse 0.6", not "see T007"); a link to an upstream issue is fine.

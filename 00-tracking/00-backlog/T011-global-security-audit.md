@@ -9,7 +9,7 @@ T010 audits the Python dependencies only. The rest of what runs is not audited: 
 - **Image versions**: `postgres:15` is a floating tag; the Silo images come from a community fork (supply-chain trust). Whether to pin by digest, and how this fits ADR001's logic (lock as source of truth) for images.
 - **What to do with findings** we can't fix (a CVE in the Nessie image): accept, record, upgrade Nessie.
 - **One task or several**: a `mise run audit` running every audit, or one task per part.
-- Whether a decision here deserves an ADR (`docs/adr/README.md`).
+- Whether a decision here deserves an ADR (`00-agentic/processes/adr.md`).
 
 ## Notes
 

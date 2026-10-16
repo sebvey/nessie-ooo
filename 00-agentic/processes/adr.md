@@ -1,0 +1,79 @@
+# ADR process
+
+One file per important decision: what was decided, why, what was ruled out, and how solid the basis is. A doc says how things are now; an ADR says why they are that way.
+
+Two series follow this process:
+
+| Series | Folder | IDs | About |
+|---|---|---|---|
+| Project | `docs/adr/` | `ADR001`, `ADR002`… | the Nessie demo: stack, dependencies, data plane |
+| Agentic layer | `00-agentic/adr/` | `A001`, `A002`… | how we work with the agent: rules, processes, agent infra |
+
+Few ADRs, each worth reading: a choice that doesn't pass the three tests below goes elsewhere.
+
+## What deserves an ADR
+
+A decision that passes all three tests:
+
+1. **Real alternatives**: at least one other option was weighed, or deliberately not examined (then the ADR says so).
+2. **Costly to reverse, or bound to be re-opened**: without the ADR, someone would ask "why not X?" or redo the analysis.
+3. **Outlives its ticket**: it constrains future work, not just the change at hand.
+
+What goes elsewhere:
+
+| Content | Where |
+|---|---|
+| Work to do | a ticket in `00-tracking/` |
+| How things are now | a doc in `docs/project/` or `00-agentic/` |
+| Working agreements (developer and agent) | `00-agentic/agreements/` |
+| Project conventions (language, running things) | `CLAUDE.md` |
+| A local implementation choice | a code comment |
+
+**One decision per ADR.** A ticket that takes several choices produces an ADR only for those that pass the tests.
+
+**The decision, not the procedure.** An ADR holds the decision and its reasons. Whatever can change without questioning the decision (commands, formats, annotation conventions) goes in the doc, and the ADR links to it.
+
+## Lifecycle
+
+- **Naming**: `ADR<nnn>-<short-kebab-case-title>.md` in `docs/adr/` (`ADR001`), `A<nnn>-<short-kebab-case-title>.md` in `00-agentic/adr/` (`A001`). In each series, the ID is the highest existing one plus one, never reused.
+- **Written in the ticket that takes the decision**, with status `proposed`. It becomes `accepted` when the developer validates the ticket, in the same squashed commit.
+- **Substance or form.** Test: could someone who agreed with the old version disagree with the new one?
+  - **Substance** (the decision, an alternative or the basis changes): a new ADR that supersedes the old one; the old one gets `superseded by <ID>` and stays. Never deleted.
+  - **Form** (wording, a dead link, a procedure detail that doesn't touch the decision): edit in place and add an `Amended` line to the header, with the date and what changed.
+  - An amendment is proposed and validated like a ticket: never applied alone.
+- **Dated facts** (versions, issue status) are true on the ADR's date. Re-check them before relying on them; if they changed the decision, write a new ADR.
+
+## Template
+
+One screen at most.
+
+```markdown
+# <ID> <The decision, as a sentence>
+
+- Status: proposed | accepted | superseded by <ID>
+- Date: <YYYY-MM-DD>
+- Tickets: T<nnn>
+- Basis: investigated | arbitrary (<what wasn't examined>)
+- Amended: <YYYY-MM-DD>: <what changed> (optional, one line per amendment)
+
+## Context
+
+<The problem and the constraints, with dated facts.>
+
+## Decision
+
+<What we do.>
+
+## Alternatives ruled out
+
+- <Option>: <why not>.
+
+## Consequences
+
+<What it costs, what it makes easier, what it forbids.>
+
+## Revisit when
+
+<The event or fact that would re-open the decision.>
+```
+

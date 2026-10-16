@@ -23,7 +23,9 @@ What we built and how to use it:
 
 ## Decisions
 
-[Architecture decision records](adr/README.md): what was decided, why, what was ruled out. Selection criteria, template and lifecycle in the same file.
+[Architecture decision records](adr/README.md): what was decided about the demo, why, what was ruled out. The ADR process (selection tests, lifecycle, template) is part of the agentic layer: [`00-agentic/processes/adr.md`](../00-agentic/processes/adr.md).
+
+How we work with the agent on this repo (rules, processes, infra, its own ADRs) is documented apart, in [`00-agentic/`](../00-agentic/README.md).
 
 ## Presentation (French)
 
