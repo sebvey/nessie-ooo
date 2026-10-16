@@ -22,13 +22,13 @@ Analysis, 2026-10-16. Basis: quick look (repo state and `gh` checked, GitHub doc
 | Today | On GitHub | Comment |
 |---|---|---|
 | `T<nnn>` ID, highest plus one | issue number `#<n>`, assigned by GitHub | Solves the ticket half of T016 (parallel-safe numbering); ADR IDs keep the problem. Numbers are shared with PRs. |
-| Folder = status | open/closed plus labels, or a Projects Status field | See "Status" below. |
+| Folder = status | a Projects Status field (leaning), or open/closed plus labels | See "Status" below. |
 | `03-done/` with Outcome | closed as "completed"; abandoned = closed as "not planned" | GitHub's close reason covers "finished or abandoned" natively. |
 | `Area: agentic` line | label `area:agentic` | Issue types would fit better but need an organization. |
 | Acceptance criteria checkboxes | task list in the issue body | Rendered and checkable in the UI; the agent ticks them by rewriting the body (`gh issue edit --body-file`). |
 | Outcome section | section in the body, filled at closing | Keeps the ticket readable in one place; a closing comment can link the commit. |
 | Notes | body section, or comments for findings along the way | |
-| Ticket ID in branch, commit | branch `T025-…` or `25-…`, commit `T025 <title>` or `#25 <title>` | `#25` autolinks in commits and closes the issue on push to `main` with `Closes #25`; `T025` doesn't autolink (custom autolinks are Pro). |
+| Ticket ID in branch, commit | branch `25-<slug>`, commit `<title> (#25)` with `Closes #25` (leaning, see below) | `T025` doesn't autolink (custom autolinks are Pro). |
 
 ### Keep the numbers: T<n> = #<n>
 
@@ -41,7 +41,23 @@ Three open states to tell apart (backlog, ready, in progress). Two options:
 - **Labels** (`ready`, `in-progress`; backlog = open with neither): works with today's token and `gh issue`, no setup. Labels aren't exclusive: the agent keeps them consistent by discipline, which is how folders work today anyway.
 - **Projects** (a board with a single-select Status): a real status and a board, built-in workflows (auto-add from the repo, closed -> Done). Costs: the `project` scope, the project lives at account level and not in the repo, and `gh project item-edit` needs project, field and option IDs (more steps for each status change).
 
-Leaning (arbitrary, to discuss): labels now, a Project only when a board is wanted; A001 already lists "a board becomes useful" as a trigger.
+Leaning (developer, 2026-10-16, still to discuss): **a Project**. The developer wants the board, and the extra cost looks small (quick look at GitHub docs and the `gh` manual, nothing tested):
+
+- `gh issue create --project "<name>"` adds the issue to the Project at creation; an auto-add workflow from the repo also exists (limited in number per plan, Free limit not checked).
+- "Item closed -> Done" is on by default: Done follows the push that closes the issue.
+- Backlog -> Ready is the developer's decision: dragging the card on the board.
+- Ready -> In progress is the only transition the agent makes by hand (`gh project item-edit`, which needs the project, field and option IDs: fixed, not secret, written once in the process doc or wrapped in a mise task).
+- Costs: the `project` token scope (`gh auth refresh -s project`, the developer's setup); `gh issue list` can't filter by Project status (`gh project item-list --format json` instead); the Project belongs to the account, created private and linked to the repo; default columns (Todo, In Progress, Done) renamed to Backlog, Ready, In progress, Done.
+- `area:agentic` stays a label, visible and filterable in the repo's issue list.
+
+### Ticket reference in branches and commits
+
+Leaning (2026-10-16, still to discuss): **`#25`**, GitHub's convention; `T025` gets no GitHub support.
+
+- Commits: subject `Move tickets to GitHub Issues (#25)`, body `Closes #25`. `#25` autolinks; `Closes #25` closes the issue when the commit reaches `main`, i.e. at the developer's push after validation, so the Outcome must be filled before the squash. `(#25)` at the end of the subject, not `#25` at the start: git strips lines starting with `#` when the message is written in the editor.
+- Branches: `25-<slug>`. `gh issue develop 25` (or "Create a branch" in the issue sidebar) creates a branch linked to the issue, shown under "Development"; it also has `--worktree`, handy for parallel agents. Default branch name believed to be `<number>-<title>`, not checked.
+- Old history (`T022 …`) stays readable through `Tn = #n`.
+- Open: what becomes of `X666-<object>` for work without a ticket, which no longer stands apart from `25-…` as clearly (keep it, or `x-<object>`).
 
 ### Agent access
 
@@ -68,5 +84,5 @@ Leaning: `gh`.
 ### Open questions
 
 - Are the tickets meant to stay private? (The repo is private; issues follow its visibility.)
-- Keep the `T` prefix in branch names and commits, or switch to `#n`?
-- Labels or a Project for the status?
+- `#n` in branches and commits (leaning above): confirm, and settle the no-ticket branch name.
+- Project for the status (leaning above): confirm.
