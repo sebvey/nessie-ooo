@@ -31,6 +31,8 @@ What goes elsewhere:
 
 **One decision per ADR.** A ticket that takes several choices produces an ADR only for those that pass the tests.
 
+**It stands on its own.** The facts the decision rests on are written in it, dated: the few that would change the decision if they changed, the ones "Revisit when" watches. Detailed evidence (test tables, logs, procedures) stays in a doc or ticket and is cited, never copied: it can disappear without weakening the ADR. A ticket is never the only place the evidence lives, since tickets will leave the repo.
+
 **The decision, not the procedure.** An ADR holds the decision and its reasons. Whatever can change without questioning the decision (commands, formats, annotation conventions) goes in the doc, and the ADR links to it.
 
 ## Lifecycle
@@ -45,7 +47,7 @@ What goes elsewhere:
 
 ## Template
 
-One screen at most.
+One screen at most: the self-standing facts are a few lines, not the evidence.
 
 ```markdown
 # <ID> <The decision, as a sentence>
