@@ -40,7 +40,7 @@ What goes elsewhere:
 - **Naming**: `ADR<nnn>-<short-kebab-case-title>.md` in `docs/adr/` (`ADR001`), `A<nnn>-<short-kebab-case-title>.md` in `00-agentic/adr/` (`A001`). In each series, the ID is the highest existing one plus one, never reused.
 - **Written in the ticket that takes the decision**, with status `proposed`. It becomes `accepted` when the developer validates the ticket, in the same squashed commit.
 - **Substance or form.** Test: could someone who agreed with the old version disagree with the new one?
-  - **Substance** (the decision, an alternative or the basis changes): a new ADR that supersedes the old one; the old one gets `superseded by <ID>` and stays. Never deleted.
+  - **Substance** (the decision, an alternative or the basis changes): a new ADR that supersedes the old one. The two are linked both ways: the new one gets `Supersedes: <old ID>`, the old one's status becomes `superseded by <new ID>`, and it stays. Never deleted.
   - **Form** (wording, a dead link, a procedure detail that doesn't touch the decision): edit in place and add an `Amended` line to the header, with the date and what changed.
   - An amendment is proposed and validated like a ticket: never applied alone.
 - **Dated facts** (versions, issue status) are true on the ADR's date. Re-check them before relying on them; if they changed the decision, write a new ADR.
@@ -56,6 +56,7 @@ One screen at most: the self-standing facts are a few lines, not the evidence.
 - Date: <YYYY-MM-DD>
 - Tickets: T<nnn>
 - Basis: investigated | arbitrary (<what wasn't examined>)
+- Supersedes: <ID> (only when it replaces an earlier ADR)
 - Amended: <YYYY-MM-DD>: <what changed> (optional, one line per amendment)
 
 ## Context
