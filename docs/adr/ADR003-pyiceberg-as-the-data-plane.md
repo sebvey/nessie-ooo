@@ -1,6 +1,6 @@
 # ADR003 PyIceberg is the data plane until DuckDB can read and write Iceberg on a Nessie branch
 
-- Status: accepted
+- Status: superseded by ADR004
 - Date: 2026-10-15
 - Tickets: T001
 - Basis: investigated (tests of 2026-10-15, recorded in T001)

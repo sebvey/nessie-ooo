@@ -2,9 +2,8 @@ version: 2
 
 sources:
   - name: raw
+    database: lake
     schema: raw
-    meta:
-      plugin: iceberg_read
     tables:
       - name: orders
         description: "Raw synthetic orders ingested onto the pipeline branch."

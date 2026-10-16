@@ -6,20 +6,20 @@ Scope: the dbt project and the notebook move to DuckDB. PyIceberg stays for inge
 
 ## Acceptance criteria
 
-- [ ] `duckdb` is `>=2.0`, a pre-release if 2.0 isn't out yet, and `mise run audit-python` passes.
-- [ ] `uv run pipeline --no-pause` merges; `uv run pipeline --bad --no-pause` doesn't merge and `main` is unchanged.
-- [ ] dbt reads `raw.orders` and writes `marts.daily_orders` through an `ATTACH` on the branch, with no dbt plugin; `src/nessie_demo/dbt_plugins/` is deleted.
-- [ ] Two `dbt build` in a row on the same branch both succeed, and the second replaces the model's data.
-- [ ] The notebook reads the selected branch through an `ATTACH`.
-- [ ] A new ADR (status `proposed`) supersedes ADR003; `architecture.md` describes the new data path.
-- [ ] A doc in `docs/` explains how dbt-duckdb's `table` and `incremental` materializations run on an attached Iceberg catalog: the SQL statements issued, and the Nessie commits each run leaves on the branch.
-- [ ] A backlog ticket exists to update the slides (slide 05 "Le détour par PyIceberg", the "Maturité" slide, the PyIceberg and plugin cards).
-- [ ] If DuckDB 2.0 stable isn't out when the ticket closes: a backlog ticket exists to move from the pre-release to the stable release.
+- [x] `duckdb` is `>=2.0`, a pre-release if 2.0 isn't out yet, and `mise run audit-python` passes. (`2.0.0.dev2610151406`; audit: no vulnerability in 111 packages.)
+- [x] `uv run pipeline --no-pause` merges; `uv run pipeline --bad --no-pause` doesn't merge and `main` is unchanged. (On the existing stack, without `stack-reset`: `main` already had `daily_orders`. The path where the table doesn't exist yet was checked apart, see the next criteria.)
+- [x] dbt reads `raw.orders` and writes `marts.daily_orders` through an `ATTACH` on the branch, with no dbt plugin; `src/nessie_demo/dbt_plugins/` is deleted.
+- [x] Two `dbt build` in a row on the same branch both succeed, and the second replaces the model's data. (On a throwaway branch after dropping `daily_orders`: `Create ICEBERG_TABLE` then `Update ICEBERG_TABLE`, the counts match `raw.orders`. `table` fails, so the marts are `incremental` with a `replace` strategy of ours.)
+- [x] The notebook reads the selected branch through an `ATTACH`. (Run headless on `main` and its table listing on another branch; the marimo UI wasn't opened.)
+- [x] A new ADR (status `proposed`) supersedes ADR003; `architecture.md` describes the new data path. (ADR004.)
+- [x] A doc in `docs/` explains how dbt-duckdb's `table` and `incremental` materializations run on an attached Iceberg catalog: the SQL statements issued, and the Nessie commits each run leaves on the branch. (`docs/project/dbt-on-iceberg.md`; built-in `append` and `delete+insert` and `--full-refresh` not tried.)
+- [x] A backlog ticket exists to update the slides (slide 05 "Le détour par PyIceberg", the "Maturité" slide, the PyIceberg and plugin cards). (T018.)
+- [x] If DuckDB 2.0 stable isn't out when the ticket closes: a backlog ticket exists to move from the pre-release to the stable release. (T019; 2.0 not out on 2026-10-16.)
 
 ## Notes
 
 - **Facts re-checked on 2026-10-16**: latest stable DuckDB is 1.5.6; 2.0.0 is planned for 2026-10-21 and 2.0.1 for 2026-11-18 (duckdb.org release calendar, tentative dates); duckdb-iceberg#1230 merged on 2026-07-26; #784 still open; dbt-duckdb 1.11.0 requires `duckdb>=1.0.0` with no upper bound (whether it works with 2.0 is not tested).
-- **Materialization** (quick look, 2026-10-16: dbt-duckdb macros read in `.venv`, nothing run on Iceberg). dbt-duckdb's `table` materialization never issues `CREATE OR REPLACE`: it runs `create table <model>__dbt_tmp as …`, renames the existing table to `<model>__dbt_backup`, renames the temporary table to the model, commits, then drops the backup. So duckdb-iceberg#784 doesn't block it; what is untested is `ALTER TABLE … RENAME` on an Iceberg table through Nessie's REST catalog (needed from the first run) and `BEGIN`/`COMMIT` around several statements. Each statement likely becomes a Nessie commit (about 4 per run), a noisier `SHOW LOG` than today. First step of the ticket: test `RENAME`. If it works, keep `table`; otherwise, `incremental` with `delete+insert` (its intermediate table is a local DuckDB temporary table; `DELETE` and `INSERT` are tested), or a custom `DROP` + `CREATE AS` materialization. The `CREATE OR REPLACE` limitation itself is tracked in T017.
+- **Materialization** (quick look, 2026-10-16: dbt-duckdb macros read in `.venv`, nothing run on Iceberg). dbt-duckdb's `table` materialization never issues `CREATE OR REPLACE`: it runs `create table <model>__dbt_tmp as …`, renames the existing table to `<model>__dbt_backup`, renames the temporary table to the model, commits, then drops the backup. So duckdb-iceberg#784 doesn't block it; what is untested is `ALTER TABLE … RENAME` on an Iceberg table through Nessie's REST catalog (needed from the first run) and `BEGIN`/`COMMIT` around several statements. Each statement likely becomes a Nessie commit (about 4 per run), a noisier `SHOW LOG` than today. First step of the ticket: test `RENAME`. If it works, keep `table`; otherwise, `incremental` with `delete+insert` (its intermediate table is a local DuckDB temporary table; `DELETE` and `INSERT` are tested), or a custom `DROP` + `CREATE AS` materialization. The `CREATE OR REPLACE` limitation itself is tracked in T017. **Result (2026-10-16, tested)**: a rename alone works, but dbt-duckdb runs its renames inside a transaction with the table creation, which the REST catalog refuses; `table` fails from the first run. Details in `docs/project/dbt-on-iceberg.md`.
 - **Configuration as-is**: credentials and endpoints stay where they are today (hardcoded in `dbt/profiles.yml`). Moving them out is [T006](../00-backlog/T006-configuration-and-secrets.md); the rest of the dbt clean-up is [T004](../00-backlog/T004-refactor-dbt-project.md). T001 comes first, and T004 no longer has to decide the `iceberg_write` plugin's future.
 
 ### Status (tests of 2026-10-15)
@@ -137,3 +137,14 @@ Nothing below is tested. Suggested order, each step validated before the next. S
 5. **Cleanup.** If everything passes, delete `src/nessie_demo/dbt_plugins/`. `catalog.py` and PyIceberg stay useful for ingestion and the narrated output (row counts from metadata), unless rewritten in DuckDB too.
 
 6. **Slides.** Slide 05 ("Le détour par PyIceberg") becomes "what we did before DuckDB 2.0", or goes; the "Maturité" slide moves DuckDB to "Mature (≥ 2.0)".
+
+## Outcome
+
+- dbt attaches the branch's Nessie catalog as `lake` (`dbt/profiles.yml`: `iceberg` extension, S3 secret, `iceberg_use_metadata_log = false`). Sources read `lake.raw`; `stg_orders` stays a view in dbt's local DuckDB file (the catalog has no views); `daily_orders` is `incremental` with a `replace` strategy of ours (`dbt/macros/incremental_replace.sql`: delete then insert by name, one transaction, one Nessie commit per run). `dbt/macros/generate_schema_name.sql` keeps the `marts` namespace as is. The `config(location = …)` of `daily_orders.sql` is gone.
+- `src/nessie_demo/dbt_plugins/` deleted. New `src/nessie_demo/lake.py` (DuckDB with the branch's catalog attached read-only); the pipeline reads `daily_orders` through it, and the notebook lists and queries `lake.<namespace>.<table>`.
+- `duckdb>=2.0.0.dev2610151406` (pre-release, picked by uv's default pre-release rule since the specifier names one); audit clean.
+- Findings: dbt-duckdb's `table` materialization fails (the REST catalog refuses a transaction mixing a table creation with renames); the extension can't create views; PyIceberg 0.10 doesn't apply the position delete files DuckDB writes, so marts must be read with DuckDB; `relation.fetchone()` is gone in DuckDB 2.0.
+- ADR004 accepted, supersedes ADR003. New doc `docs/project/dbt-on-iceberg.md`; `architecture.md`, `pipeline.md`, `README.md` and the indexes updated. T004 notes updated (plugin and `location` gone).
+- Follow-ups: T017 (`CREATE OR REPLACE`), T018 (slides), T019 (DuckDB 2.0 stable), T020 (PyIceberg and DuckDB delete files), T021 (`NESSIE_BRANCH` overridden by mise).
+- Left aside: the full end-to-end check with `stack-reset` (the stack held refs not created in this session); both pipelines ran on the existing stack, and they left a merge and the tag `release-165844` on `main`.
+- Not verified: `stack-reset` then a first pipeline run from an empty `main` (the create path was checked on a branch after dropping the table); the marimo UI (notebook run headless only); the built-in `append` and `delete+insert` strategies and `--full-refresh`; dbt-duckdb 1.11.0 (1.10.1 stays locked).

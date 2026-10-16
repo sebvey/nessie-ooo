@@ -1,5 +1,3 @@
-{{ config(location = env_var('DBT_PROJECT_DIR', 'dbt') ~ "/target/ext/" ~ this.identifier ~ ".parquet") }}
-
 select
     order_date,
     count(*)          as n_orders,

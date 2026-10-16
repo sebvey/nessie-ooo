@@ -14,10 +14,11 @@ General knowledge about Iceberg and Nessie, valid outside this repo. Read in thi
 
 What we built and how to use it:
 
-- [Architecture](project/architecture.md): components, docker compose services, Nessie configuration, read and write paths, why PyIceberg.
+- [Architecture](project/architecture.md): components, docker compose services, Nessie configuration, read and write paths, who reads and writes what.
 - [The pipeline](project/pipeline.md): branch, ingest, dbt build, merge or alert, step by step.
 - [Working on your own branch](project/working-on-a-branch.md): run dbt on a personal Nessie branch through `mise.local.toml`.
 - [Nessie CLI](project/nessie-cli.md): REPL commands (refs, history, merge, rollback).
+- [dbt on Iceberg](project/dbt-on-iceberg.md): how dbt-duckdb materializes the models on the attached Nessie catalog, the SQL sent, the commits left on the branch.
 - [Dependency policy](project/dependency-policy.md): version specifiers for an application and for a library, upgrade procedure, vulnerability check and the OSV database.
 
 ## Decisions

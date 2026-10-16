@@ -44,8 +44,8 @@ mise run audit-python          # known vulnerabilities in the locked Python depe
 
 `mise run notebook` opens `notebooks/explore.mo.py` in marimo:
 - pick a Nessie branch (branches only, not tags);
-- every table of every namespace becomes a DuckDB view named `<namespace>_<table>` (`raw.orders` -> `raw_orders`). PyIceberg asks Nessie for each table's current `metadata.json` and DuckDB reads it with `iceberg_scan`: nothing is loaded in advance;
-- query them in the SQL cell (`SELECT * FROM raw_orders WHERE amount < 0`).
+- DuckDB attaches the branch's catalog as `lake` and lists its tables with their row counts; nothing is loaded in advance;
+- query them in the SQL cell as `lake.<namespace>.<table>` (`SELECT * FROM lake.raw.orders WHERE amount < 0`).
 
 ## Slack alert (optional)
 

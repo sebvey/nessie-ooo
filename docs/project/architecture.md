@@ -9,9 +9,9 @@ What runs, how it's wired, and why. For the concepts behind it, see [Nessie over
 | Orchestration | `src/nessie_demo/pipeline.py` | Runs the steps, merges if the tests pass, alerts otherwise |
 | Control plane | `src/nessie_demo/nessie.py` | Python class over the Nessie API v2: create, merge, tag, delete branches |
 | Control plane | `src/nessie_demo/alert.py` | Console alert, optional Slack webhook |
-| Data plane | PyIceberg (`catalog.py`, `ingest.py`) | Reads and writes Iceberg tables on a branch |
-| Data plane | dbt on DuckDB | Transforms and tests; DuckDB only computes |
-| Data plane | `dbt_plugins/iceberg_write.py` | dbt-duckdb plugin that writes a model as an Iceberg table on the branch |
+| Data plane | PyIceberg (`catalog.py`, `ingest.py`) | Ingests into `raw.orders`, creates namespaces, counts raw rows |
+| Data plane | dbt on DuckDB | Transforms and tests; reads and writes the Iceberg tables of the branch through an `ATTACH` |
+| Data plane | DuckDB (`lake.py`) | Reads the marts for the pipeline output and the notebook |
 | Infra | Nessie, PostgreSQL, Silo | Catalog, version store, S3 storage (docker compose) |
 
 ## Services (docker compose)
@@ -49,17 +49,17 @@ Write:
 
 Other branches, `main` included, are untouched until a merge. Creating a branch copies no file; a merge only moves pointers.
 
-## Why PyIceberg, and not DuckDB directly
+## Who reads and writes what
 
-Decision and alternatives: [ADR003](../adr/ADR003-pyiceberg-as-the-data-plane.md).
+Decision and alternatives: [ADR004](../adr/ADR004-duckdb-attached-to-the-nessie-branch.md), which supersedes [ADR003](../adr/ADR003-pyiceberg-as-the-data-plane.md) (the former PyIceberg detour).
 
-DuckDB's Iceberg extension can attach an Iceberg REST catalog, but up to DuckDB 1.5 it ignores the `overrides.uri` Nessie returns and calls `/iceberg/<branch>/v1/<branch>/…`: it only works on `main` (duckdb-iceberg#1145, fixed on the extension's main branch, not in a stable release yet). So:
+Every client puts the branch in the catalog URI (`http://localhost:19120/iceberg/<branch>`):
 
-- PyIceberg talks to the catalog, with the branch in its URI.
-- dbt-duckdb reads sources through its bundled `iceberg` plugin (PyIceberg scan to Arrow) and writes models through `iceberg_write`; DuckDB only runs the SQL.
-- The notebook asks PyIceberg for each table's `metadata.json` and lets DuckDB read it with `iceberg_scan`, which doesn't go through the REST catalog.
+- **Ingestion**: PyIceberg appends to `raw.orders` (`ingest.py`); `bootstrap.py` creates the namespaces through PyIceberg too.
+- **dbt**: DuckDB attaches the branch's catalog as `lake` (`dbt/profiles.yml`), reads `lake.raw.orders` and writes `lake.marts.daily_orders`. How the models are materialized: [dbt on Iceberg](dbt-on-iceberg.md).
+- **Pipeline output and notebook**: DuckDB, through `lake.py` (the same `ATTACH`, read-only). PyIceberg 0.10 doesn't apply the delete files DuckDB writes, so it would miscount the marts. The raw row count still comes from PyIceberg's snapshot summary (metadata only).
 
-Plan to drop the detour once DuckDB 2.0 ships: ticket T001.
+DuckDB reaches a branch from DuckDB 2.0 on (duckdb-iceberg#1230); before, it ignored the `overrides.uri` Nessie returns and only saw `main` (duckdb-iceberg#1145). The repo runs a 2.0 pre-release.
 
 ## Choices
 
@@ -68,7 +68,7 @@ Plan to drop the detour once DuckDB 2.0 ships: ticket T001.
 | Runtime | docker compose, Nessie `0.106.0` | One command, everything local |
 | Version store | Postgres (`JDBC2`) | Durable across restarts, same model as production: stateless Nessie, external database |
 | Warehouse | Silo (`s3://iceberg-warehouse`) | S3 API locally; official MinIO images are gone |
-| Engines | PyIceberg, dbt-duckdb | Light, no JVM ([ADR003](../adr/ADR003-pyiceberg-as-the-data-plane.md)) |
+| Engines | DuckDB 2.0 (pre-release) with dbt-duckdb, PyIceberg for ingestion | Light, no JVM ([ADR004](../adr/ADR004-duckdb-attached-to-the-nessie-branch.md)) |
 | Nessie operations | `nessie.py` (API v2), Nessie CLI | `pynessie` is API v1 and unmaintained |
 | Tasks and env | mise (`mise.toml`, `tasks.toml`) | Tools, env vars and tasks in one place |
 

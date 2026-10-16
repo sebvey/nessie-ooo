@@ -6,16 +6,12 @@ app = marimo.App(width="medium")
 
 @app.cell(hide_code=True)
 def _():
-    from urllib.parse import urlparse
-
-    import duckdb
     import marimo as mo
 
-    from nessie_demo.catalog import branch_catalog
+    from nessie_demo.lake import branch_lake
     from nessie_demo.nessie import Nessie
-    from nessie_demo.settings import settings
 
-    return Nessie, branch_catalog, duckdb, mo, settings, urlparse
+    return Nessie, branch_lake, mo
 
 
 @app.cell(hide_code=True)
@@ -31,45 +27,35 @@ def _(Nessie, mo):
 
 
 @app.cell(hide_code=True)
-def _(branch, branch_catalog, duckdb, mo, settings, urlparse):
-    # One DuckDB view per table of the branch, named <namespace>_<table> (e.g. raw.orders -> raw_orders).
-    # Nessie only gives the pointer (each table's current metadata.json); DuckDB reads the Parquet
-    # files from Silo at query time, without loading anything in advance.
-    con = duckdb.connect()
-    con.sql("INSTALL httpfs; LOAD httpfs; INSTALL iceberg; LOAD iceberg")
-    con.sql(f"""
-        CREATE SECRET (TYPE s3, KEY_ID '{settings.s3_access_key}', SECRET '{settings.s3_secret_key}',
-            ENDPOINT '{urlparse(settings.s3_endpoint).netloc}', URL_STYLE 'path', USE_SSL false,
-            REGION '{settings.s3_region}')
-    """)
-
-    _catalog = branch_catalog(branch.value)
-    _views = []
-    for _ns in _catalog.list_namespaces():
-        for _ident in _catalog.list_tables(_ns):
-            _table = _catalog.load_table(_ident)
-            _name = "_".join(_ident)
-            _snapshot = _table.current_snapshot()
-            con.sql(f"CREATE VIEW {_name} AS SELECT * FROM iceberg_scan('{_table.metadata_location}')")
-            _views.append({
-                "view": _name,
-                "rows": int(_snapshot.summary.get("total-records", 0)) if _snapshot else 0,
-                "columns": len(_table.schema().fields),
-                "metadata.json": _table.metadata_location.rsplit("/", 1)[-1],
-            })
+def _(branch, branch_lake, mo):
+    # The branch's Nessie catalog, attached as the `lake` database: query its tables as
+    # lake.<namespace>.<table> (e.g. lake.raw.orders). DuckDB reads the Parquet files from Silo at
+    # query time, without loading anything in advance.
+    con = branch_lake(branch.value)
+    _tables = []
+    for _ns, _name in con.sql(
+        "SELECT schema_name, table_name FROM duckdb_tables() WHERE database_name = 'lake' ORDER BY ALL"
+    ).fetchall():
+        # Not duckdb_tables().column_count: the Iceberg extension only loads a table's schema on use.
+        _table = f"lake.{_ns}.{_name}"
+        _tables.append({
+            "table": _table,
+            "rows": con.sql(f"SELECT count(*) FROM {_table}").fetchall()[0][0],
+            "columns": len(con.sql(f"FROM {_table}").columns),
+        })
 
     mo.vstack([
-        mo.md(f"**{len(_views)} table(s)** on branch `{branch.value}`"),
-        mo.ui.table(_views, selection=None) if _views else mo.md("_No table on this branch._"),
+        mo.md(f"**{len(_tables)} table(s)** on branch `{branch.value}`"),
+        mo.ui.table(_tables, selection=None) if _tables else mo.md("_No table on this branch._"),
     ])
     return (con,)
 
 
 @app.cell
-def _(con, mo, raw_orders):
+def _(con, mo):
     _df = mo.sql(
         f"""
-        SELECT * FROM raw_orders where amount < 0
+        SELECT * FROM lake.raw.orders where amount < 0
         """,
         engine=con
     )

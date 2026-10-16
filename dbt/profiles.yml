@@ -3,33 +3,32 @@ nessie_demo:
   outputs:
     dev:
       type: duckdb
+      # Local DuckDB database: holds the staging views. The Iceberg catalog only stores tables
+      # (DuckDB's Iceberg extension can't create views in it).
       # Absolute (mise exports DBT_PROJECT_DIR): dbt can run from the repo root or from dbt/.
       path: "{{ env_var('DBT_PROJECT_DIR', 'dbt') }}/target/nessie_demo.duckdb"
       extensions:
         - httpfs
-      # DuckDB is only the compute engine; the Nessie branch lives in the plugins' URI below.
-      plugins:
-        # READ sources: raw.* Iceberg tables on the branch (bundled plugin).
-        - module: iceberg
-          alias: iceberg_read
-          config:
-            catalog: nessie
-            type: rest
-            uri: "http://localhost:19120/iceberg/{{ env_var('NESSIE_BRANCH', 'main') }}"
-            s3.endpoint: http://localhost:29000
-            s3.access-key-id: minioadmin
-            s3.secret-access-key: 8qqR90Az
-            s3.region: us-east-1
-            s3.path-style-access: "true"
-        # WRITE marts: materialize models as Iceberg tables on the branch (custom plugin).
-        - module: nessie_demo.dbt_plugins.iceberg_write
-          alias: iceberg_write
-          config:
-            catalog: nessie
-            type: rest
-            uri: "http://localhost:19120/iceberg/{{ env_var('NESSIE_BRANCH', 'main') }}"
-            s3.endpoint: http://localhost:29000
-            s3.access-key-id: minioadmin
-            s3.secret-access-key: 8qqR90Az
-            s3.region: us-east-1
-            s3.path-style-access: "true"
+        - iceberg
+      settings:
+        # Without it, any write after a table creation fails
+        # ("table metadata does not contain a metadata-log").
+        iceberg_use_metadata_log: false
+      # Access to the Iceberg data files in Silo.
+      secrets:
+        - type: s3
+          key_id: minioadmin
+          secret: 8qqR90Az
+          endpoint: localhost:29000
+          url_style: path
+          use_ssl: false
+          region: us-east-1
+      # The Nessie catalog, attached as the `lake` database. The branch is in the endpoint: every
+      # read and write targets it, never main directly.
+      attach:
+        - path: warehouse
+          alias: lake
+          type: iceberg
+          options:
+            endpoint: "http://localhost:19120/iceberg/{{ env_var('NESSIE_BRANCH', 'main') }}"
+            authorization_type: none

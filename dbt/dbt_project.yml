@@ -3,6 +3,7 @@ version: "1.0"
 profile: nessie_demo
 
 model-paths: ["models"]
+macro-paths: ["macros"]
 test-paths: ["tests"]
 target-path: "target"
 clean-targets: ["target", "dbt_packages"]
@@ -10,7 +11,13 @@ clean-targets: ["target", "dbt_packages"]
 models:
   nessie_demo:
     staging:
+      # In the local DuckDB database (the Iceberg catalog has no views).
       +materialized: view
     marts:
-      +materialized: external
-      +plugin: iceberg_write
+      # Iceberg tables on the branch: `lake` is the attached Nessie catalog (profiles.yml).
+      # `incremental` with the `replace` strategy (macros/incremental_replace.sql): every run
+      # replaces the whole table, like `table`, which the Iceberg extension can't run.
+      +materialized: incremental
+      +incremental_strategy: replace
+      +database: lake
+      +schema: marts

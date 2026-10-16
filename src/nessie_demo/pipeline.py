@@ -21,13 +21,14 @@ import subprocess
 from datetime import datetime
 from pathlib import Path
 
-from pyiceberg.exceptions import NoSuchTableError
+import duckdb
 
 from . import display
 from .alert import alert
 from .catalog import branch_catalog, row_count
 from .display import check, line, rows, short, step
 from .ingest import RAW_TABLE, ingest
+from .lake import branch_lake
 from .nessie import Nessie
 from .settings import settings
 
@@ -53,7 +54,6 @@ TEST_LABELS = {
 
 def run_dbt(branch: str, verbose: bool = False) -> bool:
     """Run `dbt build` (run + test) on `branch`, print a per-node summary. True if all green."""
-    (DBT_DIR / "target" / "ext").mkdir(parents=True, exist_ok=True)
     cmd = ["dbt", "build", "--project-dir", str(DBT_DIR), "--profiles-dir", str(DBT_DIR)]
     if not verbose:
         cmd.insert(1, "--quiet")
@@ -94,22 +94,22 @@ def run_dbt(branch: str, verbose: bool = False) -> bool:
     return result.returncode == 0
 
 
-def mart(catalog) -> str:
-    """daily_orders aggregates by day, so its row count barely moves: show days + orders instead."""
+def mart(branch: str) -> str:
+    """daily_orders aggregates by day, so its row count barely moves: show days + orders instead.
+
+    Read with DuckDB, which wrote the table (see lake.py)."""
     try:
-        data = catalog.load_table(MART_TABLE).scan(selected_fields=("n_orders",)).to_arrow()
-    except NoSuchTableError:
+        days, orders = branch_lake(branch).sql(f"SELECT count(*), sum(n_orders) FROM lake.{MART_TABLE}").fetchall()[0]
+    except duckdb.CatalogException:
         return "doesn't exist yet"
-    days = data.num_rows
-    orders = sum(data['n_orders'].to_pylist())
     return f"{days} day{'s' if days > 1 else ''}, {orders} order{'s' if orders > 1 else ''}"
 
 
-def tables(catalog) -> list[str]:
+def tables(branch: str) -> list[str]:
     """State of both tables of the demo on a branch, one line per table."""
     return [
-        f"{RAW_TABLE:<19} {rows(row_count(catalog, RAW_TABLE))}",
-        f"{MART_TABLE:<19} {mart(catalog)}",
+        f"{RAW_TABLE:<19} {rows(row_count(branch_catalog(branch), RAW_TABLE))}",
+        f"{MART_TABLE:<19} {mart(branch)}",
     ]
 
 
@@ -128,7 +128,7 @@ def run_pipeline(bad: bool = False, keep: bool = False, verbose: bool = False) -
         line("[bold red]main has no commit yet: run `mise run stack-up` first.")
         return 2
     line(f"main @ [bold]{short(main_before)}[/]")
-    for t in tables(main_catalog):
+    for t in tables(MAIN):
         line(t)
 
     # --- 1. branch
@@ -153,7 +153,7 @@ def run_pipeline(bad: bool = False, keep: bool = False, verbose: bool = False) -
     step(3, "Transforming and testing the branch", "dbt + DuckDB")
     ok = run_dbt(branch, verbose=verbose)
     if ok:
-        line(f"{MART_TABLE}: branch = [bold]{mart(branch_catalog(branch))}[/] · main = {mart(main_catalog)} [dim](unchanged)")
+        line(f"{MART_TABLE}: branch = [bold]{mart(branch)}[/] · main = {mart(MAIN)} [dim](unchanged)")
 
     # --- 4. decide
     if ok:
@@ -172,14 +172,14 @@ def run_pipeline(bad: bool = False, keep: bool = False, verbose: bool = False) -
             nessie.delete_branch(branch)
             line(f"branch {branch} deleted")
         display.pause("Summary")
-        display.success("main updated", tables(main_catalog))
+        display.success("main updated", tables(MAIN))
         return 0
 
     step(4, "No merge, branch kept (tests red)", "Nessie API")
     main_now = nessie.ref_hash(MAIN)
     unchanged = "unchanged" if main_now == main_before else "[bold red]moved![/]"
     line(f"main @ [bold]{short(main_now)}[/] ({unchanged})")
-    for t in tables(main_catalog):
+    for t in tables(MAIN):
         line(t)
     line(f"branch [bold]{branch}[/] kept for investigation")
     display.pause("Alert")
