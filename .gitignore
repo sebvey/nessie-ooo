@@ -28,3 +28,6 @@ __marimo__/
 
 # mise (réglages locaux)
 mise.local.toml
+
+# docs/project/ is ignored by a global "project/" rule
+!docs/project/
