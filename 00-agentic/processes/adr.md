@@ -23,7 +23,7 @@ What goes elsewhere:
 
 | Content | Where |
 |---|---|
-| Work to do | a ticket in `00-tracking/` |
+| Work to do | a ticket |
 | How things are now | a doc in `docs/project/` or `00-agentic/` |
 | Working agreements (developer and agent) | `00-agentic/agreements/` |
 | Project conventions (language, running things) | `CLAUDE.md` |
@@ -54,7 +54,7 @@ One screen at most: the self-standing facts are a few lines, not the evidence.
 
 - Status: proposed | accepted | superseded by <ID>
 - Date: <YYYY-MM-DD>
-- Tickets: T<nnn>
+- Tickets: <ticket references>
 - Basis: investigated | arbitrary (<what wasn't examined>)
 - Supersedes: <ID> (only when it replaces an earlier ADR)
 - Amended: <YYYY-MM-DD>: <what changed> (optional, one line per amendment)

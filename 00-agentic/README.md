@@ -7,7 +7,7 @@ How we work with a coding agent (Claude Code) on this repo: the rules it follows
 | Agentic layer (here) | Project (elsewhere) |
 |---|---|
 | Working agreements: tickets workflow, decisions, honesty, memory, writing, boundaries | What the repo is, the stack, how to run it: `CLAUDE.md`, `README.md` |
-| Processes: tickets, ADRs | The tickets themselves: `00-tracking/`, local, ignored by git |
+| Processes: tickets, ADRs; ticket backends | The tickets themselves (`00-tracking/`, local, ignored by git) and which backend stores them (an import in `CLAUDE.md`) |
 | Agent infra: Claude Code permissions, MCP servers, external instructions | Project ADRs: `docs/adr/` |
 | Decisions on the layer: `adr/` | Project docs: `docs/` |
 
@@ -25,10 +25,12 @@ Test: would this still hold for another repo worked on the same way? Then it bel
   - [`writing.md`](agreements/writing.md): English, unwrapped Markdown.
   - [`boundaries.md`](agreements/boundaries.md): the developer's setup, destructive actions.
 - [`processes/`](processes/): reference for humans and the agent, read when needed.
-  - [`tickets.md`](processes/tickets.md): statuses, naming, IDs, template, `Area` line.
+  - [`tickets.md`](processes/tickets.md): statuses, template, `Area` line.
+- [`ticket-backends/`](ticket-backends/): how tickets are stored, one file per backend; a project imports one in its `CLAUDE.md`.
+  - [`local.md`](ticket-backends/local.md): local Markdown files, ignored by git (naming, IDs, operations).
   - [`adr.md`](processes/adr.md): what deserves an ADR, lifecycle, template, for both series.
 - [`adr/`](adr/README.md): decisions on the agentic layer (`A001`…).
 
 ## Tracking
 
-Work on this layer is tracked like the rest, in the local `00-tracking/`, with an `Area: agentic` line in the ticket.
+Work on this layer is tracked like the rest, in the project's ticket backend, with an `Area: agentic` line in the ticket.

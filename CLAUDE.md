@@ -24,6 +24,10 @@ The working agreements between the developer and the agent live in `00-agentic/a
 @00-agentic/agreements/writing.md
 @00-agentic/agreements/boundaries.md
 
+Tickets are stored as local Markdown files (one backend among others; to switch, replace this import):
+
+@00-agentic/ticket-backends/local.md
+
 ## Language
 
 English everywhere (rule in `00-agentic/agreements/writing.md`), with two exceptions: `docs/presentation/` stays in French, and older commits are in French (leave them).
