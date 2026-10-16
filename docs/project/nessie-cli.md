@@ -19,7 +19,7 @@ Every command ends with `;`. `<ref>` is a branch or tag name; `BRANCH` / `TAG` k
 SHOW REFERENCE;                    -- current ref, type and hash
 LIST REFERENCES;                   -- all branches and tags
 LIST CONTENTS;                     -- namespaces and tables on the current ref
-LIST CONTENTS ON pipeline-120000-bad;
+LIST CONTENTS ON pipeline-ko-120000;
 USE BRANCH main;                   -- or USE TAG release-120000, USE REFERENCE <ref>
 ```
 

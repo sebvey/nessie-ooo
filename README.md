@@ -4,8 +4,8 @@ A demo of **Project Nessie**, a Git-like versioned catalog for Iceberg tables. A
 
 ```text
 open branch  ->  ingest  ->  dbt build (transform + test)  ->  green? -> MERGE + TAG on main
-pipeline-HHMMSS  raw.orders  marts.daily_orders                 red?   -> no merge + ALERT
-                                                                          (branch pipeline-HHMMSS-bad kept)
+pipeline-ok|ko-  raw.orders  marts.daily_orders                 red?   -> no merge + ALERT
+HHMMSS                                                                    (branch pipeline-ko-HHMMSS kept)
 ```
 
 Everything runs locally: Nessie, PostgreSQL (version store) and Silo (S3 storage, community fork of MinIO) in docker compose; PyIceberg, dbt and DuckDB in Python. Details in [`docs/project/architecture.md`](docs/project/architecture.md).
@@ -31,7 +31,7 @@ Other tasks:
 mise run branches              # list Nessie branches and tags
 mise run cli                   # Nessie REPL connected to main
 mise run notebook              # marimo notebook to explore a branch
-mise run dbt-inspect <branch>  # replay dbt build on a branch (e.g. the kept -bad branch)
+mise run dbt-inspect <branch>  # replay dbt build on a branch (e.g. the kept pipeline-ko branch)
 mise run stack-down            # stop the stack, keep the data
 mise run stack-reset           # stop and delete everything
 mise run audit-python          # known vulnerabilities in the locked Python dependencies (not the images)

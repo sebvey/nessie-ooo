@@ -382,7 +382,7 @@
       </div>
 
       <div class="steps" style="margin-top:22px">
-        <div class="step reveal"><div class="n">01</div><div class="t">Ouvrir une branche</div><div class="d"><code>pipeline-HHMMSS</code> depuis main · <em>API Nessie</em></div></div>
+        <div class="step reveal"><div class="n">01</div><div class="t">Ouvrir une branche</div><div class="d"><code>pipeline-ok|ko-HHMMSS</code> depuis main · <em>API Nessie</em></div></div>
         <div class="step reveal"><div class="n">02</div><div class="t">Ingérer</div><div class="d">5 commandes dans <code>raw.orders</code> · <em>PyIceberg</em></div></div>
         <div class="step reveal"><div class="n">03</div><div class="t">dbt build</div><div class="d">transforme + <strong>teste</strong> · <em>DuckDB</em></div></div>
         <div class="step reveal"><div class="n">04</div><div class="t">Décider</div><div class="d">merge + tag&nbsp;✓ &nbsp;/&nbsp; alerte&nbsp;✗</div></div>
@@ -413,7 +413,7 @@
         <text x="596" y="85" fill="var(--muted)" font-family="var(--font-mono)" font-size="13">/iceberg/main</text>
         <text x="596" y="104" fill="var(--muted)" font-family="var(--font-mono)" font-size="11">personne ne s'y adresse</text>
         <rect x="580" y="128" width="290" height="72" rx="9" fill="color-mix(in srgb,var(--accent) 10%,var(--surface))" stroke="var(--accent)" stroke-width="2"/>
-        <text x="596" y="158" fill="var(--accent-ink)" font-family="var(--font-mono)" font-size="13" font-weight="700">/iceberg/pipeline-143205</text>
+        <text x="596" y="158" fill="var(--accent-ink)" font-family="var(--font-mono)" font-size="13" font-weight="700">/iceberg/pipeline-ok-143205</text>
         <text x="596" y="182" fill="var(--muted)" font-family="var(--font-mono)" font-size="11">chaque écriture = un commit</text>
 
         <!-- read: branch -> DuckDB -->
@@ -435,7 +435,7 @@
           <span class="num">2 · UN SEUL MOTEUR</span>
           <p>DuckDB <strong>attache</strong> l'adresse de la branche, puis lit, calcule, teste et écrit en SQL.</p>
           <div class="codeblock">ATTACH 'warehouse' AS lake (TYPE iceberg,
-  ENDPOINT '…/iceberg/<span class="hl">pipeline-143205</span>');</div>
+  ENDPOINT '…/iceberg/<span class="hl">pipeline-ok-143205</span>');</div>
         </div>
         <div class="card reveal">
           <span class="num">3 · MAIN INTOUCHÉ</span>
@@ -471,7 +471,7 @@
         <rect x="680" y="64" width="220" height="112" rx="14" fill="color-mix(in srgb,var(--accent) 10%,var(--surface))" stroke="var(--accent)" stroke-width="2"/>
         <text x="698" y="96" fill="var(--ink)" font-family="var(--font-mono)" font-size="15" font-weight="700">Nessie</text>
         <text x="698" y="122" fill="var(--accent-ink)" font-family="var(--font-mono)" font-size="12">branche</text>
-        <text x="698" y="146" fill="var(--accent-ink)" font-family="var(--font-mono)" font-size="12" font-weight="700">pipeline-143205</text>
+        <text x="698" y="146" fill="var(--accent-ink)" font-family="var(--font-mono)" font-size="12" font-weight="700">pipeline-ok-143205</text>
 
         <!-- read path: Nessie -> plugin -> DuckDB -->
         <path class="draw" style="--len:120" d="M690,64 C690,45 640,45 604,45" fill="none" stroke="var(--accent)" stroke-width="2.2"/>
@@ -535,7 +535,7 @@
           <span class="lbl">Acte 3 — explorer &amp; prouver</span>
           <div class="cmd"><span class="p">$</span> mise run branches</div>
           <div class="cmd"><span class="p">$</span> mise run notebook</div>
-          <p>Basculer <code>main</code> ↔ branche <code>-bad</code> dans le notebook · rejouer avec <code>mise run dbt-inspect</code>.</p>
+          <p>Basculer <code>main</code> ↔ branche <code>pipeline-ko-…</code> dans le notebook · rejouer avec <code>mise run dbt-inspect</code>.</p>
         </div>
       </div>
       <p class="demo-foot reveal"># préparation : <span style="color:var(--accent-ink)">mise run stack-reset &amp;&amp; mise run stack-up</span> → ardoise vierge, main sans aucune table</p>
@@ -738,7 +738,7 @@
         say:'Une cinquantaine de lignes pour contourner une limite de DuckDB, à supprimer dès DuckDB 2.0.'},
       client:{lane:'Control plane · agir, prévenir',col:'var(--tag)',title:'nessie.py · client de l\'API Nessie',
         role:'Une petite <strong>classe Python <code>Nessie</code></strong> qui appelle l\'<strong>API REST v2</strong> de Nessie (<code>/api/v2</code>) avec <code>requests</code>. C\'est le <strong>control plane</strong> : les opérations Git sur le catalogue.',
-        demo:['<code>create_branch()</code> : ouvre <code>pipeline-HHMMSS</code> depuis <code>main</code> (<code>POST /trees</code>).',
+        demo:['<code>create_branch()</code> : ouvre <code>pipeline-ok|ko-HHMMSS</code> depuis <code>main</code> (<code>POST /trees</code>).',
               '<code>merge()</code> : merge atomique dans <code>main</code> (<code>POST /trees/main@&lt;hash&gt;/history/merge</code>).',
               '<code>create_tag()</code>, <code>delete_branch()</code>, <code>log()</code>, <code>ref_hash()</code> : tag, ménage, historique, hash d\'une branche.',
               'Appelée par <code>pipeline.py</code> et le notebook : elle exécute, elle ne décide pas.'],

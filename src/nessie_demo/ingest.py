@@ -3,7 +3,7 @@
 Each run adds fresh, random rows timestamped within the 5 seconds following generation, so
 raw.orders grows over time and successive tags/commits capture a genuinely evolving dataset.
 
-`--bad` injects dirty rows (negative amount, null customer) so the dbt tests fail on purpose,
+`--ko` injects dirty rows (negative amount, null customer) so the dbt tests fail on purpose,
 which drives the 'no merge + alert' branch of the demo.
 """
 
@@ -27,7 +27,7 @@ PRODUCTS = [
 ]  # 10 products
 
 
-def generate(start_id: int, n_rows: int = ROWS_PER_RUN, bad: bool = False) -> pa.Table:
+def generate(start_id: int, n_rows: int = ROWS_PER_RUN, ko: bool = False) -> pa.Table:
     rng = np.random.default_rng()  # fresh randomness each run
     now = datetime.now()
 
@@ -38,7 +38,7 @@ def generate(start_id: int, n_rows: int = ROWS_PER_RUN, bad: bool = False) -> pa
     amounts = [round(float(rng.uniform(5, 200)), 2) for _ in range(n_rows)]
     quantities = [int(rng.integers(1, 11)) for _ in range(n_rows)]  # 1..10
 
-    if bad:
+    if ko:
         # Poison a couple of rows: negative amount + a null customer -> trips dbt tests.
         amounts[1] = -50.0
         customers[3] = None
@@ -55,11 +55,11 @@ def generate(start_id: int, n_rows: int = ROWS_PER_RUN, bad: bool = False) -> pa
     )
 
 
-def ingest(branch: str, bad: bool = False, n_rows: int = ROWS_PER_RUN) -> pa.Table:
+def ingest(branch: str, ko: bool = False, n_rows: int = ROWS_PER_RUN) -> pa.Table:
     """Append a batch to raw.orders on `branch` and return the appended rows."""
     catalog = branch_catalog(branch)
     start_id = column_max(catalog, RAW_TABLE, "order_id")  # continue ids across appends
-    data = generate(start_id=start_id, n_rows=n_rows, bad=bad)
+    data = generate(start_id=start_id, n_rows=n_rows, ko=ko)
     append_table(catalog, RAW_TABLE, data)
     return data
 
@@ -67,10 +67,10 @@ def ingest(branch: str, bad: bool = False, n_rows: int = ROWS_PER_RUN) -> pa.Tab
 def main() -> None:
     p = argparse.ArgumentParser(description="Append synthetic orders onto a Nessie branch.")
     p.add_argument("branch", help="target Nessie branch")
-    p.add_argument("--bad", action="store_true", help="inject dirty rows that fail dbt tests")
+    p.add_argument("--ko", action="store_true", help="inject dirty rows that fail dbt tests")
     args = p.parse_args()
-    n = ingest(args.branch, bad=args.bad).num_rows
-    print(f"appended {n} rows to {RAW_TABLE} on branch '{args.branch}'" + (" [BAD DATA]" if args.bad else ""))
+    n = ingest(args.branch, ko=args.ko).num_rows
+    print(f"appended {n} rows to {RAW_TABLE} on branch '{args.branch}'" + (" [BAD DATA]" if args.ko else ""))
 
 
 if __name__ == "__main__":

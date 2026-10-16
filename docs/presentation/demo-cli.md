@@ -23,9 +23,9 @@ SHOW REFERENCE;
 LIST REFERENCES;
 ```
 
-**À voir** : `main`, `pipeline-HHMMSS-bad`, `release-HHMMSS`.
+**À voir** : `main`, `pipeline-ko-HHMMSS`, `release-HHMMSS`.
 **À dire** :
-- la branche `-bad` est toujours là : c'est la mauvaise donnée, isolée ;
+- la branche `pipeline-ko-…` est toujours là : c'est la mauvaise donnée, isolée ;
 - le tag `release-…` a **le même hash que `main`** : c'est la dernière promotion validée.
 
 ## 3. Ce que contient `main`
@@ -48,7 +48,7 @@ SHOW LOG;
 ## 5. Passer sur la branche fautive
 
 ```sql
-USE BRANCH pipeline-HHMMSS-bad;
+USE BRANCH pipeline-ko-HHMMSS;
 SHOW LOG;
 ```
 
@@ -66,7 +66,7 @@ USE BRANCH main;
 ## 6. Simuler un merge, sans rien modifier
 
 ```sql
-MERGE DRY BRANCH pipeline-HHMMSS-bad INTO main;
+MERGE DRY BRANCH pipeline-ko-HHMMSS INTO main;
 ```
 
 **À voir** : Nessie dit si le merge serait possible, sans l'appliquer.

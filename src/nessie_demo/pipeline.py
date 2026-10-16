@@ -2,7 +2,7 @@
 
 Flow:
   0. starting point: where main is, how many rows it holds (main is prepared by `mise run stack-up`)
-  1. open branch  pipeline-HHMMSS  from main           (Nessie API)
+  1. open branch  pipeline-ok|ko-HHMMSS  from main     (Nessie API)
   2. ingest raw orders onto the branch                 (PyIceberg)
   3. dbt build  = run transforms + run tests           (dbt + DuckDB)
   4. tests green -> merge branch into main + tag       (Nessie API, atomic)
@@ -113,9 +113,9 @@ def tables(branch: str) -> list[str]:
     ]
 
 
-def run_pipeline(bad: bool = False, keep: bool = False, verbose: bool = False) -> int:
+def run_pipeline(ko: bool = False, keep: bool = False, verbose: bool = False) -> int:
     nessie = Nessie()
-    branch = f"pipeline-{datetime.now():%H%M%S}" + ("-bad" if bad else "")
+    branch = f"pipeline-{'ko' if ko else 'ok'}-{datetime.now():%H%M%S}"
     main_catalog = branch_catalog(MAIN)
 
     display.header(f"Pipeline Nessie · {branch}")
@@ -141,8 +141,8 @@ def run_pipeline(bad: bool = False, keep: bool = False, verbose: bool = False) -
 
     # --- 2. ingest
     step(2, "Ingesting orders onto the branch", "PyIceberg")
-    data = ingest(branch, bad=bad)
-    line(f"+{data.num_rows} orders in {RAW_TABLE}" + (" [bold red](some of them dirty)" if bad else ""))
+    data = ingest(branch, ko=ko)
+    line(f"+{data.num_rows} orders in {RAW_TABLE}" + (" [bold red](some of them dirty)" if ko else ""))
     display.orders_table(data)
     branch_rows = row_count(branch_catalog(branch), RAW_TABLE)
     main_rows = row_count(main_catalog, RAW_TABLE)
@@ -198,13 +198,13 @@ def run_pipeline(bad: bool = False, keep: bool = False, verbose: bool = False) -
 
 def main() -> None:
     p = argparse.ArgumentParser(description="Run the Nessie branch->test->merge demo pipeline.")
-    p.add_argument("--bad", action="store_true", help="ingest dirty data so tests fail (no merge)")
+    p.add_argument("--ko", action="store_true", help="ingest dirty data so tests fail (no merge)")
     p.add_argument("--keep", action="store_true", help="keep the branch even on success")
     p.add_argument("--no-pause", action="store_true", help="don't wait for Enter between steps")
     p.add_argument("--verbose", action="store_true", help="show the raw dbt output")
     args = p.parse_args()
     display.PAUSE = not args.no_pause
-    raise SystemExit(run_pipeline(bad=args.bad, keep=args.keep, verbose=args.verbose))
+    raise SystemExit(run_pipeline(ko=args.ko, keep=args.keep, verbose=args.verbose))
 
 
 if __name__ == "__main__":

@@ -4,8 +4,8 @@
 
 ```text
 open branch  ->  ingest  ->  dbt build (transform + test)  ->  green? -> MERGE + TAG on main
-pipeline-HHMMSS  raw.orders  marts.daily_orders                 red?   -> no merge + ALERT
-                                                                          (branch pipeline-HHMMSS-bad kept)
+pipeline-ok|ko-  raw.orders  marts.daily_orders                 red?   -> no merge + ALERT
+HHMMSS                                                                    (branch pipeline-ko-HHMMSS kept)
 ```
 
 The console output is meant to be narrated: one block per step, with a pause (Enter) that names the next step.
@@ -17,8 +17,8 @@ The console output is meant to be narrated: one block per step, with a pause (En
 ## Steps
 
 0. **Starting point**: hash of `main`, and the content of `raw.orders` and `marts.daily_orders` on `main` ("doesn't exist yet" on the first run). Read from the Nessie API, PyIceberg (raw row count from the metadata) and DuckDB (`daily_orders`); nothing is written.
-1. **Open a branch**: `Nessie.create_branch("pipeline-HHMMSS", from_ref="main")` (suffix `-bad` with `--bad`). Same commit as `main`, no data copied.
-2. **Ingest**: `ingest.py` generates 5 synthetic orders and appends them to `raw.orders` on the branch through PyIceberg. With `--bad`, one order has a negative amount and one a `null` customer (shown in red). The branch now has 5 more rows; `main` hasn't moved.
+1. **Open a branch**: `Nessie.create_branch("pipeline-ok-HHMMSS", from_ref="main")` (`pipeline-ko-HHMMSS` with `--ko`). Same commit as `main`, no data copied.
+2. **Ingest**: `ingest.py` generates 5 synthetic orders and appends them to `raw.orders` on the branch through PyIceberg. With `--ko`, one order has a negative amount and one a `null` customer (shown in red). The branch now has 5 more rows; `main` hasn't moved.
 3. **Transform and test**: `NESSIE_BRANCH=<branch> dbt build`:
    - DuckDB attaches the branch's catalog as `lake` and reads `lake.raw.orders`;
    - builds `stg_orders` (view in dbt's local DuckDB file) then `lake.marts.daily_orders`, an Iceberg table on the branch, replaced at every run in one commit ([dbt on Iceberg](dbt-on-iceberg.md));
@@ -30,7 +30,7 @@ The console output is meant to be narrated: one block per step, with a pause (En
 ## Options
 
 ```bash
-uv run pipeline --bad        # inject bad rows (what pipeline-ko does)
+uv run pipeline --ko         # inject bad rows (what pipeline-ko does)
 uv run pipeline --keep       # keep the branch even after a merge
 uv run pipeline --no-pause   # no Enter between steps
 uv run pipeline --verbose    # raw dbt output
@@ -39,8 +39,8 @@ uv run pipeline --verbose    # raw dbt output
 ## After a red run
 
 ```bash
-mise run branches                          # the -bad branch is still there
-mise run dbt-inspect pipeline-HHMMSS-bad   # replay dbt build on it
+mise run branches                         # the pipeline-ko branch is still there
+mise run dbt-inspect pipeline-ko-HHMMSS   # replay dbt build on it
 mise run notebook                          # pick the branch, query raw_orders
 ```
 
@@ -52,7 +52,7 @@ src/nessie_demo/
 ├─ nessie.py          Nessie API v2 client: branch, merge, tag, delete, list, log
 ├─ catalog.py         PyIceberg catalog scoped to a branch
 ├─ lake.py            DuckDB with the branch's catalog attached as `lake` (reads the marts)
-├─ ingest.py          synthetic orders -> raw.orders (--bad for the failing case)
+├─ ingest.py          synthetic orders -> raw.orders (--ko for the failing case)
 ├─ bootstrap.py       stack-up: stack + namespaces on main
 ├─ pipeline.py        orchestrator: steps 0 to 4
 ├─ display.py         narrated console output (steps, pauses, tables)

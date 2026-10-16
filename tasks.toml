@@ -24,7 +24,7 @@ quiet = true  # no "[pipeline-ok] $ uv run pipeline" line
 description = "Failing pipeline: bad data -> red tests -> no merge + alert"
 # The pipeline exits with an error on purpose (a real CI run would fail here): swallow it so the
 # demo ends cleanly on the alert banner.
-run = "uv run pipeline --bad || true"
+run = "uv run pipeline --ko || true"
 raw = true
 quiet = true
 
@@ -41,7 +41,7 @@ description = "marimo notebook: pick a branch, browse the tables, query them wit
 run = "uv run --group explore marimo edit notebooks/explore.mo.py"
 
 [dbt-inspect]
-description = "Replay dbt build on a branch, e.g. mise run dbt-inspect pipeline-120000-bad"
+description = "Replay dbt build on a branch, e.g. mise run dbt-inspect pipeline-ko-120000"
 usage = 'arg "<branch>" help="Nessie branch to inspect"'
 run = "NESSIE_BRANCH=${usage_branch?} uv run dbt build || true"
 
