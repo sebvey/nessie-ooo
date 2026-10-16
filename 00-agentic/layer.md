@@ -17,6 +17,8 @@ The components of the agentic layer and how they fit. The working agreements the
 4. It checks every criterion, reports what was verified and what wasn't, and waits for the developer's validation.
 5. On validation: ticket to `03-done/` with its Outcome, one squashed commit `T<nnn> <title>` on `main`, fast-forward. Pushing is the developer's.
 
+Small work without a ticket follows the same discipline, lighter: an `X666-<object>` branch, merged into `main` only after the developer's explicit validation.
+
 Rules: [`agreements/tickets.md`](agreements/tickets.md). Format: [`processes/tickets.md`](processes/tickets.md).
 
 ## Decisions
