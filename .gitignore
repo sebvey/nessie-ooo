@@ -28,3 +28,6 @@ __marimo__/
 
 # mise (local settings and secrets)
 mise.local.toml
+
+# Tickets: local only, not versioned
+00-tracking/

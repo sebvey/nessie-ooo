@@ -10,7 +10,7 @@ Demo of Project Nessie (Git-like catalog for Iceberg tables): a pipeline works o
   - `docs/project/`: what we built (architecture, pipeline, CLI, dependency policy).
   - `docs/presentation/`: the talk's slides and notes.
   - `docs/adr/`: architecture decision records, why things are the way they are.
-- `00-tracking/`: tickets, one file each, foldered by status.
+- `00-tracking/`: tickets, one file each, foldered by status. Local only: ignored by git, absent from clones and git worktrees.
 - `00-agentic/`: the agentic layer, how we work with the agent (working agreements, processes, infra, its own ADRs). It will leave the repo at some point.
 
 ## Working agreements

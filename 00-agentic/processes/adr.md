@@ -38,7 +38,7 @@ What goes elsewhere:
 ## Lifecycle
 
 - **Naming**: `ADR<nnn>-<short-kebab-case-title>.md` in `docs/adr/` (`ADR001`), `A<nnn>-<short-kebab-case-title>.md` in `00-agentic/adr/` (`A001`). In each series, the ID is the highest existing one plus one, never reused.
-- **Written in the ticket that takes the decision**, with status `proposed`. It becomes `accepted` when the developer validates the ticket, in the same squashed commit.
+- **Written on the branch of the ticket that takes the decision**, with status `proposed`. It becomes `accepted` when the developer validates the ticket, in the ticket's squashed commit.
 - **Substance or form.** Test: could someone who agreed with the old version disagree with the new one?
   - **Substance** (the decision, an alternative or the basis changes): a new ADR that supersedes the old one. The two are linked both ways: the new one gets `Supersedes: <old ID>`, the old one's status becomes `superseded by <new ID>`, and it stays. Never deleted.
   - **Form** (wording, a dead link, a procedure detail that doesn't touch the decision): edit in place and add an `Amended` line to the header, with the date and what changed.

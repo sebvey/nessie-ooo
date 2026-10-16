@@ -4,6 +4,8 @@ How tickets are kept, in `00-tracking/`. When to take one and how to deliver it 
 
 One Markdown file per ticket. The folder a ticket sits in is its status.
 
+The folder is local: listed in `.gitignore`, not versioned, not pushed, with no backup but the developer's own. Its history up to 2026-10-16 stays readable in git (`git log -- 00-tracking`).
+
 | Folder | Status | What it takes to be here |
 |---|---|---|
 | `00-backlog/` | Idea or draft | Nothing: a title and a few lines are enough. Every new ticket starts here. |
@@ -13,7 +15,7 @@ One Markdown file per ticket. The folder a ticket sits in is its status.
 
 ## Changing a status
 
-- Move the file with `git mv`; it keeps its name.
+- Move the file (`mv`); it keeps its name.
 - While in `02-in-progress/`: tick each acceptance criterion when it is verified (workflow in [`agreements/tickets.md`](../agreements/tickets.md)).
 - To `03-done/`: every criterion ticked (or the gap stated in the Outcome), and the Outcome added (what changed, where, anything left aside, and what wasn't verified).
 - Never delete a ticket: an abandoned one goes to `03-done/` with an Outcome saying why.

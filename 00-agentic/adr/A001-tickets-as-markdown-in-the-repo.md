@@ -1,6 +1,6 @@
 # A001 Tickets are Markdown files in the repo, until they move to a ticket tool
 
-- Status: accepted
+- Status: superseded by A004
 - Date: 2026-10-16
 - Tickets: T014, T015
 - Basis: arbitrary (the simplest way to start, locally; GitHub issues were not compared)
