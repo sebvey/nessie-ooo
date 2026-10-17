@@ -1,6 +1,6 @@
 # ADR005 The agentic layer, vierbein, is imported from a sibling folder
 
-- Status: accepted
+- Status: superseded by ADR006
 - Date: 2026-10-17
 - Tickets: none (small work on branch `X666-vierbein-moved-out`)
 - Basis: investigated (Claude Code 2.1.281, on a side-by-side copy in a scratch folder: `@../vierbein/…` imports were dropped by `claude -p` until external imports were approved in an interactive session, then loaded, with tickets placed at this project's root and the layer's links resolved; behaviour documented in Claude Code's memory docs and [anthropics/claude-code#79046](https://github.com/anthropics/claude-code/issues/79046))

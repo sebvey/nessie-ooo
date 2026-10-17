@@ -24,9 +24,9 @@ What we built and how to use it:
 
 ## Decisions
 
-[Architecture decision records](adr/README.md): what was decided about the demo, why, what was ruled out. The ADR process (selection tests, lifecycle, template) is part of the agentic layer, vierbein: `processes/adr.md` in `../vierbein/`.
+[Architecture decision records](adr/README.md): what was decided about the demo, why, what was ruled out. The ADR process (selection tests, lifecycle, template) is part of the agentic layer: [`00-agentic/processes/adr.md`](../00-agentic/processes/adr.md).
 
-How we work with the agent on this repo is the agentic layer, vierbein, a separate repository checked out next to this one (`../vierbein/`): working agreements imported by `CLAUDE.md`, processes, ticket backends. This project's side of it: [Agent setup](project/agent-setup.md).
+How we work with the agent on this repo is the agentic layer, in [`00-agentic/`](../00-agentic/README.md): working agreements imported by `CLAUDE.md`, processes, ticket backends. It is this project's copy of vierbein, a separate repository, and changes here with commits here. This project's side of it: [Agent setup](project/agent-setup.md).
 
 ## Presentation (French)
 

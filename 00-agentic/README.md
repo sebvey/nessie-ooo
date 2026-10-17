@@ -1,0 +1,21 @@
+# Agentic layer (copy of vierbein)
+
+How we work with the coding agent on this repository: working agreements, processes, ticket backends. `CLAUDE.md` imports the agreements and the ticket backend from here (decision: [ADR006](../docs/adr/ADR006-vierbein-copied-into-the-repository.md)). This project's side of the setup: [Agent setup](../docs/project/agent-setup.md).
+
+This folder is a copy of vierbein, the agentic layer, a separate repository. The copy is this project's: change it here, with a commit here, like any other file of the repository, and list each change under "Adapted" below, so a later update of the layer can be carried over.
+
+## Provenance
+
+- Source: vierbein, commit `c88e379` (`main`, 2026-10-17).
+- Copied on 2026-10-17, verbatim (`git archive c88e379 agreements processes ticket-backends`).
+- Files copied:
+  - `agreements/`: `boundaries.md`, `decisions.md`, `honesty.md`, `memory.md`, `tickets.md`, `writing.md`
+  - `processes/`: `adr.md`, `tickets.md`
+  - `ticket-backends/`: `local.md`, `github.md`, `github-setup.md`
+- Not copied: vierbein's `CLAUDE.md`, `README.md`, `docs/`, `scripts/`.
+
+## Adapted
+
+Changes made here since the copy, one line each (date, file, what and why).
+
+- Nothing at the copy.
