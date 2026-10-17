@@ -1,6 +1,6 @@
 # Agent setup
 
-What the coding agent runs on and with in this project. Facts dated 2026-10-16, the agentic layer section 2026-10-17. The agentic layer itself (working agreements, processes, ticket backends) comes from vierbein, a separate repository; this page is this project's side of it.
+What the coding agent runs on and with in this project. Facts dated 2026-10-16, the agentic layer and tickets sections 2026-10-17. The agentic layer itself (working agreements, processes, ticket backends) comes from vierbein, a separate repository; this page is this project's side of it.
 
 ## Agentic layer (`00-agentic/`)
 
@@ -8,7 +8,14 @@ What the coding agent runs on and with in this project. Facts dated 2026-10-16, 
 
 - **No setup**: the imports are inside the project's folder, so Claude Code loads them in every session, `claude -p` and the Claude desktop app included, with no checkout of vierbein and no external-import approval.
 - **The copy is this project's**: it changes with commits here. A change in vierbein reaches this project only when copied here. `00-agentic/README.md` gives the vierbein commit it comes from and lists what was adapted since.
-- **Git worktrees and clones** get the working agreements like the main checkout. Tickets are local and ignored by git, so they are absent from a worktree: a session there reads and writes them in the main checkout's `00-tracking/`, by absolute path, as the [local backend](../../00-agentic/ticket-backends/local.md) says.
+- **Git worktrees and clones** get the working agreements like the main checkout.
+
+## Tickets (GitHub)
+
+Tickets are issues of `sebvey/nessie-ooo`, with their status in GitHub Project 3 (`nessie-ooo`, private), as the [GitHub backend](../../00-agentic/ticket-backends/github.md) says; its one-time setup is in [`github-setup.md`](../../00-agentic/ticket-backends/github-setup.md) (decision: [ADR007](../adr/ADR007-tickets-move-to-github-issues.md)). Ticket `T<nnn>` from before the move (2026-10-17) is issue `#<nnn>`; the seven IDs that left with the layer (T015, T016, T021, T025 to T028) are placeholder issues, closed as not planned and out of the Project.
+
+- **`gh`** (2.102.0 on 2026-10-17), run through `mise exec` for the workspace's credentials, with the `project` scope on top of `repo` (`gh auth refresh -s project`, the developer's setup).
+- Every `gh` command works from any checkout, worktrees included: tickets are no longer local files.
 
 ## Claude Code
 
@@ -23,6 +30,7 @@ Committed in the repo, where Claude Code reads it. It pre-approves read-only com
 | Git, read-only, through mise | `mise exec -- git status`, `log`, `diff`, `show`, `grep`, `ls-files` | Inspecting the repo; `mise exec` gives git the workspace identity |
 | Environment | `printenv`, `mise env` | Checking which variables are set. They may print secret values: the developer's global rule is to list names only (`mise env \| cut -d= -f1`) |
 | Stack, read-only | `docker compose ps`, `config`, `logs`, `aws s3 ls`, `mise run branches` | Checking the local stack without changing it |
+| Tickets, read-only, through mise | `mise exec -- gh issue view`, `gh issue list`, `gh project item-list`, `gh project field-list` | Reading tickets and their status; creating or editing an issue still asks |
 | MCP, read-only | `tavily_search`, `tavily_extract`, Context7 docs, browser `find` and `get_page_text`, `read_terminal` | Looking things up and reading pages or the developer's terminal |
 
 Writes (commits, file edits, stack resets, network calls with side effects) are not pre-approved.

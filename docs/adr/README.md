@@ -14,3 +14,4 @@ The "Choices" table in [`architecture.md`](../project/architecture.md#choices) s
 | [ADR004](ADR004-duckdb-attached-to-the-nessie-branch.md) | DuckDB reads and writes the dbt models directly on the Nessie branch; PyIceberg only ingests | accepted |
 | [ADR005](ADR005-vierbein-imported-from-a-sibling-folder.md) | The agentic layer, vierbein, is imported from a sibling folder | superseded by ADR006 |
 | [ADR006](ADR006-vierbein-copied-into-the-repository.md) | The agentic layer, vierbein, is copied into the repository (`00-agentic/`) | accepted |
+| [ADR007](ADR007-tickets-move-to-github-issues.md) | Nessie's tickets move to GitHub Issues, all of them, with issue `#n` for ticket `Tn` | accepted |

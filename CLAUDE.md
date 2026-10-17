@@ -23,9 +23,11 @@ From the agentic layer, a copy of vierbein in `00-agentic/` that this project ow
 @00-agentic/agreements/writing.md
 @00-agentic/agreements/boundaries.md
 
-Ticket backend, ticket prefix `T`:
+Ticket backend: GitHub, GitHub Project 3 of sebvey:
 
-@00-agentic/ticket-backends/local.md
+@00-agentic/ticket-backends/github.md
+
+Ticket `T<nnn>` from before the move is issue `#<nnn>`.
 
 ## Language
 
