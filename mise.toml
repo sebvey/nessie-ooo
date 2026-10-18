@@ -12,6 +12,8 @@ NESSIE_URI = "http://localhost:19120"
 # Local Silo, for the demo's clients, dbt and the AWS CLI (e.g. `aws s3 ls s3://iceberg-warehouse --recursive`).
 # The credentials (AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY) are secrets: they live in mise.local.toml.
 AWS_ENDPOINT_URL = "http://localhost:29000"
+# Silo web console (`mise run ui-silo`).
+SILO_CONSOLE_URL = "http://localhost:29090"
 AWS_REGION = "us-east-1"
 AWS_S3_ADDRESSING_STYLE = "path"
 AWS_EC2_METADATA_DISABLED = "true"

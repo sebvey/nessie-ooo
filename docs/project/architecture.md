@@ -77,7 +77,7 @@ DuckDB reaches a branch from DuckDB 2.0 on (duckdb-iceberg#1230); before, it ign
 - Postgres (version store): `NESSIE_PG_USER` / `NESSIE_PG_PASSWORD` in `mise.local.toml` (ignored by git, template in `mise.local.toml.example`). `docker-compose.yml` reads them for both the `postgres` and `nessie` services and refuses to start without them, so run compose through mise. Changing the password needs `mise run stack-reset`: Postgres only reads it on first start.
 - Silo: `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` in `mise.local.toml`, the root user of Silo (console at http://localhost:29090). The standard AWS names, so `docker-compose.yml` (Silo, its bucket setup, Nessie), `settings.py`, `dbt/profiles.yml` and the AWS CLI all read the same pair. Compose refuses to start without them; `settings.py` and dbt stop with the name of the missing variable.
 
-The other values the clients need are not secrets and live in `mise.toml`: `NESSIE_URI` (Nessie from the host) and `AWS_ENDPOINT_URL`, `AWS_REGION` (Silo from the host). `settings.py` has no default for them: outside mise, it stops instead of guessing.
+The other values the clients need are not secrets and live in `mise.toml`: `NESSIE_URI` (Nessie from the host) and `AWS_ENDPOINT_URL`, `AWS_REGION` (Silo from the host), `SILO_CONSOLE_URL` (Silo console). `settings.py` has no default for them: outside mise, it stops instead of guessing.
 
 ## Checks
 

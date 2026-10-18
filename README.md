@@ -30,6 +30,8 @@ Other tasks:
 ```bash
 mise run branches              # list Nessie branches and tags
 mise run cli                   # Nessie REPL connected to main
+mise run ui-nessie             # open Nessie's web UI in the browser
+mise run ui-silo               # open the Silo console in the browser
 mise run notebook              # marimo notebook to explore a branch
 mise run dbt-inspect <branch>  # replay dbt build on a branch (e.g. the kept pipeline-ko branch)
 mise run stack-down            # stop the stack, keep the data

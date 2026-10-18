@@ -30,7 +30,23 @@ quiet = true
 
 [branches]
 description = "List Nessie branches and tags"
-run = "curl -s $NESSIE_URI/api/v2/trees | python3 -m json.tool"
+run = "curl -s $NESSIE_URI/api/v2/trees | uvx python -m json.tool"
+
+[ui-nessie]
+description = "Open Nessie's web UI in the default browser"
+run = """
+if curl -sf -o /dev/null "$NESSIE_URI/"; then uvx python -m webbrowser -t "$NESSIE_URI/"
+else echo "Nessie doesn't answer at $NESSIE_URI: start the stack with mise run stack-up" >&2; exit 1; fi
+"""
+quiet = true
+
+[ui-silo]
+description = "Open the Silo console in the default browser (credentials in mise.local.toml)"
+run = """
+if curl -sf -o /dev/null "$SILO_CONSOLE_URL/"; then uvx python -m webbrowser -t "$SILO_CONSOLE_URL/"
+else echo "The Silo console doesn't answer at $SILO_CONSOLE_URL: start the stack with mise run stack-up" >&2; exit 1; fi
+"""
+quiet = true
 
 [cli]
 description = "Nessie REPL connected to main (e.g. LIST REFERENCES;). Args go to the CLI, e.g. -c 'SHOW LOG;'"

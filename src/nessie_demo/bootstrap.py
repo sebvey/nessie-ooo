@@ -34,7 +34,7 @@ def start_stack() -> None:
         sys.exit(1)
     line("postgres [green]✓[/] · silo [green]✓[/] · bucket iceberg-warehouse [green]✓[/] · nessie [green]✓")
     line(f"[dim]Nessie        {settings.nessie_uri}")
-    line("[dim]Silo console  http://localhost:29090 (credentials in mise.local.toml)")
+    line(f"[dim]Silo console  {settings.silo_console_url} (credentials in mise.local.toml)")
 
 
 def describe(entries: list[dict]) -> str:
