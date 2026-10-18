@@ -32,7 +32,7 @@ Renaming `Todo` keeps it as the option the Project workflows point to: "Item add
 
 Menu `…`, Workflows. The backend relies on three of the Project workflows enabled on a new Project: "Item added to project" (sets `Backlog`), "Item closed" (sets `Done`) and "Auto-close issue" (closes the issue when its Status is set to `Done`). Leave them on. Leave "Auto-add to project" off: the backend adds each issue itself.
 
-All the Project workflows of a new Project, as shown in the web UI on 2026-10-17 (after step 3). A ticket loop based on pull requests will depend on the ones marked "pull request".
+All the Project workflows of a new Project, as shown in the web UI on 2026-10-17 (after step 3). The ones marked "pull request" act on pull requests, which this backend doesn't use.
 
 | Project workflow | Default | Trigger and action |
 |---|---|---|

@@ -20,3 +20,4 @@ Changes made here since the copy, one line each (date, file, what and why).
 
 - Nothing at the copy.
 - 2026-10-18, `agreements/writing.md`: carried over from vierbein at `959f77d` (file now identical to it): "Docs say how things are now", and the conversation with the developer in the developer's language.
+- 2026-10-18, `agreements/tickets.md`, `processes/adr.md`, `ticket-backends/github-setup.md`: carried over from vierbein at `959f77d` (files now identical to it): tickets live outside the code, instead of a forecast that they will leave the repo; the Project workflows marked "pull request" described as unused by the backend. `ticket-backends/github.md` not carried over: its "at the push" leaves who pushes to the project, and here the developer pushes.
