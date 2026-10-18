@@ -19,6 +19,7 @@ class Settings(BaseSettings):
     s3_access_key: str = Field(validation_alias="AWS_ACCESS_KEY_ID")
     s3_secret_key: str = Field(validation_alias="AWS_SECRET_ACCESS_KEY")
     s3_region: str = Field(validation_alias="AWS_REGION")
+    silo_console_url: str = Field(validation_alias="SILO_CONSOLE_URL")
 
     @property
     def nessie_api_uri(self) -> str:
