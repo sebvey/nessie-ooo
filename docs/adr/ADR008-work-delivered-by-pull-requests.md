@@ -1,6 +1,6 @@
 # ADR008 Work is delivered by pull requests, squash-merged into a `main` protected with no bypass
 
-- Status: proposed
+- Status: accepted
 - Date: 2026-10-18
 - Tickets: #30, #33
 - Basis: investigated (`gh` 2.102.0 on vierbein-sandbox, 2026-10-18: draft pull requests linked by `Closes #<n>`, squash merges with each message setting, a pull request closed unmerged, and this ruleset applied with pushes from an admin account; results in #30's Notes. `gh api` on `sebvey/nessie-ooo`, 2026-10-18: rulesets and branch protection refused on the private repository)
