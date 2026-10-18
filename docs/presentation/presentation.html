@@ -314,9 +314,8 @@
         </div>
         <div class="lane reveal">
           <p class="col-h">Data plane · lire, transformer</p>
-          <button type="button" class="mini" data-detail="pyiceberg" aria-haspopup="dialog"><div class="k"><span class="dot" style="background:var(--pass)"></span>PyIceberg</div><div class="v">Accès catalogue <strong>scopé à une branche</strong> (lecture / écriture Iceberg).</div></button>
-          <button type="button" class="mini" data-detail="dbt" aria-haspopup="dialog"><div class="k"><span class="dot" style="background:var(--pass)"></span>dbt · DuckDB</div><div class="v">Les transformations <strong>+ les tests</strong> de qualité.</div></button>
-          <button type="button" class="mini" data-detail="plugin" aria-haspopup="dialog"><div class="k"><span class="dot" style="background:var(--pass)"></span>Plugin dbt custom</div><div class="v">Matérialise les marts en tables Iceberg sur la branche.</div></button>
+          <button type="button" class="mini" data-detail="pyiceberg" aria-haspopup="dialog"><div class="k"><span class="dot" style="background:var(--pass)"></span>PyIceberg</div><div class="v">Ingestion : écrit <code>raw.orders</code> <strong>sur la branche</strong>.</div></button>
+          <button type="button" class="mini" data-detail="dbt" aria-haspopup="dialog"><div class="k"><span class="dot" style="background:var(--pass)"></span>dbt · DuckDB</div><div class="v">Les transformations <strong>+ les tests</strong>, DuckDB attaché à la branche.</div></button>
         </div>
         <div class="lane reveal">
           <p class="col-h">Control plane · agir, prévenir</p>
@@ -387,11 +386,11 @@
         <div class="step reveal"><div class="n">03</div><div class="t">dbt build</div><div class="d">transforme + <strong>teste</strong> · <em>DuckDB</em></div></div>
         <div class="step reveal"><div class="n">04</div><div class="t">Décider</div><div class="d">merge + tag&nbsp;✓ &nbsp;/&nbsp; alerte&nbsp;✗</div></div>
       </div>
-      <p class="caption reveal"><strong>Control plane</strong> (brancher / merger / tag) = API Nessie · <strong>data plane</strong> (lire/écrire sur la branche) = PyIceberg, la branche est dans l'URI. dbt ne fait qu'une chose : transformer + tester la branche qu'on lui désigne.</p>
+      <p class="caption reveal"><strong>Control plane</strong> (brancher / merger / tag) = API Nessie · <strong>data plane</strong> (lire/écrire sur la branche) = PyIceberg pour l'ingestion, DuckDB pour dbt, la branche est dans l'URI. dbt ne fait qu'une chose : transformer + tester la branche qu'on lui désigne.</p>
     </div>
   </section>
 
-  <!-- 04 MECANISME : CAS IDEAL -->
+  <!-- 04 MECANISME : LE PRINCIPE -->
   <section class="slide" id="s4">
     <div class="wrap">
       <p class="eyebrow reveal">04 · Travailler sur une branche · le principe</p>
@@ -442,74 +441,58 @@
           <p>Personne n'utilise <code>/iceberg/main</code> avant le merge : <code>main</code> <strong>ne peut pas bouger</strong>. Le merge final est une opération Nessie.</p>
         </div>
       </div>
-      <p class="caption reveal">C'est la cible. Avec DuckDB ≤ 1.5.6, l'<code>ATTACH</code> sur une branche échoue : slide suivante.</p>
+      <p class="caption reveal">C'est ce que fait la démo. Comment dbt écrit dans une table Iceberg : slide suivante.</p>
     </div>
   </section>
 
-  <!-- 05 MECANISME : CONTOURNEMENT -->
+  <!-- 05 MECANISME : DBT SUR ICEBERG -->
   <section class="slide" id="s5">
     <div class="wrap">
-      <p class="eyebrow reveal">05 · Travailler sur une branche · aujourd'hui</p>
-      <h2 class="reveal">Le détour par PyIceberg</h2>
+      <p class="eyebrow reveal">05 · Travailler sur une branche · avec dbt</p>
+      <h2 class="reveal">dbt sur Iceberg : un commit par run</h2>
 
-      <svg class="diagram reveal" viewBox="0 0 920 240" role="img" aria-label="L'accès direct de DuckDB à la branche échoue (404). Un plugin PyIceberg lit raw.orders sur la branche et le passe à DuckDB ; un plugin maison réécrit daily_orders sur la branche.">
-        <!-- DuckDB -->
-        <rect x="20" y="64" width="250" height="112" rx="14" fill="var(--surface)" stroke="var(--line-strong)" stroke-width="1.5"/>
-        <text x="40" y="96" fill="var(--ink)" font-family="var(--font-mono)" font-size="15" font-weight="700">DuckDB</text>
-        <text x="40" y="122" fill="var(--muted)" font-family="var(--font-mono)" font-size="12">calcul + tests seulement</text>
-        <text x="40" y="146" fill="var(--muted)" font-family="var(--font-mono)" font-size="11">stg_orders → daily_orders</text>
-
-        <!-- plugins -->
-        <rect x="350" y="14" width="250" height="62" rx="11" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.8"/>
-        <text x="368" y="40" fill="var(--ink)" font-family="var(--font-mono)" font-size="13" font-weight="700">plugin iceberg</text>
-        <text x="368" y="60" fill="var(--muted)" font-family="var(--font-mono)" font-size="11">lecture · PyIceberg → Arrow</text>
-        <rect x="350" y="164" width="250" height="62" rx="11" fill="var(--surface)" stroke="var(--pass)" stroke-width="1.8"/>
-        <text x="368" y="190" fill="var(--ink)" font-family="var(--font-mono)" font-size="13" font-weight="700">plugin iceberg_write</text>
-        <text x="368" y="210" fill="var(--muted)" font-family="var(--font-mono)" font-size="11">écriture · maison · PyIceberg</text>
-
-        <!-- Nessie -->
-        <rect x="680" y="64" width="220" height="112" rx="14" fill="color-mix(in srgb,var(--accent) 10%,var(--surface))" stroke="var(--accent)" stroke-width="2"/>
-        <text x="698" y="96" fill="var(--ink)" font-family="var(--font-mono)" font-size="15" font-weight="700">Nessie</text>
-        <text x="698" y="122" fill="var(--accent-ink)" font-family="var(--font-mono)" font-size="12">branche</text>
-        <text x="698" y="146" fill="var(--accent-ink)" font-family="var(--font-mono)" font-size="12" font-weight="700">pipeline-ok-143205</text>
-
-        <!-- read path: Nessie -> plugin -> DuckDB -->
-        <path class="draw" style="--len:120" d="M690,64 C690,45 640,45 604,45" fill="none" stroke="var(--accent)" stroke-width="2.2"/>
-        <path class="draw" style="--len:140" d="M348,45 C300,45 250,45 250,62" fill="none" stroke="var(--accent)" stroke-width="2.2"/>
-        <path class="pop d1" d="M244,58 l6,9 l6,-9 z" fill="var(--accent)"/>
-        <text x="660" y="36" fill="var(--accent-ink)" font-family="var(--font-mono)" font-size="11">raw.orders</text>
-        <!-- write path: DuckDB -> plugin -> Nessie -->
-        <path class="draw" style="--len:140" d="M250,178 C250,195 300,195 348,195" fill="none" stroke="var(--pass)" stroke-width="2.2"/>
-        <path class="draw" style="--len:120" d="M604,195 C640,195 690,195 690,180" fill="none" stroke="var(--pass)" stroke-width="2.2"/>
-        <path class="pop d2" d="M684,184 l6,-9 l6,9 z" fill="var(--pass)"/>
-        <text x="640" y="216" fill="var(--pass)" font-family="var(--font-mono)" font-size="11">daily_orders</text>
-
-        <!-- direct path: broken -->
-        <path d="M272,120 H676" fill="none" stroke="var(--fail)" stroke-width="2" stroke-dasharray="5 6" opacity=".85"/>
-        <g class="pop d3">
-          <circle cx="475" cy="120" r="12" fill="var(--bg)" stroke="var(--fail)" stroke-width="2.5"/>
-          <path d="M470,115 l10,10 M480,115 l-10,10" stroke="var(--fail)" stroke-width="2.5" stroke-linecap="round"/>
-        </g>
-        <text x="475" y="148" text-anchor="middle" fill="var(--fail)" font-family="var(--font-mono)" font-size="11">ATTACH direct · 404</text>
+      <svg class="diagram reveal" viewBox="0 0 920 200" role="img" aria-label="Un run sur la branche fait deux commits : l'ingestion met à jour raw.orders, dbt met à jour daily_orders. Le merge les porte dans main en un seul commit.">
+        <!-- main line -->
+        <path class="draw" style="--len:820" d="M60,150 H860" fill="none" stroke="var(--line-strong)" stroke-width="5" stroke-linecap="round"/>
+        <circle class="pop d1" cx="120" cy="150" r="7" fill="var(--bg)" stroke="var(--line-strong)" stroke-width="3"/>
+        <text x="120" y="180" text-anchor="middle" fill="var(--muted)" font-family="var(--font-mono)" font-size="13">main</text>
+        <!-- branch -->
+        <path class="draw" style="--len:700" d="M180,150 C220,150 228,60 270,60 H660 C702,60 710,150 752,150" fill="none" stroke="var(--pass)" stroke-width="3.5" stroke-linecap="round"/>
+        <text x="200" y="40" fill="var(--pass)" font-family="var(--font-mono)" font-size="12.5" font-weight="600">pipeline-ok-143205</text>
+        <!-- commit 1: ingestion -->
+        <circle class="pop d2" cx="350" cy="60" r="7" fill="var(--pass)"/>
+        <text x="350" y="90" text-anchor="middle" fill="var(--ink)" font-family="var(--font-mono)" font-size="12">Update raw.orders</text>
+        <text x="350" y="108" text-anchor="middle" fill="var(--muted)" font-family="var(--font-mono)" font-size="11">ingestion · PyIceberg append</text>
+        <!-- commit 2: dbt -->
+        <circle class="pop d2" cx="570" cy="60" r="7" fill="var(--pass)"/>
+        <text x="570" y="90" text-anchor="middle" fill="var(--ink)" font-family="var(--font-mono)" font-size="12">Update marts.daily_orders</text>
+        <text x="570" y="108" text-anchor="middle" fill="var(--muted)" font-family="var(--font-mono)" font-size="11">dbt · incremental replace</text>
+        <!-- merge -->
+        <circle class="pop d3" cx="752" cy="150" r="7" fill="var(--pass)"/>
+        <text x="752" y="180" text-anchor="middle" fill="var(--muted)" font-family="var(--font-mono)" font-size="12">merge · un commit, deux tables</text>
       </svg>
 
       <div class="cols" style="margin-top:8px">
         <div class="card ko reveal">
-          <span class="num" style="color:var(--fail)">LE BUG</span>
-          <p>Nessie répond <code>prefix = &lt;branche&gt;</code> et <code>uri = /iceberg/</code>. DuckDB ignore <code>uri</code> et colle le préfixe derrière l'adresse de la branche :</p>
-          <div class="codeblock">/iceberg/<span class="hl">br</span>/v1/<span class="hl">br</span>/… → 404
-/iceberg/v1/<span class="hl">br</span>/…    → 200</div>
+          <span class="num" style="color:var(--fail)">TABLE : ÉCHOUE</span>
+          <p>La matérialisation <code>table</code> crée une table temporaire puis la <strong>renomme</strong>, dans une seule transaction. Le catalogue REST refuse de mélanger les deux :</p>
+          <div class="codeblock">cannot commit this transaction
+atomically: mixes table updates
+with rename/drop requests</div>
         </div>
         <div class="card fix reveal">
-          <span class="num" style="color:var(--pass)">LE DÉTOUR</span>
-          <p><strong>Lecture</strong> : le plugin <code>iceberg</code> de dbt-duckdb charge <code>raw.orders</code> via PyIceberg, en Arrow. <strong>Écriture</strong> : notre plugin <code>iceberg_write</code> réécrit <code>daily_orders</code> sur la branche via PyIceberg.</p>
+          <span class="num" style="color:var(--pass)">INCREMENTAL + REPLACE</span>
+          <p>dbt calcule le modèle dans une table temporaire <strong>locale</strong>, puis une stratégie maison vide et remplit la table Iceberg :</p>
+          <div class="codeblock">delete from lake.marts.daily_orders;
+insert into lake.marts.daily_orders
+  by name select * from <span class="hl">tmp</span>;</div>
         </div>
         <div class="card cost reveal">
-          <span class="num" style="color:var(--tag)">LE PRIX</span>
-          <p>Les données transitent <strong>en mémoire</strong> (Arrow), un plugin <strong>maison</strong> à maintenir, et le mart est <strong>réécrit en entier</strong> à chaque run.</p>
+          <span class="num" style="color:var(--tag)">UN COMMIT PAR RUN</span>
+          <p>Le <code>delete</code> et l'<code>insert</code> tombent dans <strong>un seul commit</strong> Iceberg : la branche ne montre jamais une table vide. Les vues (<code>stg_orders</code>) restent dans le fichier DuckDB local : l'extension ne sait pas en créer dans le catalogue.</p>
         </div>
       </div>
-      <p class="caption reveal">Corrigé dans l'extension DuckDB (<a href="https://github.com/duckdb/duckdb-iceberg/pull/1230" style="color:var(--accent-ink)">#1230</a>, juillet 2026), <strong>pas encore dans une version publiée</strong>. Dès sa sortie : retirer les plugins et revenir au principe de la slide précédente.</p>
+      <p class="caption reveal">Testé avec la <strong>pré-version DuckDB 2.0</strong> : l'<code>ATTACH</code> sur une branche n'est pas encore dans une version stable (<a href="https://github.com/duckdb/duckdb-iceberg/pull/1230" style="color:var(--accent-ink)">#1230</a>). Le détail : <code>docs/project/dbt-on-iceberg.md</code>.</p>
     </div>
   </section>
 
@@ -555,14 +538,14 @@
           <div class="det">Extensions SQL Nessie : <b>CREATE / MERGE BRANCH</b> en SQL. La voie canonique. Contrepartie : JVM, lourd.</div>
         </div>
         <div class="row reveal">
-          <div class="eng">PyIceberg<small>ingestion + marts</small></div>
+          <div class="eng">PyIceberg<small>ingestion</small></div>
           <span class="pill ok">✓ Mature</span>
           <div class="det">Branche <b>dans l'URI</b> (<code>/iceberg/&lt;branche&gt;</code>), respecte <code>overrides.uri</code> → n'importe quelle branche, en <b>lecture et écriture</b>.</div>
         </div>
         <div class="row reveal">
           <div class="eng">DuckDB<small>transformations</small></div>
-          <span class="pill warn">⚠ Pas encore</span>
-          <div class="det">Jusqu'à la 1.5.6 (sept. 2026) : <b>main uniquement</b>, le client ignore <code>overrides.uri</code> (<a href="https://github.com/duckdb/duckdb-iceberg/issues/1145">#1145</a>). <b>Corrigé</b> dans l'extension (<a href="https://github.com/duckdb/duckdb-iceberg/pull/1230">#1230</a>), <b>pas encore publié</b>. <code>CREATE OR REPLACE</code> toujours absent (<a href="https://github.com/duckdb/duckdb-iceberg/issues/784">#784</a>). <b>On a rusé</b> : DuckDB calcule, PyIceberg écrit sur la branche.</div>
+          <span class="pill warn">⚠ Pré-version 2.0</span>
+          <div class="det"><b>Lit et écrit sur une branche</b> avec la pré-version 2.0 : l'extension respecte enfin <code>overrides.uri</code> (<a href="https://github.com/duckdb/duckdb-iceberg/pull/1230">#1230</a>). La dernière version stable (1.5.6, sept. 2026) ne voit que <b>main</b> (<a href="https://github.com/duckdb/duckdb-iceberg/issues/1145">#1145</a>). Toujours absents : <code>CREATE OR REPLACE</code> (<a href="https://github.com/duckdb/duckdb-iceberg/issues/784">#784</a>) et les <b>vues</b> dans le catalogue.</div>
         </div>
         <div class="row reveal">
           <div class="eng">Trino<small>—</small></div>
@@ -575,7 +558,7 @@
           <div class="det">Intégration Iceberg REST avec <code>PREFIX = '&lt;branche&gt;'</code> (<a href="https://docs.snowflake.com/en/sql-reference/sql/create-catalog-integration-rest">doc</a>) : branche <b>fixée par intégration</b>, comme Trino, mais une intégration + une base par branche se créent en SQL. Nessie doit être <b>authentifié</b> et joignable depuis Snowflake.</div>
         </div>
       </div>
-      <p class="caption reveal">Pour un workflow <strong>multi-branches dynamique</strong>, seuls <strong>Spark</strong> (natif, lourd) et <strong>PyIceberg</strong> (léger, via l'URI) sont prêts. D'où notre choix : <strong>PyIceberg pour les branches + DuckDB pour le calcul</strong>.</p>
+      <p class="caption reveal">Pour un workflow <strong>multi-branches dynamique</strong>, <strong>Spark</strong> (natif, lourd) et <strong>PyIceberg</strong> (léger, via l'URI) sont prêts, <strong>DuckDB</strong> le sera avec la 2.0. Notre choix : <strong>PyIceberg pour l'ingestion + DuckDB attaché à la branche pour dbt</strong>.</p>
     </div>
   </section>
 
@@ -707,35 +690,27 @@
         demo:['Bucket <code>iceberg-warehouse</code>, créé au démarrage par le service <code>minio-setup</code>.',
               'Image <code>pgsty/minio</code> : <strong>Silo</strong>, fork communautaire de MinIO maintenu par Pigsty (AGPLv3). Les images officielles MinIO ne sont plus publiées.',
               'Console sur <code>localhost:29090</code> pour montrer les fichiers.'],
-        files:['docker-compose.yml','mise.toml (AWS_* pour aws s3 ls)'],
+        files:['docker-compose.yml','mise.local.toml (identifiants AWS_*)'],
         alt:['En production : <strong>S3, GCS, ADLS</strong>.'],
         say:'Iceberg, ce sont des fichiers : ici dans Silo, en production dans S3.'},
       pyiceberg:{lane:'Data plane · lire, transformer',col:'var(--pass)',title:'PyIceberg',
         role:'Implémentation <strong>Python</strong> d\'Iceberg : client de catalogue REST, lecture (scan vers Arrow) et écriture (append, overwrite).',
         demo:['La branche est dans l\'adresse : <code>…/iceberg/&lt;branche&gt;</code>.',
               '<strong>Ingestion</strong> : ajoute les commandes à <code>raw.orders</code> sur la branche.',
-              'Sous les deux plugins dbt : lit <code>raw.orders</code>, écrit <code>daily_orders</code>.',
-              'Compte les lignes via le <strong>snapshot</strong> (métadonnées seules) pour la sortie de la pipeline.'],
+                            'Compte les lignes via le <strong>snapshot</strong> (métadonnées seules) pour la sortie de la pipeline.'],
         files:['src/nessie_demo/catalog.py','src/nessie_demo/ingest.py','src/nessie_demo/settings.py'],
-        alt:['<strong>DuckDB ≥ 2.0</strong> : lecture et écriture directes sur la branche.','<strong>Spark</strong> : complet, mais une JVM et un cluster.'],
+        alt:['<strong>DuckDB</strong> : écrit déjà les marts ; pourrait aussi ingérer.','<strong>Spark</strong> : complet, mais une JVM et un cluster.'],
         say:'PyIceberg respecte l\'adresse que Nessie lui renvoie : c\'est pour ça qu\'il sait viser une branche.'},
       dbt:{lane:'Data plane · lire, transformer',col:'var(--pass)',title:'dbt · DuckDB',
         role:'<strong>dbt</strong> enchaîne les transformations SQL et les <strong>tests</strong> ; <strong>DuckDB</strong> est le moteur SQL embarqué qui les exécute.',
-        demo:['<code>stg_orders</code> (vue) puis <code>daily_orders</code> (table Iceberg).',
+        demo:['DuckDB <strong>attache</strong> la branche comme base <code>lake</code> (<code>profiles.yml</code>) : lit <code>lake.raw.orders</code>, écrit <code>lake.marts.daily_orders</code>.',
+              '<code>stg_orders</code> (vue, dans le fichier DuckDB local) puis <code>daily_orders</code> (table Iceberg, <code>incremental</code> + stratégie <code>replace</code> : un commit par run).',
               '<strong>6 tests</strong> : order_id non null et unique, customer_id non null, montant ≥ 0, order_date non null et unique.',
               'Lancé par la pipeline avec <code>NESSIE_BRANCH=&lt;branche&gt; dbt build</code>.',
               'Tests rouges : dbt saute <code>daily_orders</code> et la pipeline ne merge pas.'],
-        files:['dbt/models/','dbt/tests/','dbt/profiles.yml'],
+        files:['dbt/models/','dbt/tests/','dbt/profiles.yml','dbt/macros/incremental_replace.sql'],
         alt:['dbt-spark, dbt-trino.','SQLMesh.'],
         say:'dbt ne sait rien de Nessie : il transforme et teste la branche qu\'on lui donne.'},
-      plugin:{lane:'Data plane · lire, transformer',col:'var(--pass)',title:'Plugin dbt custom',
-        role:'Écrit le résultat d\'un modèle dbt en <strong>table Iceberg sur la branche</strong>, à la place de DuckDB.',
-        demo:['Modèles <code>materialized=\'external\'</code> avec <code>plugin=\'iceberg_write\'</code>.',
-              'DuckDB calcule, le résultat passe en Arrow, PyIceberg fait un <code>overwrite</code> de <code>marts.daily_orders</code>.',
-              'Existe parce que DuckDB ≤ 1.5.6 ne sait pas écrire sur une branche Nessie (slide « Le détour par PyIceberg »).'],
-        files:['src/nessie_demo/dbt_plugins/iceberg_write.py','dbt/dbt_project.yml'],
-        alt:['<strong>DuckDB 2.0</strong> : <code>ATTACH</code> sur la branche, plus besoin de plugin.'],
-        say:'Une cinquantaine de lignes pour contourner une limite de DuckDB, à supprimer dès DuckDB 2.0.'},
       client:{lane:'Control plane · agir, prévenir',col:'var(--tag)',title:'nessie.py · client de l\'API Nessie',
         role:'Une petite <strong>classe Python <code>Nessie</code></strong> qui appelle l\'<strong>API REST v2</strong> de Nessie (<code>/api/v2</code>) avec <code>requests</code>. C\'est le <strong>control plane</strong> : les opérations Git sur le catalogue.',
         demo:['<code>create_branch()</code> : ouvre <code>pipeline-ok|ko-HHMMSS</code> depuis <code>main</code> (<code>POST /trees</code>).',
