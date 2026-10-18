@@ -19,3 +19,4 @@ This folder is a copy of vierbein, the agentic layer, a separate repository. The
 Changes made here since the copy, one line each (date, file, what and why).
 
 - Nothing at the copy.
+- 2026-10-18, `agreements/writing.md`: carried over from vierbein at `959f77d` (file now identical to it): "Docs say how things are now", and the conversation with the developer in the developer's language.

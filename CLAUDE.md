@@ -31,7 +31,7 @@ Ticket `T<nnn>` from before the move is issue `#<nnn>`.
 
 ## Language
 
-English everywhere (rule in `00-agentic/agreements/writing.md`), with two exceptions: `docs/presentation/` stays in French, and older commits are in French (leave them).
+English everywhere in the repo (rule in `00-agentic/agreements/writing.md`), with two exceptions: `docs/presentation/` stays in French, and older commits are in French (leave them).
 
 ## Running things
 
