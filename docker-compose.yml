@@ -28,12 +28,12 @@ services:
       - nessie.catalog.service.s3.default-options.region=us-east-1
       - nessie.catalog.service.s3.default-options.path-style-access=true
       - nessie.catalog.service.s3.default-options.access-key=urn:nessie-secret:quarkus:nessie.catalog.secrets.access-key
-      - nessie.catalog.secrets.access-key.name=minioadmin
-      - nessie.catalog.secrets.access-key.secret=8qqR90Az
+      - nessie.catalog.secrets.access-key.name=${AWS_ACCESS_KEY_ID:?set in mise.local.toml, run through mise}
+      - nessie.catalog.secrets.access-key.secret=${AWS_SECRET_ACCESS_KEY:?set in mise.local.toml, run through mise}
         # Silo endpoint for the Nessie server
       - nessie.catalog.service.s3.default-options.endpoint=http://minio:9000/
         # Silo endpoint for clients (on the Docker host)
-      - nessie.catalog.service.s3.default-options.external-endpoint=http://127.0.0.1:29000/
+      - nessie.catalog.service.s3.default-options.external-endpoint=${AWS_ENDPOINT_URL:?set in mise.toml, run through mise}/
     healthcheck:
       # healthcheck is executed from within the container’s own network namespace
       test: "exec 3<>/dev/tcp/localhost/9000 && echo -e 'GET /q/health HTTP/1.1\\r\\nHost: localhost\\r\\nConnection: close\\r\\n\\r\\n' >&3 && cat <&3 | grep -q '200 OK'"
@@ -70,8 +70,8 @@ services:
     volumes:
     - minio_data:/data
     environment:
-      - MINIO_ROOT_USER=minioadmin
-      - MINIO_ROOT_PASSWORD=8qqR90Az
+      - MINIO_ROOT_USER=${AWS_ACCESS_KEY_ID:?set in mise.local.toml, run through mise}
+      - MINIO_ROOT_PASSWORD=${AWS_SECRET_ACCESS_KEY:?set in mise.local.toml, run through mise}
       - MINIO_ADDRESS=:9000
       - MINIO_CONSOLE_ADDRESS=:9090
     healthcheck:
@@ -86,9 +86,13 @@ services:
     depends_on:
       minio:
         condition: service_healthy
+    environment:
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID:?set in mise.local.toml, run through mise}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY:?set in mise.local.toml, run through mise}
+    # $$: expanded by the container's shell, not by compose.
     entrypoint: >
       /bin/sh -c "
-      mc alias set local http://minio:9000 minioadmin 8qqR90Az &&
+      mc alias set local http://minio:9000 $$AWS_ACCESS_KEY_ID $$AWS_SECRET_ACCESS_KEY &&
       mc mb -p local/iceberg-warehouse &&
       echo 'bucket iceberg-warehouse ready'
       "

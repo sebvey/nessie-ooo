@@ -17,12 +17,14 @@ nessie_demo:
       # Access to the Iceberg data files in Silo.
       secrets:
         - type: s3
-          key_id: minioadmin
-          secret: 8qqR90Az
-          endpoint: localhost:29000
+          # From the environment (mise.toml, mise.local.toml): dbt fails if one is missing.
+          key_id: "{{ env_var('AWS_ACCESS_KEY_ID') }}"
+          secret: "{{ env_var('AWS_SECRET_ACCESS_KEY') }}"
+          # DuckDB wants host:port, without the scheme.
+          endpoint: "{{ env_var('AWS_ENDPOINT_URL') | replace('http://', '') }}"
           url_style: path
           use_ssl: false
-          region: us-east-1
+          region: "{{ env_var('AWS_REGION') }}"
       # The Nessie catalog, attached as the `lake` database. The branch is in the endpoint: every
       # read and write targets it, never main directly.
       attach:
@@ -30,5 +32,5 @@ nessie_demo:
           alias: lake
           type: iceberg
           options:
-            endpoint: "http://localhost:19120/iceberg/{{ env_var('NESSIE_BRANCH', 'main') }}"
+            endpoint: "{{ env_var('NESSIE_URI') }}/iceberg/{{ env_var('NESSIE_BRANCH', 'main') }}"
             authorization_type: none

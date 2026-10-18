@@ -19,7 +19,7 @@ Everything runs locally: Nessie, PostgreSQL (version store) and Silo (S3 storage
 
 ```bash
 mise trust                                   # once per clone: let mise load mise.toml
-cp mise.local.toml.example mise.local.toml   # once per clone: then set NESSIE_PG_PASSWORD
+cp mise.local.toml.example mise.local.toml   # once per clone: then set the passwords (Postgres, Silo)
 mise run stack-up      # start Nessie + Postgres + Silo, create the bucket and the raw / marts namespaces
 mise run pipeline-ok   # nominal run: branch -> ingest -> dbt build (green) -> merge into main
 mise run pipeline-ko   # failing run: bad data -> red tests -> no merge + alert
@@ -38,7 +38,7 @@ mise run audit-python          # known vulnerabilities in the locked Python depe
 ```
 
 - Nessie API: http://localhost:19120
-- Silo console: http://localhost:29090 (`minioadmin` / `8qqR90Az`)
+- Silo console: http://localhost:29090 (`AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` from `mise.local.toml`)
 
 ## Explore the data
 

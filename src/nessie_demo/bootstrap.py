@@ -33,8 +33,8 @@ def start_stack() -> None:
         display.console.print(result.stdout, result.stderr)
         sys.exit(1)
     line("postgres [green]✓[/] · silo [green]✓[/] · bucket iceberg-warehouse [green]✓[/] · nessie [green]✓")
-    line("[dim]Nessie        http://localhost:19120")
-    line("[dim]Silo console  http://localhost:29090 (minioadmin / 8qqR90Az)")
+    line(f"[dim]Nessie        {settings.nessie_uri}")
+    line("[dim]Silo console  http://localhost:29090 (credentials in mise.local.toml)")
 
 
 def describe(entries: list[dict]) -> str:
