@@ -1,5 +1,8 @@
-"""Central config for the demo. Sensible local defaults so `mise run stack-up` + `mise run pipeline-ok` just works."""
+"""Central config for the demo, read from the environment that mise exports (`mise.toml` for the URLs, `mise.local.toml` for the secrets): run through mise."""
 
+import sys
+
+from pydantic import Field, ValidationError
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -7,16 +10,23 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="", extra="ignore")
 
     # Nessie
-    nessie_api_uri: str = "http://localhost:19120/api/v2"
-    nessie_iceberg_uri: str = "http://localhost:19120/iceberg"  # + /<branch>
+    nessie_uri: str = Field(validation_alias="NESSIE_URI")
     main_branch: str = "main"
 
-    # Object store (MinIO)
+    # Object store (Silo)
     warehouse: str = "s3://iceberg-warehouse"
-    s3_endpoint: str = "http://localhost:29000"
-    s3_access_key: str = "minioadmin"
-    s3_secret_key: str = "8qqR90Az"
-    s3_region: str = "us-east-1"
+    s3_endpoint: str = Field(validation_alias="AWS_ENDPOINT_URL")
+    s3_access_key: str = Field(validation_alias="AWS_ACCESS_KEY_ID")
+    s3_secret_key: str = Field(validation_alias="AWS_SECRET_ACCESS_KEY")
+    s3_region: str = Field(validation_alias="AWS_REGION")
+
+    @property
+    def nessie_api_uri(self) -> str:
+        return f"{self.nessie_uri}/api/v2"
+
+    @property
+    def nessie_iceberg_uri(self) -> str:
+        return f"{self.nessie_uri}/iceberg"  # + /<branch>
 
     def pyiceberg_props(self, branch: str) -> dict:
         """kwargs for pyiceberg.catalog.load_catalog targeting a Nessie branch."""
@@ -31,4 +41,12 @@ class Settings(BaseSettings):
         }
 
 
-settings = Settings()
+def load() -> Settings:
+    try:
+        return Settings()
+    except ValidationError as e:
+        missing = ", ".join(str(err["loc"][0]) for err in e.errors())
+        sys.exit(f"Missing environment variables: {missing}. Set them in mise.local.toml (secrets) or mise.toml, and run through mise.")
+
+
+settings = load()

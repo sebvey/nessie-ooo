@@ -32,7 +32,7 @@ Start order: `postgres` and `minio` become healthy, `minio-setup` creates the bu
 
 - **Version store**: `nessie.version.store.type=JDBC2` on Postgres, through the Quarkus datasource named `postgresql` (`nessie.version.store.persist.jdbc.datasource`, `quarkus.datasource.postgresql.*`). Nessie creates its two tables at startup: `refs2` (branches and tags, like `.git/refs`) and `objs2` (commits, content values and internal objects, each serialized in `obj_value`, like `.git/objects`). Nessie itself is stateless: restarting it loses nothing.
 - **Warehouse**: `s3://iceberg-warehouse/`, declared as the default warehouse. Nessie announces it in `/v1/config` and writes the `metadata.json` files there.
-- **S3 endpoints**: Nessie reaches Silo at `http://minio:9000` (compose network); its `external-endpoint` (`http://127.0.0.1:29000`) is the address meant for clients. The demo's clients set their S3 endpoint themselves anyway (`settings.py`, `dbt/profiles.yml`).
+- **S3 endpoints**: Nessie reaches Silo at `http://minio:9000` (compose network); its `external-endpoint` (`http://127.0.0.1:29000`) is the address meant for clients. The demo's clients set their S3 endpoint themselves anyway (`AWS_ENDPOINT_URL`, read by `settings.py` and `dbt/profiles.yml`).
 - **Security**: authentication and authorization are disabled. Anyone who can reach port 19120 can write to any branch, including `main`.
 
 ## Read and write paths
@@ -75,7 +75,9 @@ DuckDB reaches a branch from DuckDB 2.0 on (duckdb-iceberg#1230); before, it ign
 ## Credentials
 
 - Postgres (version store): `NESSIE_PG_USER` / `NESSIE_PG_PASSWORD` in `mise.local.toml` (ignored by git, template in `mise.local.toml.example`). `docker-compose.yml` reads them for both the `postgres` and `nessie` services and refuses to start without them, so run compose through mise. Changing the password needs `mise run stack-reset`: Postgres only reads it on first start.
-- Silo: `minioadmin` / `8qqR90Az` (console at http://localhost:29090), still hardcoded in several files and exported by `mise.toml` (`AWS_*`) for S3 clients.
+- Silo: `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` in `mise.local.toml`, the root user of Silo (console at http://localhost:29090). The standard AWS names, so `docker-compose.yml` (Silo, its bucket setup, Nessie), `settings.py`, `dbt/profiles.yml` and the AWS CLI all read the same pair. Compose refuses to start without them; `settings.py` and dbt stop with the name of the missing variable.
+
+The other values the clients need are not secrets and live in `mise.toml`: `NESSIE_URI` (Nessie from the host) and `AWS_ENDPOINT_URL`, `AWS_REGION` (Silo from the host). `settings.py` has no default for them: outside mise, it stops instead of guessing.
 
 ## Checks
 

@@ -7,3 +7,8 @@ NESSIE_BRANCH = "main"
 # Changing the password needs `mise run stack-reset` (Postgres only reads it on first start).
 NESSIE_PG_USER = "nessie"
 NESSIE_PG_PASSWORD = "change-me"
+
+# Silo root credentials, read by docker-compose.yml, the demo's clients, dbt and the AWS CLI.
+# The password needs at least 8 characters.
+AWS_ACCESS_KEY_ID = "silo-admin"
+AWS_SECRET_ACCESS_KEY = "change-me"

@@ -48,7 +48,7 @@ mise run notebook                          # pick the branch, query raw_orders
 
 ```text
 src/nessie_demo/
-├─ settings.py        config (Nessie URIs, S3), local defaults
+├─ settings.py        config (Nessie URIs, S3), read from the mise environment
 ├─ nessie.py          Nessie API v2 client: branch, merge, tag, delete, list, log
 ├─ catalog.py         PyIceberg catalog scoped to a branch
 ├─ lake.py            DuckDB with the branch's catalog attached as `lake` (reads the marts)

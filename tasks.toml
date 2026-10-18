@@ -30,7 +30,7 @@ quiet = true
 
 [branches]
 description = "List Nessie branches and tags"
-run = "curl -s http://localhost:19120/api/v2/trees | python3 -m json.tool"
+run = "curl -s $NESSIE_URI/api/v2/trees | python3 -m json.tool"
 
 [cli]
 description = "Nessie REPL connected to main (e.g. LIST REFERENCES;). Args go to the CLI, e.g. -c 'SHOW LOG;'"
