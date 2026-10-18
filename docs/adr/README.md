@@ -15,3 +15,4 @@ The "Choices" table in [`architecture.md`](../project/architecture.md#choices) s
 | [ADR005](ADR005-vierbein-imported-from-a-sibling-folder.md) | The agentic layer, vierbein, is imported from a sibling folder | superseded by ADR006 |
 | [ADR006](ADR006-vierbein-copied-into-the-repository.md) | The agentic layer, vierbein, is copied into the repository (`00-agentic/`) | accepted |
 | [ADR007](ADR007-tickets-move-to-github-issues.md) | Nessie's tickets move to GitHub Issues, all of them, with issue `#n` for ticket `Tn` | accepted |
+| [ADR008](ADR008-work-delivered-by-pull-requests.md) | Work is delivered by pull requests, squash-merged into a `main` protected with no bypass (public repository) | accepted |
