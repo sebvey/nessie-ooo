@@ -39,7 +39,7 @@ Committed in the repo, where Claude Code reads it. It pre-approves read-only com
 | Git, read-only, through mise | `mise exec -- git status`, `log`, `diff`, `show`, `grep`, `ls-files` | Inspecting the repo; `mise exec` gives git the workspace identity |
 | Environment | `printenv`, `mise env` | Checking which variables are set. They may print secret values: the developer's global rule is to list names only (`mise env \| cut -d= -f1`) |
 | Stack, read-only | `docker compose ps`, `config`, `logs`, `aws s3 ls`, `mise run branches` | Checking the local stack without changing it |
-| Tickets, read-only, through mise | `mise exec -- gh issue view`, `gh issue list`, `gh project item-list`, `gh project field-list` | Reading tickets and their status; creating or editing an issue still asks |
+| Tickets and pull requests, read-only, through mise | `mise exec -- gh issue view`, `gh issue list`, `gh pr view`, `gh pr list`, `gh pr checks`, `gh project item-list`, `gh project field-list` | Reading tickets, their status and their pull requests; creating or editing an issue or a pull request still asks |
 | MCP, read-only | `tavily_search`, `tavily_extract`, Context7 docs, browser `find` and `get_page_text`, `read_terminal` | Looking things up and reading pages or the developer's terminal |
 
 Writes (commits, file edits, stack resets, network calls with side effects) are not pre-approved.
