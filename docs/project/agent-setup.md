@@ -22,7 +22,7 @@ Tickets are issues of `sebvey/nessie-ooo`, with their status in GitHub Project 3
 Every change reaches `main` through a pull request, squash-merged by GitHub, as the [ticket loop](../../00-agentic/agreements/tickets.md) and the [GitHub backend](../../00-agentic/ticket-backends/github.md) say (decision: [ADR008](../adr/ADR008-work-delivered-by-pull-requests.md)). Facts dated 2026-10-18.
 
 - **A ticket opens its draft pull request when it starts**, linked by `Closes #<n>`: the GitHub Project moves the issue to `In Progress`, and to `Done` at the merge. An analysis ticket (label `type:analysis`) has no pull request: its analysis report is a comment on the issue ([ADR009](../adr/ADR009-analysis-tickets-deliver-a-report-on-the-issue.md)).
-- **The developer merges** in the web UI by default; the agent merges only when asked.
+- **The developer merges** in the web UI by default; the agent never offers to, and merges only when asked.
 - **`main` is protected** by a ruleset with no bypass, admins included: neither the developer nor the agent, which uses the developer's `gh` token and SSH key, can push to it, force-push or delete it. The repository is public, which GitHub Free requires for a ruleset. Setup: [`github-setup.md`](../../00-agentic/ticket-backends/github-setup.md), steps 5 and 6.
 - **Commit subjects on `main`**: the pull request's title and number (`… (#34)`) from #30 on; earlier subjects carry the ticket's number (`… (#29)`) or `X666`.
 
