@@ -32,3 +32,5 @@ How the operations of the ticket loop ([`agreements/tickets.md`](../agreements/t
 | Tick or untick a criterion | Edit the checkbox in the file. |
 | Add a note, a follow-up to propose | Edit the `Notes` section. |
 | Close as done or abandoned | Fill the `Outcome` section, then move the file to `03-done/`. |
+
+An analysis ticket keeps its `Type: analysis` line and has no branch and no commit; its analysis report is a `## Analysis report` section of the ticket file, before `## Outcome`.

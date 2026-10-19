@@ -97,9 +97,10 @@ gh api -X POST repos/<owner>/<repo>/rulesets --input <file>
 
 GitHub adds `require_extra_approval_for_unattributed_changes: true` to the `pull_request` rule on its own (meaning not examined; it blocked nothing in the test). The check: a direct push to `main` is refused (`GH013`, "Changes must be made through a pull request"), a force push too, and a pull request merges only by squash, once out of draft.
 
-## 7. Labels for areas (if any)
+## 7. Labels
 
-For each area the project names: `gh label create area:<name>`.
+- Analysis tickets: `gh label create type:analysis --description "Analysis ticket: the deliverable is a report on the issue, no change to the repository"`.
+- Areas, if any: for each area the project names, `gh label create area:<name>`.
 
 ## 8. The project's `CLAUDE.md`
 
