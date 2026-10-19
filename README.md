@@ -14,7 +14,7 @@ flowchart LR
     dbt -- tests red --> alert
 ```
 
-Everything runs locally: Nessie, PostgreSQL (version store) and Silo (S3 storage, community fork of MinIO) in docker compose; PyIceberg, dbt and DuckDB in Python. How it fits together: [Architecture overview](docs/project/architecture.md).
+Everything runs locally: Nessie, PostgreSQL (version store) and Silo (S3 storage) in docker compose; PyIceberg, dbt and DuckDB in Python. How it fits together: [Architecture overview](docs/project/architecture.md).
 
 ## Prerequisites
 

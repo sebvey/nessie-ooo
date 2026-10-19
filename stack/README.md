@@ -43,13 +43,13 @@ docs/nessie-cli.md           Nessie CLI reference
 |---|---|---|---|
 | `nessie` | `ghcr.io/projectnessie/nessie:0.106.0` | Nessie API (`/api/v2`) and Iceberg REST (`/iceberg/<branch>`) | `19120` (API), `19000` (management: health, metrics) |
 | `postgres` | `postgres:15` | Nessie version store | `35432` |
-| `silo` | `pgsty/silo` | Silo, the community fork of MinIO: S3 storage for Iceberg files | `29000` (S3 API), `29090` (console) |
+| `silo` | `pgsty/silo` | S3 storage for Iceberg files | `29000` (S3 API), `29090` (console) |
 | `silo-setup` | `pgsty/silo` | One-shot job: creates the `iceberg-warehouse` bucket with `mcli`, the client shipped in the Silo image | none |
 | `nessie-cli` | `ghcr.io/projectnessie/nessie-cli:0.106.0` | Nessie REPL, started by `mise run cli` (profile `tools`) | none |
 
 Start order: `postgres` and `silo` become healthy, `silo-setup` creates the bucket, then `nessie` starts.
 
-Why these: docker compose runs everything locally with one command. Postgres keeps the history across restarts, the same model as production (a stateless Nessie, an external database). Silo gives an S3 API locally: the official MinIO images are no longer published (Docker Hub and quay.io answer 401).
+Why these: docker compose runs everything locally with one command. Postgres keeps the history across restarts, the same model as production (a stateless Nessie, an external database). Silo, pgsty's community fork of MinIO, gives an S3 API locally: MinIO's official images are no longer published (Docker Hub and quay.io answer 401).
 
 ## Nessie configuration
 
@@ -61,7 +61,7 @@ Why these: docker compose runs everything locally with one command. Postgres kee
 ## Credentials and settings
 
 - Postgres (version store): `NESSIE_PG_USER` / `NESSIE_PG_PASSWORD` in `mise.local.toml` (ignored by git, template in `mise.local.toml.example`). `docker-compose.yml` reads them for both the `postgres` and `nessie` services and refuses to start without them, so run compose through mise. Changing the password needs `mise run stack-reset`: Postgres only reads it on first start.
-- Silo: `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` in `mise.local.toml`, the root user of Silo. The standard AWS names, so `docker-compose.yml` (Silo, its bucket setup, Nessie), the clients' settings (`lakehouse-client`), dbt's profile (`transformation`) and the AWS CLI all read the same pair. Compose refuses to start without them; the settings and dbt stop with the name of the missing variable.
+- Silo: `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` in `mise.local.toml`, the root user of Silo. Compose passes them to Silo as `MINIO_ROOT_USER` / `MINIO_ROOT_PASSWORD`: Silo keeps MinIO's variable names and has no `SILO_*` equivalent. The standard AWS names, so `docker-compose.yml` (Silo, its bucket setup, Nessie), the clients' settings (`lakehouse-client`), dbt's profile (`transformation`) and the AWS CLI all read the same pair. Compose refuses to start without them; the settings and dbt stop with the name of the missing variable.
 
 The other values the clients need are not secrets and live in `mise.toml`: `NESSIE_URI` (Nessie from the host) and `AWS_ENDPOINT_URL`, `AWS_REGION` (Silo from the host), `SILO_CONSOLE_URL` (Silo console). The settings have no default for them: outside mise, they stop instead of guessing.
 

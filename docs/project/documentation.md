@@ -28,3 +28,11 @@ Where a piece of documentation goes, and what each page holds. The reader is the
   A component's README is a reference card with the fixed sections above. Everything in `docs/concepts/` is an overview. A how-to may end with a short "Background" section when the context is needed to apply it.
 - **Commands are written for the developer's shell**, where mise is activated: `uv run dbt build`, not `mise exec -- uv run dbt build`. The agent adds the prefix itself (`CLAUDE.md`, "Running things").
 - **Links are relative** (`../adr/ADR004-….md`), so they work on GitHub and in an editor. After moving or renaming a page, grep for its old path.
+
+## Vocabulary
+
+Project terms, one per concept ([`writing.md`](../../00-agentic/agreements/writing.md), "Names don't collide").
+
+- **Silo**: pgsty's community fork of MinIO (`pgsty/silo`), the S3 storage the stack runs. It is MinIO-compatible: same `MINIO_*` variables, same data format. Docs, code comments, docstrings and console output call it Silo, and say it is a fork of MinIO only where its origin matters (why this image, why `MINIO_*` variables).
+- **MinIO**: the upstream project, the S3-compatible object storage server of MinIO, Inc. (`minio/minio`), whose community edition is no longer distributed. The name is used only for that project.
+- **`minio`**, in any case, appears otherwise only in technical identifiers that keep it on purpose (`MINIO_*` variables, the `/minio/health/…` routes), always in backticks in the docs.
