@@ -14,10 +14,10 @@ mise run pipeline-ko   # failing run: bad data -> red tests -> no merge + alert
 The command behind them, `pipeline`, with its options:
 
 ```bash
-mise exec -- uv run pipeline --ko         # inject bad rows (what pipeline-ko does)
-mise exec -- uv run pipeline --keep       # keep the branch even after a merge
-mise exec -- uv run pipeline --no-pause   # no Enter between steps
-mise exec -- uv run pipeline --verbose    # raw dbt output
+uv run pipeline --ko         # inject bad rows (what pipeline-ko does)
+uv run pipeline --keep       # keep the branch even after a merge
+uv run pipeline --no-pause   # no Enter between steps
+uv run pipeline --verbose    # raw dbt output
 ```
 
 To post the alert to Slack as well, set `SLACK_WEBHOOK_URL` (`export SLACK_WEBHOOK_URL=https://hooks.slack.com/services/…`) before a run.

@@ -57,7 +57,7 @@ A session without them still works; the permissions above simply go unused.
 
 ## mise
 
-Every tool runs through mise (`mise run <task>`, `mise exec -- <command>`): it provides the pinned tools, the env vars from `mise.toml` and `mise.local.toml`, and the workspace's git identity and credentials. The agent's shell doesn't have them otherwise. Setup (trusting the config, writing `mise.local.toml`, starting Docker) is the developer's job; the rule is in `CLAUDE.md`.
+Every tool runs through mise (`mise run <task>`, `mise exec -- <command>`): it provides the pinned tools, the env vars from `mise.toml` and `mise.local.toml`, and the workspace's git identity and credentials. The agent's shell doesn't have them otherwise, so the agent prefixes its commands with `mise exec --`; the docs show them without the prefix, for a developer's shell where mise is activated. Setup (trusting the config, writing `mise.local.toml`, starting Docker) is the developer's job; the rule is in `CLAUDE.md`.
 
 ## Outside the repo
 
@@ -66,4 +66,4 @@ The agent also follows instructions that are not in the repo and are not copied 
 - **The developer's global `CLAUDE.md`** (`~/.claude/CLAUDE.md`): personal working environment, notably running git and dev tools through `mise exec`.
 - **The organization's instructions** (Ippon Technologies), set by the administrator in Claude: posture, writing style, language. They take precedence over user preferences.
 
-Someone else working on the repo with an agent gets the repo's rules, but not these two: the `mise exec` habit, at least, has to come from their own setup.
+Someone else working on the repo with an agent gets the repo's rules, but not these two. `CLAUDE.md` already tells the agent to run the tools through mise; what only the global file adds is running git through `mise exec` too, for the workspace's identity and credentials, which another setup has to provide itself.

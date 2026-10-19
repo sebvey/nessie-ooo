@@ -6,15 +6,15 @@ How to write version specifiers in the components' `pyproject.toml`, where each 
 
 The dependencies live in the `pyproject.toml` of the component that imports or runs them ([components](architecture.md#components)), not in the root one, which only lists the components.
 
-- **Add one** with `mise exec -- uv add --package <component> <pkg>`. A package used by several components is declared in each, with the same floor (the locked version).
+- **Add one** with `uv add --package <component> <pkg>`. A package used by several components is declared in each, with the same floor (the locked version).
 - **A component that uses another** declares it like a package, with `{ workspace = true }` in `[tool.uv.sources]`.
 - **Check what a component declares**: the shared `.venv` holds every component's dependencies, so an import a component doesn't declare still works in it. `--exact` removes from the `.venv` what the component doesn't declare, then runs the command:
 
   ```bash
-  mise exec -- uv run --exact --package orchestration pipeline --help
-  mise exec -- uv run --exact --package transformation dbt parse
-  mise exec -- uv run --exact --package exploration python -P -c "import lakehouse_client.lake"
-  mise exec -- uv sync    # put every component back
+  uv run --exact --package orchestration pipeline --help
+  uv run --exact --package transformation dbt parse
+  uv run --exact --package exploration python -P -c "import lakehouse_client.lake"
+  uv sync    # put every component back
   ```
 
   `python -P`: Python run from the repository root also sees the component folders (`orchestration/`, `stack/`…) as namespace packages, which would hide a missing dependency on another component. Entry points (`pipeline`, `dbt`…) don't have that problem.
@@ -55,10 +55,10 @@ The library's lock only serves its own development: users never see it. The spec
 
 When: before each talk, on a vulnerability alert, or for a feature you need. Each wave of upgrades is a ticket.
 
-1. See what's behind: `mise exec -- uv tree --depth 1 --outdated --all-groups`.
-2. Upgrade one package at a time, never everything at once: `mise exec -- uv lock --upgrade-package <pkg>`. A transitive dependency can be upgraded the same way. To stay on a release line, name the version: `--upgrade-package dbt-core==1.11.16`.
+1. See what's behind: `uv tree --depth 1 --outdated --all-groups`.
+2. Upgrade one package at a time, never everything at once: `uv lock --upgrade-package <pkg>`. A transitive dependency can be upgraded the same way. To stay on a release line, name the version: `--upgrade-package dbt-core==1.11.16`.
 3. Read what uv changed (`Updated`, `Added`, `Removed` lines). A new dependency or a major you didn't ask for is a reason to stop and choose.
-4. Raise the floors to the new locked versions, in every component's `pyproject.toml` that declares the package (`grep -rn '"<pkg>' --include=pyproject.toml .`), then `mise exec -- uv lock` (no version may change).
+4. Raise the floors to the new locked versions, in every component's `pyproject.toml` that declares the package (`grep -rn '"<pkg>' --include=pyproject.toml .`), then `uv lock` (no version may change).
 5. Check for vulnerabilities (`mise run audit-python`, below), then run the end-to-end check from [`CLAUDE.md`](../../CLAUDE.md#running-things).
 
 ## Vulnerability check

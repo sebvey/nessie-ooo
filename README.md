@@ -20,6 +20,7 @@ Everything runs locally: Nessie, PostgreSQL (version store) and Silo (S3 storage
 
 - Docker with compose, running (e.g. Colima)
 - [mise](https://mise.jdx.dev): tools, env vars (`mise.toml`) and tasks (`tasks.toml`) in one place; it installs [uv](https://docs.astral.sh/uv/)
+- mise activated in your shell (`eval "$(mise activate zsh)"` in `~/.zshrc`, or the line for your shell): the commands in the docs (`uv run …`) rely on the env vars it sets. Without it, run them through `mise exec -- <command>`.
 
 ## Quick start
 

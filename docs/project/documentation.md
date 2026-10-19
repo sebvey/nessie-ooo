@@ -26,4 +26,5 @@ Where a piece of documentation goes, and what each page holds. The reader is the
   - a **reference** lists facts to look up ("Nessie CLI reference").
 
   A component's README is a reference card with the fixed sections above. Everything in `docs/concepts/` is an overview. A how-to may end with a short "Background" section when the context is needed to apply it.
+- **Commands are written for the developer's shell**, where mise is activated: `uv run dbt build`, not `mise exec -- uv run dbt build`. The agent adds the prefix itself (`CLAUDE.md`, "Running things").
 - **Links are relative** (`../adr/ADR004-….md`), so they work on GitHub and in an editor. After moving or renaming a page, grep for its old path.

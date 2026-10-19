@@ -8,7 +8,7 @@ The pipeline runs `dbt build` at its step 3 ([orchestration](../orchestration/RE
 
 ```bash
 mise run dbt-inspect <branch>                                  # replay dbt build on a branch, e.g. a kept pipeline-ko branch
-mise exec -- env NESSIE_BRANCH=<branch> uv run dbt build       # the same, without swallowing the exit code
+NESSIE_BRANCH=<branch> uv run dbt build                        # the same, without swallowing the exit code
 ```
 
 `mise.toml` exports `DBT_PROJECT_DIR` and `DBT_PROFILES_DIR`, so dbt runs from anywhere in the repository. The branch comes from `NESSIE_BRANCH`; without it, `profiles.yml` falls back to `main` and dbt writes straight to `main`. To work on a branch of your own: [How to work on your own branch](docs/working-on-a-branch.md).

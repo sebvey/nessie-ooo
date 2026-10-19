@@ -7,8 +7,8 @@ The demo's source system: it generates synthetic orders and appends them to `raw
 The pipeline calls it at its step 2 ([orchestration](../orchestration/README.md#steps)). On its own, on a branch that exists:
 
 ```bash
-mise exec -- uv run ingest <branch>        # 5 clean orders
-mise exec -- uv run ingest <branch> --ko   # 5 orders, one with a negative amount, one with a null customer
+uv run ingest <branch>        # 5 clean orders
+uv run ingest <branch> --ko   # 5 orders, one with a negative amount, one with a null customer
 ```
 
 ## Files
