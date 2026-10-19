@@ -41,13 +41,17 @@ docs/nessie-cli.md           Nessie CLI reference
 
 | Service | Image | Role | Host ports |
 |---|---|---|---|
-| `nessie` | `ghcr.io/projectnessie/nessie:0.106.0` | Nessie API (`/api/v2`) and Iceberg REST (`/iceberg/<branch>`) | `19120` (API), `19000` (management: health, metrics) |
-| `postgres` | `postgres:15` | Nessie version store | `35432` |
+| `nessie` | `ghcr.io/projectnessie/nessie` | Nessie API (`/api/v2`) and Iceberg REST (`/iceberg/<branch>`) | `19120` (API), `19000` (management: health, metrics) |
+| `postgres` | `postgres` | Nessie version store | `35432` |
 | `silo` | `pgsty/silo` | S3 storage for Iceberg files | `29000` (S3 API), `29090` (console) |
 | `silo-setup` | `pgsty/silo` | One-shot job: creates the `iceberg-warehouse` bucket with `mcli`, the client shipped in the Silo image | none |
-| `nessie-cli` | `ghcr.io/projectnessie/nessie-cli:0.106.0` | Nessie REPL, started by `mise run cli` (profile `tools`) | none |
+| `nessie-cli` | `ghcr.io/projectnessie/nessie-cli` | Nessie REPL, started by `mise run cli` (profile `tools`) | none |
+
+The image versions are in `docker-compose.yml`, pinned as [How to manage the dependencies](../docs/project/dependencies.md#container-images) says.
 
 Start order: `postgres` and `silo` become healthy, `silo-setup` creates the bucket, then `nessie` starts.
+
+Names: a service is named after what it runs (`nessie`, `postgres`, `silo`), a one-shot job after the service it prepares (`silo-setup`), a volume `<service>_data`. A long-running service's container takes the service's name, except `nessie-postgres`: container names are global to the Docker host, and `postgres` is a common one.
 
 Why these: docker compose runs everything locally with one command. Postgres keeps the history across restarts, the same model as production (a stateless Nessie, an external database). Silo, pgsty's community fork of MinIO, gives an S3 API locally: MinIO's official images are no longer published (Docker Hub and quay.io answer 401).
 

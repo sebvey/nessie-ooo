@@ -19,6 +19,7 @@ Where a piece of documentation goes, and what each page holds. The reader is the
 
 - **One entry point.** Every page can be reached by links from the root README, directly or through a component's README, `docs/concepts/README.md` or `docs/adr/README.md`. A new page gets its link where it belongs in that tree. The agentic layer, `00-agentic/`, is the exception: its own README describes it, and `CLAUDE.md` imports its files.
 - **Every component has a `README.md`**, even a short one, with these sections: what it does (the first paragraph), `Run`, `Files`, `Depends on`, then what is specific to it. A page too long for the README goes in the component's `docs/` folder (`transformation/docs/dbt-on-iceberg.md`), and the README links to it.
+- **The slides follow the facts.** When a fact they show changes (a service, an image, a port, a command, a file name), it is updated in `docs/presentation/` in the same change, in French. Their wording and structure are reworked on their own, not along with the change.
 - **One place per piece of information.** A fact (a list of components, a file tree, a credential, a command's options) is written once; other pages link to it. A one-line summary that links to the details is not a duplicate. The list of mise tasks is `tasks.toml` itself (`mise tasks` prints it); each component's README says how to run that component.
 - **One kind per page**, said by its title:
   - an **overview** explains how something works ("Architecture overview", "dbt on Iceberg: how the models are materialized");

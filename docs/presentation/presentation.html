@@ -679,7 +679,7 @@ insert into lake.marts.daily_orders
         say:'Nessie versionne les pointeurs, pas les fichiers : une branche coûte un pointeur.'},
       postgres:{lane:'Infra · docker-compose',col:'var(--line-strong)',title:'PostgreSQL',
         role:'Le <strong>version store</strong> de Nessie : l\'historique des commits, branches et tags. C\'est le « dépôt Git » du catalogue.',
-        demo:['Image <code>postgres:15</code>, base <code>nessie</code>, port local <code>35432</code>.',
+        demo:['Image <code>postgres:15.19</code>, base <code>nessie</code>, port local <code>35432</code>.',
               'Branché par <code>nessie.version.store.type=JDBC</code>.',
               '<code>mise run stack-reset</code> efface son volume : l\'historique Nessie repart de zéro.'],
         files:['stack/docker-compose.yml'],
