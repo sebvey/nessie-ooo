@@ -1,6 +1,6 @@
 # How to manage the dependencies
 
-How to write version specifiers in the components' `pyproject.toml`, where each dependency is declared, and how to upgrade. Why: [ADR001](../adr/ADR001-lock-is-the-source-of-truth.md). The rules differ between an **application**, installed from its lock, and a **library**, installed by someone else's resolver. This repo is an application; the library rules are for a package extracted from it, such as a standalone Nessie client (T005).
+How to write version specifiers in the components' `pyproject.toml`, where each dependency is declared, and how to upgrade; then how the stack's container images are pinned and upgraded. Why: [ADR001](../adr/ADR001-lock-is-the-source-of-truth.md). The rules differ between an **application**, installed from its lock, and a **library**, installed by someone else's resolver. This repo is an application; the library rules are for a package extracted from it, such as a standalone Nessie client (T005).
 
 ## Components
 
@@ -61,9 +61,18 @@ When: before each talk, on a vulnerability alert, or for a feature you need. Eac
 4. Raise the floors to the new locked versions, in every component's `pyproject.toml` that declares the package (`grep -rn '"<pkg>' --include=pyproject.toml .`), then `uv lock` (no version may change).
 5. Check for vulnerabilities (`mise run audit-python`, below), then run the end-to-end check from [`CLAUDE.md`](../../CLAUDE.md#running-things).
 
+## Container images
+
+The images the stack runs are declared in `stack/docker-compose.yml`, the only place their versions are written.
+
+- **An exact release tag**, the most precise one the image publishes: `ghcr.io/projectnessie/nessie:0.106.0`, `postgres:15.19`, `pgsty/silo:RELEASE.2026-10-18T00-00-00Z`. Never `latest` nor a major-only tag (`postgres:15`): the image would change under the stack at the next pull, without an end-to-end check.
+- **Images of one project released together share a tag**: `nessie` and `nessie-cli`.
+- **Upgrade one image at a time**: find the latest release in a primary source (the project's releases, the tag in the registry), change the tag, then run the end-to-end check from [`CLAUDE.md`](../../CLAUDE.md#running-things). A new Postgres major can't read the data of the previous one: it needs a `stack-reset`, which deletes the Nessie history.
+- The images are not audited: [Vulnerability check](#vulnerability-check).
+
 ## Vulnerability check
 
-**Scope: the Python dependencies only.** The container images the stack runs (Nessie, Nessie CLI, Postgres, Silo, mc) are not audited by anything in this repo: see T011.
+**Scope: the Python dependencies only.** The container images the stack runs (Nessie, Nessie CLI, Postgres, Silo) are not audited by anything in this repo: see T011.
 
 ```bash
 mise run audit-python
