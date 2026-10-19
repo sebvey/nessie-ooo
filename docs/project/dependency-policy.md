@@ -1,6 +1,23 @@
-# Dependency policy
+# How to manage the dependencies
 
-How to write version specifiers in `pyproject.toml` and how to upgrade. Why: [ADR001](../adr/ADR001-lock-is-the-source-of-truth.md). The rules differ between an **application**, installed from its lock, and a **library**, installed by someone else's resolver. This repo is an application; the library rules are for a package extracted from it, such as a standalone Nessie client (T005).
+How to write version specifiers in the components' `pyproject.toml`, where each dependency is declared, and how to upgrade. Why: [ADR001](../adr/ADR001-lock-is-the-source-of-truth.md). The rules differ between an **application**, installed from its lock, and a **library**, installed by someone else's resolver. This repo is an application; the library rules are for a package extracted from it, such as a standalone Nessie client (T005).
+
+## Components
+
+The dependencies live in the `pyproject.toml` of the component that imports or runs them ([components](architecture.md#components)), not in the root one, which only lists the components.
+
+- **Add one** with `mise exec -- uv add --package <component> <pkg>`. A package used by several components is declared in each, with the same floor (the locked version).
+- **A component that uses another** declares it like a package, with `{ workspace = true }` in `[tool.uv.sources]`.
+- **Check what a component declares**: the shared `.venv` holds every component's dependencies, so an import a component doesn't declare still works in it. `--exact` removes from the `.venv` what the component doesn't declare, then runs the command:
+
+  ```bash
+  mise exec -- uv run --exact --package orchestration pipeline --help
+  mise exec -- uv run --exact --package transformation dbt parse
+  mise exec -- uv run --exact --package exploration python -P -c "import lakehouse_client.lake"
+  mise exec -- uv sync    # put every component back
+  ```
+
+  `python -P`: Python run from the repository root also sees the component folders (`orchestration/`, `stack/`…) as namespace packages, which would hide a missing dependency on another component. Entry points (`pipeline`, `dbt`…) don't have that problem.
 
 ## Rules for both
 
@@ -20,7 +37,6 @@ How to write version specifiers in `pyproject.toml` and how to upgrade. Why: [AD
 - **The floor moves with the lock**: every deliberate upgrade raises it to the new locked version, in the same commit.
 - **Exception: `[build-system]`.** The build backend isn't in the lock, so it keeps the upper bound uv recommends for its own backend (`uv_build>=0.9.21,<0.10.0`).
 - **The application has no version of its own.** `version = "0.1.0"` stays as it is: nobody installs the repo by version. A git tag marks a state worth coming back to, such as the one shown in a talk.
-- **Each component declares what it uses.** The dependencies live in the `pyproject.toml` of the component that imports or runs them ([components](architecture.md#components)), not in the root one, which only lists the components. Add one with `mise exec -- uv add --package <component> <pkg>`. A package used by several components is declared in each, with the same floor (the locked version). A component that uses another declares it like a package, with `{ workspace = true }` in `[tool.uv.sources]`.
 - **No dependency cooldown** (`[tool.uv] exclude-newer = "1 week"`, which ignores releases younger than the duration). An arbitrary choice, not investigated, open to challenge: [ADR002](../adr/ADR002-no-dependency-cooldown.md).
 
 ## Library (a package others install)
@@ -53,7 +69,7 @@ When: before each talk, on a vulnerability alert, or for a feature you need. Eac
 mise run audit-python
 ```
 
-The task runs `uv audit`, which reads `uv.lock` directly and checks every package of every dependency group, on all platforms, against the [OSV database](#the-osv-database). It exits 1 when a vulnerability is found, 2 on a usage error. It needs the network, so it's not part of the end-to-end check: run it in the upgrade procedure and when finishing a ticket that changes `uv.lock`.
+The task runs `uv audit`, which reads `uv.lock` directly and checks every package of every dependency group, on all platforms, against the [OSV database](#background-the-osv-database). It exits 1 when a vulnerability is found, 2 on a usage error. It needs the network, so it's not part of the end-to-end check: run it in the upgrade procedure and when finishing a ticket that changes `uv.lock`.
 
 - **Preview command.** `uv audit` is experimental in uv (still the case in uv 0.13.1, 2026-10-16); the task passes `--preview-features audit-command` to silence the warning printed at every run. uv stays on `latest` in `mise.toml`: if an upgrade changes the interface, the task fails with exit 2 and gets fixed then. A change of behaviour without an error (what gets audited by default, for instance) would go unnoticed: check the "Preview features" section of the uv release notes when the task's output looks different.
 - Before T013, the task exported the lock to `pylock.toml` and ran `pip-audit` against OSV. On the lock from before T007, both tools reported the same 109 vulnerabilities in the same 12 packages (2026-10-16). OSV rather than pip-audit's default PyPI service, which reported 100.
@@ -63,7 +79,7 @@ The Red Hat Dependency Analytics extension in VS Code uses its own sources and m
 
 The same extension suggests Red Hat Trusted Libraries, an index where Red Hat rebuilds popular packages from source with signed provenance. It's useful where supply-chain provenance is a requirement; here it would tie installs to a Red Hat account for the same code, so the repo stays on PyPI.
 
-### The OSV database
+## Background: the OSV database
 
 OSV (Open Source Vulnerabilities) names two things:
 

@@ -1,6 +1,6 @@
 # dbt on Iceberg: how the models are materialized
 
-How dbt-duckdb builds models when the Nessie catalog is attached to DuckDB as an Iceberg database, which SQL it sends, and what each run leaves in the branch's Nessie history. Why this setup: [ADR004](../adr/ADR004-duckdb-attached-to-the-nessie-branch.md).
+How dbt-duckdb builds models when the Nessie catalog is attached to DuckDB as an Iceberg database, which SQL it sends, and what each run leaves in the branch's Nessie history. Why this setup: [ADR004](../docs/adr/ADR004-duckdb-attached-to-the-nessie-branch.md).
 
 Observed on 2026-10-16 with DuckDB `2.0.0.dev2610151406`, dbt-core 1.11.16, dbt-duckdb 1.10.1, Nessie 0.106.0. The SQL comes from dbt's log (`transformation/logs/dbt.log`) and from dbt-duckdb's macros (`dbt/include/duckdb/macros/materializations/` in the installed package).
 

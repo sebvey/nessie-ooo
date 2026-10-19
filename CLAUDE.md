@@ -4,12 +4,9 @@ Demo of Project Nessie (Git-like catalog for Iceberg tables): a pipeline works o
 
 ## Where to read
 
-- `README.md`: what the repo does, quick start, mise tasks.
-- `docs/README.md`: documentation index.
-  - `docs/concepts/`: Iceberg and Nessie knowledge, valid outside this repo.
-  - `docs/project/`: what we built (architecture, pipeline, CLI, dependency policy).
-  - `docs/presentation/`: the talk's slides and notes.
-  - `docs/adr/`: architecture decision records, why things are the way they are. The project's ADR series: `ADR001`, `ADR002`…
+- `README.md`: the entry point. What the repo does, the quick start, the components (each with its `README.md`) and every doc.
+- Where a piece of documentation goes: `docs/project/documentation.md`.
+- `docs/adr/`: architecture decision records, why things are the way they are. The project's ADR series: `ADR001`, `ADR002`…
 - `00-agentic/`: the agentic layer (working agreements, processes, ticket backends), this project's copy of vierbein.
 
 ## Working agreements

@@ -1,4 +1,4 @@
-# Working on your own branch
+# How to work on your own branch
 
 Run your `dbt build` on a Nessie branch of your own, without touching `main`. Prerequisite: the stack is running (`mise run stack-up`).
 

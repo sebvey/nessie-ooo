@@ -1,4 +1,4 @@
-# Agent setup
+# Agent setup reference
 
 What the coding agent runs on and with in this project. Facts dated 2026-10-16, the agentic layer and tickets sections 2026-10-17. The agentic layer itself (working agreements, processes, ticket backends) comes from vierbein, a separate repository; this page is this project's side of it.
 

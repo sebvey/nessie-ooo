@@ -2,8 +2,6 @@
 
 Why the Nessie demo is the way it is: stack, dependencies, data plane, repository layout. What deserves an ADR, the lifecycle and the template are in the ADR process of the agentic layer: [`00-agentic/processes/adr.md`](../../00-agentic/processes/adr.md).
 
-The "Choices" table in [`architecture.md`](../project/architecture.md#choices) stays as the one-line summary of the setup; a row links to an ADR when one exists.
-
 ## Records
 
 | ADR | Decision | Status |

@@ -8,12 +8,12 @@ pipeline-ok|ko-  raw.orders  marts.daily_orders                 red?   -> no mer
 HHMMSS                                                                    (branch pipeline-ko-HHMMSS kept)
 ```
 
-Everything runs locally: Nessie, PostgreSQL (version store) and Silo (S3 storage, community fork of MinIO) in docker compose; PyIceberg, dbt and DuckDB in Python. Details in [`docs/project/architecture.md`](docs/project/architecture.md).
+Everything runs locally: Nessie, PostgreSQL (version store) and Silo (S3 storage, community fork of MinIO) in docker compose; PyIceberg, dbt and DuckDB in Python. How it fits together: [Architecture overview](docs/project/architecture.md).
 
 ## Prerequisites
 
 - Docker with compose, running (e.g. Colima)
-- [mise](https://mise.jdx.dev): env vars in `mise.toml`, tasks in `tasks.toml`; it installs [uv](https://docs.astral.sh/uv/)
+- [mise](https://mise.jdx.dev): tools, env vars (`mise.toml`) and tasks (`tasks.toml`) in one place; it installs [uv](https://docs.astral.sh/uv/)
 
 ## Quick start
 
@@ -25,50 +25,27 @@ mise run pipeline-ok   # nominal run: branch -> ingest -> dbt build (green) -> m
 mise run pipeline-ko   # failing run: bad data -> red tests -> no merge + alert
 ```
 
-Other tasks:
+`mise tasks` lists every task; each component's README says how to run it.
 
-```bash
-mise run branches              # list Nessie branches and tags
-mise run cli                   # Nessie REPL connected to main
-mise run ui-nessie             # open Nessie's web UI in the browser
-mise run ui-silo               # open the Silo console in the browser
-mise run ui-exploration        # marimo notebook to explore a branch
-mise run dbt-inspect <branch>  # replay dbt build on a branch (e.g. the kept pipeline-ko branch)
-mise run stack-down            # stop the stack, keep the data
-mise run stack-reset           # stop and delete everything
-mise run audit-python          # known vulnerabilities in the locked Python dependencies (not the images)
-```
+## Components
 
-- Nessie API: http://localhost:19120
-- Silo console: http://localhost:29090 (`AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` from `mise.local.toml`)
+One folder per responsibility, each with its README ([how they connect](docs/project/architecture.md#components)):
 
-## Explore the data
-
-`mise run ui-exploration` opens `exploration/explore.mo.py` in marimo:
-- pick a Nessie branch (branches only, not tags);
-- DuckDB attaches the branch's catalog as `lake` and lists its tables with their row counts; nothing is loaded in advance;
-- query them in the SQL cell as `lake.<namespace>.<table>` (`SELECT * FROM lake.raw.orders WHERE amount < 0`).
-
-## Slack alert (optional)
-
-```bash
-export SLACK_WEBHOOK_URL=https://hooks.slack.com/services/…
-mise run pipeline-ko   # the alert is also posted to Slack
-```
-
-## Repository layout
-
-One folder per component, each a uv workspace member with its own dependencies ([architecture](docs/project/architecture.md#components)):
-
-```text
-stack/              docker compose (Nessie, PostgreSQL, Silo) and the stack-up bootstrap
-lakehouse-client/   Nessie API client, PyIceberg catalog and DuckDB access to a branch, settings
-ingestion/          synthetic orders appended to raw.orders
-transformation/     the dbt project: models and tests
-orchestration/      the pipeline: branch, ingest, dbt build, merge or alert
-exploration/        marimo notebook to query a branch
-```
+| Component | What it does |
+|---|---|
+| [`stack`](stack/README.md) | Nessie, PostgreSQL and Silo in docker compose, and the bootstrap that prepares `main` |
+| [`lakehouse-client`](lakehouse-client/README.md) | Python library: Nessie API client, PyIceberg catalog and DuckDB access to a branch, settings |
+| [`ingestion`](ingestion/README.md) | Synthetic orders appended to `raw.orders` (dirty ones with `--ko`) |
+| [`transformation`](transformation/README.md) | The dbt project: models and tests, run on a branch |
+| [`orchestration`](orchestration/README.md) | The pipeline: branch, ingest, dbt build, merge or alert |
+| [`exploration`](exploration/README.md) | marimo notebook to query any branch |
 
 ## Documentation
 
-[`docs/README.md`](docs/README.md): Iceberg and Nessie concepts, the project's architecture and pipeline, the Nessie CLI, and the talk's slides and notes (in French).
+- [Architecture overview](docs/project/architecture.md): the flow of a run, how the components connect, who reads and writes what.
+- [Concepts](docs/concepts/README.md): Iceberg and Nessie, valid outside this repository, in reading order.
+- [Architecture decision records](docs/adr/README.md): what was decided, why, what was ruled out.
+- [How to manage the dependencies](docs/project/dependency-policy.md): version specifiers, dependencies per component, upgrades, vulnerability check.
+- [How to write the documentation](docs/project/documentation.md): where each piece of documentation goes.
+- Working with the coding agent: [Agent setup reference](docs/project/agent-setup.md), and the agentic layer in [`00-agentic/`](00-agentic/README.md) (working agreements, processes, ticket backends).
+- The talk, in French: [Iceberg refresher deck](docs/presentation/iceberg.html), [Nessie demo deck](docs/presentation/presentation.html), [guided REPL walkthrough](docs/presentation/demo-cli.md).
