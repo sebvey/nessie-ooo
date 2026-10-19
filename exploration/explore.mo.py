@@ -44,7 +44,7 @@ def _(attach_branches, lake_connection, mo, selector):
     mo.stop(not selector.value, mo.md("_Select at least one branch._"))
     con = lake_connection()
     _aliases = attach_branches(con, selector.value)
-    mo.md("  \n".join(f"`{_alias}`: branch `{_branch}`" for _alias, _branch in _aliases.items()))
+    mo.md("\n".join(["| database | branch |", "|:---|:---|"] + [f"| {_a} | {_b} |" for _a, _b in _aliases.items()]))
     return (con,)
 
 
