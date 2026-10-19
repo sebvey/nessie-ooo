@@ -2,10 +2,16 @@
 
 A demo of **Project Nessie**, a Git-like versioned catalog for Iceberg tables. A data pipeline processes new data **on an isolated branch**, **tests it with dbt**, and **merges into `main`** only if the tests pass. Otherwise the bad data stays on its branch and an **alert** is raised: `main` never sees it.
 
-```text
-open branch  ->  ingest  ->  dbt build (transform + test)  ->  green? -> MERGE + TAG on main
-pipeline-ok|ko-  raw.orders  marts.daily_orders                 red?   -> no merge + ALERT
-HHMMSS                                                                    (branch pipeline-ko-HHMMSS kept)
+```mermaid
+flowchart LR
+    branch["Open a branch<br/>pipeline-ok-HHMMSS<br/>or pipeline-ko-HHMMSS"]
+    ingest["Ingest<br/>raw.orders"]
+    dbt["dbt build<br/>transform + test<br/>marts.daily_orders"]
+    merge["Merge + tag on main"]
+    alert["No merge + alert<br/>branch kept"]
+    branch --> ingest --> dbt
+    dbt -- tests green --> merge
+    dbt -- tests red --> alert
 ```
 
 Everything runs locally: Nessie, PostgreSQL (version store) and Silo (S3 storage, community fork of MinIO) in docker compose; PyIceberg, dbt and DuckDB in Python. How it fits together: [Architecture overview](docs/project/architecture.md).
