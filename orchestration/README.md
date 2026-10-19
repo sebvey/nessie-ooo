@@ -50,5 +50,5 @@ src/orchestration/
 ```bash
 mise run branches                         # the pipeline-ko branch is still there
 mise run dbt-inspect pipeline-ko-HHMMSS   # replay dbt build on it
-mise run ui-exploration                   # pick the branch, query raw.orders
+mise run ui-exploration                   # pick the branch, compare raw.orders with main
 ```

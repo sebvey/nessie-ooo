@@ -60,7 +60,7 @@ description = "Nessie REPL connected to main (e.g. LIST REFERENCES;). Args go to
 run = "docker compose run --rm --no-deps nessie-cli -u http://nessie:19120/api/v2 -r main"
 
 [ui-exploration]
-description = "marimo notebook: pick a branch, browse the tables, query them with DuckDB"
+description = "marimo notebook: pick Nessie branches, browse their tables, query them with DuckDB"
 run = "uv run marimo edit exploration/explore.mo.py"
 
 [dbt-inspect]

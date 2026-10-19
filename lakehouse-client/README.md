@@ -9,11 +9,13 @@ Nothing to run: other components import it.
 ```python
 from lakehouse_client.nessie import Nessie
 from lakehouse_client.catalog import branch_catalog
-from lakehouse_client.lake import branch_lake
+from lakehouse_client.lake import attach_branches, branch_lake, lake_connection
 
 Nessie().create_branch("my-branch", from_ref="main")
 branch_catalog("my-branch").load_table("raw.orders")          # PyIceberg
-branch_lake("my-branch").sql("SELECT count(*) FROM lake.raw.orders")  # DuckDB
+branch_lake("my-branch").sql("SELECT count(*) FROM lake.raw.orders")  # DuckDB, one branch
+con = lake_connection()                                               # DuckDB, several branches
+attach_branches(con, ["main", "my-branch"])                           # as lake_main, lake_my_branch
 ```
 
 ## Files
@@ -23,7 +25,7 @@ src/lakehouse_client/
 ├─ settings.py    config (Nessie URIs, S3), read from the mise environment
 ├─ nessie.py      Nessie API v2 client: branch, merge, tag, delete, list, log
 ├─ catalog.py     PyIceberg catalog scoped to a branch: namespaces, append, overwrite, row count
-└─ lake.py        DuckDB with the branch's catalog attached read-only as `lake` (reads the marts)
+└─ lake.py        DuckDB with branch catalogs attached read-only: one as `lake`, or several as `lake_<branch>` (reads the marts)
 ```
 
 ## Depends on
@@ -36,7 +38,7 @@ No other component. Packages: `requests` (Nessie API), `pyiceberg` and `pyarrow`
 
 ## A branch in every URI
 
-Every client puts the branch in the catalog URI (`http://localhost:19120/iceberg/<branch>`): `branch_catalog(branch)` for PyIceberg, `branch_lake(branch)` for DuckDB. Nothing reads or writes `main` unless it is the branch asked for. How a client reaches a branch: [Architecture overview](../docs/project/architecture.md#read-and-write-paths).
+Every client puts the branch in the catalog URI (`http://localhost:19120/iceberg/<branch>`): `branch_catalog(branch)` for PyIceberg, `branch_lake(branch)` and `attach_branches(con, branches)` for DuckDB. Nothing reads or writes `main` unless it is the branch asked for. How a client reaches a branch: [Architecture overview](../docs/project/architecture.md#read-and-write-paths).
 
 `lake.py` reads with DuckDB, the engine that writes the marts, because DuckDB deletes rows with position delete files that a reader must apply ([dbt on Iceberg](../transformation/docs/dbt-on-iceberg.md#what-the-files-look-like)).
 
