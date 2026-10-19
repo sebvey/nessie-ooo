@@ -3,7 +3,7 @@
 - Status: accepted
 - Date: 2026-10-16
 - Tickets: T001
-- Basis: investigated (pipeline runs and probes on 2026-10-16 with DuckDB `2.0.0.dev2610151406`, dbt-duckdb 1.10.1, PyIceberg 0.10.0; [dbt on Iceberg](../project/dbt-on-iceberg.md))
+- Basis: investigated (pipeline runs and probes on 2026-10-16 with DuckDB `2.0.0.dev2610151406`, dbt-duckdb 1.10.1, PyIceberg 0.10.0; [dbt on Iceberg](../../transformation/docs/dbt-on-iceberg.md))
 - Supersedes: ADR003
 - Amended: 2026-10-19: PyIceberg 0.12 applies the delete files DuckDB writes (#42); Consequences and Revisit when updated, the decision is unchanged.
 

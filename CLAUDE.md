@@ -4,12 +4,9 @@ Demo of Project Nessie (Git-like catalog for Iceberg tables): a pipeline works o
 
 ## Where to read
 
-- `README.md`: what the repo does, quick start, mise tasks.
-- `docs/README.md`: documentation index.
-  - `docs/concepts/`: Iceberg and Nessie knowledge, valid outside this repo.
-  - `docs/project/`: what we built (architecture, pipeline, CLI, dependency policy).
-  - `docs/presentation/`: the talk's slides and notes.
-  - `docs/adr/`: architecture decision records, why things are the way they are. The project's ADR series: `ADR001`, `ADR002`…
+- `README.md`: the entry point. What the repo does, the quick start, the components (each with its `README.md`) and every doc.
+- Where a piece of documentation goes: `docs/project/documentation.md`.
+- `docs/adr/`: architecture decision records, why things are the way they are. The project's ADR series: `ADR001`, `ADR002`…
 - `00-agentic/`: the agentic layer (working agreements, processes, ticket backends), this project's copy of vierbein.
 
 ## Working agreements
@@ -41,5 +38,5 @@ English everywhere in the repo (rule in `00-agentic/agreements/writing.md`), wit
 - Stack: `mise run stack-up`, `stack-down`, `stack-reset` (deletes all data: Nessie history and Iceberg files).
 - The local stack is disposable, except refs the developer created (rule in `00-agentic/agreements/boundaries.md`). Before `stack-reset`, or before dropping a branch or tag, list the refs: `curl -s http://localhost:19120/api/v2/trees`.
 - End-to-end check after a change: `mise run stack-reset`, `stack-up`, then `uv run pipeline --no-pause` and `uv run pipeline --ko --no-pause` (through `mise exec --`). The `--ko` run must end with no merge and `main` unchanged.
-- Dependencies: adding, upgrading or bounding one follows `docs/project/dependency-policy.md` (floors equal to the locked versions, `uv lock --upgrade-package` one package at a time). After any change to `uv.lock`, run `mise run audit-python` (Python dependencies only; container images aren't audited).
+- Dependencies: adding, upgrading or bounding one follows `docs/project/dependencies.md` (floors equal to the locked versions, `uv lock --upgrade-package` one package at a time). After any change to `uv.lock`, run `mise run audit-python` (Python dependencies only; container images aren't audited).
 - The Nessie CLI (`mise run cli`) is for humans (it needs a TTY). Programmatic actions and checks go through the Nessie API: `lakehouse-client/src/lakehouse_client/nessie.py` or `curl http://localhost:19120/api/v2/...`.
