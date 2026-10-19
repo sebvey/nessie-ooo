@@ -5,8 +5,8 @@ nessie_demo:
       type: duckdb
       # Local DuckDB database: holds the staging views. The Iceberg catalog only stores tables
       # (DuckDB's Iceberg extension can't create views in it).
-      # Absolute (mise exports DBT_PROJECT_DIR): dbt can run from the repo root or from dbt/.
-      path: "{{ env_var('DBT_PROJECT_DIR', 'dbt') }}/target/nessie_demo.duckdb"
+      # Absolute (mise exports DBT_PROJECT_DIR): dbt can run from the repo root or from transformation/.
+      path: "{{ env_var('DBT_PROJECT_DIR', 'transformation') }}/target/nessie_demo.duckdb"
       extensions:
         - httpfs
         - iceberg

@@ -36,10 +36,10 @@ English everywhere in the repo (rule in `00-agentic/agreements/writing.md`), wit
 ## Running things
 
 - Run tools through mise: `mise run <task>` (see `tasks.toml`) or `mise exec -- <command>`. Env vars come from `mise.toml` and `mise.local.toml`.
-- `mise.local.toml` is ignored by git and holds local values and secrets (template: `mise.local.toml.example`). `docker-compose.yml` refuses to start without them.
+- `mise.local.toml` is ignored by git and holds local values and secrets (template: `mise.local.toml.example`). `stack/docker-compose.yml` refuses to start without them.
 - Setup (rule in `00-agentic/agreements/boundaries.md`): if mise reports an untrusted config, `mise.local.toml` is missing, or Docker isn't running, ask the developer to run `mise trust`, create `mise.local.toml` from the example, or start Docker (Colima). Never edit `mise.local.toml`; to target another branch for one command, `mise exec -- env NESSIE_BRANCH=<branch> <command>` (a `NESSIE_BRANCH=… mise exec` prefix is overridden by `mise.local.toml`).
 - Stack: `mise run stack-up`, `stack-down`, `stack-reset` (deletes all data: Nessie history and Iceberg files).
 - The local stack is disposable, except refs the developer created (rule in `00-agentic/agreements/boundaries.md`). Before `stack-reset`, or before dropping a branch or tag, list the refs: `curl -s http://localhost:19120/api/v2/trees`.
 - End-to-end check after a change: `mise run stack-reset`, `stack-up`, then `uv run pipeline --no-pause` and `uv run pipeline --ko --no-pause` (through `mise exec --`). The `--ko` run must end with no merge and `main` unchanged.
 - Dependencies: adding, upgrading or bounding one follows `docs/project/dependency-policy.md` (floors equal to the locked versions, `uv lock --upgrade-package` one package at a time). After any change to `uv.lock`, run `mise run audit-python` (Python dependencies only; container images aren't audited).
-- The Nessie CLI (`mise run cli`) is for humans (it needs a TTY). Programmatic actions and checks go through the Nessie API: `src/nessie_demo/nessie.py` or `curl http://localhost:19120/api/v2/...`.
+- The Nessie CLI (`mise run cli`) is for humans (it needs a TTY). Programmatic actions and checks go through the Nessie API: `lakehouse-client/src/lakehouse_client/nessie.py` or `curl http://localhost:19120/api/v2/...`.

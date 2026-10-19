@@ -1,0 +1,19 @@
+[project]
+name = "stack"
+version = "0.1.0"
+description = "The local stack (Nessie, Postgres, Silo) and its bootstrap"
+requires-python = ">=3.13"
+dependencies = [
+    "lakehouse-client",
+    "rich>=15.0.0",
+]
+
+[project.scripts]
+bootstrap = "stack.bootstrap:main"
+
+[tool.uv.sources]
+lakehouse-client = { workspace = true }
+
+[build-system]
+requires = ["uv_build>=0.9.21,<0.10.0"]
+build-backend = "uv_build"

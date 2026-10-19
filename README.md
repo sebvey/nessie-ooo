@@ -44,7 +44,7 @@ mise run audit-python          # known vulnerabilities in the locked Python depe
 
 ## Explore the data
 
-`mise run notebook` opens `notebooks/explore.mo.py` in marimo:
+`mise run notebook` opens `exploration/explore.mo.py` in marimo:
 - pick a Nessie branch (branches only, not tags);
 - DuckDB attaches the branch's catalog as `lake` and lists its tables with their row counts; nothing is loaded in advance;
 - query them in the SQL cell as `lake.<namespace>.<table>` (`SELECT * FROM lake.raw.orders WHERE amount < 0`).
@@ -54,6 +54,19 @@ mise run audit-python          # known vulnerabilities in the locked Python depe
 ```bash
 export SLACK_WEBHOOK_URL=https://hooks.slack.com/services/…
 mise run pipeline-ko   # the alert is also posted to Slack
+```
+
+## Repository layout
+
+One folder per component, each a uv workspace member with its own dependencies ([architecture](docs/project/architecture.md#components)):
+
+```text
+stack/              docker compose (Nessie, PostgreSQL, Silo) and the stack-up bootstrap
+lakehouse-client/   Nessie API client, PyIceberg catalog and DuckDB access to a branch, settings
+ingestion/          synthetic orders appended to raw.orders
+transformation/     the dbt project: models and tests
+orchestration/      the pipeline: branch, ingest, dbt build, merge or alert
+exploration/        marimo notebook to query a branch
 ```
 
 ## Documentation

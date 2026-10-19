@@ -2,9 +2,13 @@
 uv = "latest"
 
 [env]
-# dbt: the project and its profiles live in dbt/ (overrides the workspace's DBT_PROFILES_DIR).
-DBT_PROJECT_DIR = "{{config_root}}/dbt"
-DBT_PROFILES_DIR = "{{config_root}}/dbt"
+# dbt: the project and its profiles live in the transformation component (overrides the
+# workspace's DBT_PROFILES_DIR).
+DBT_PROJECT_DIR = "{{config_root}}/transformation"
+DBT_PROFILES_DIR = "{{config_root}}/transformation"
+
+# docker compose finds the stack's file from anywhere in the repository.
+COMPOSE_FILE = "{{config_root}}/stack/docker-compose.yml"
 
 # Nessie as reached from the host: API v2 at /api/v2, Iceberg REST at /iceberg/<branch>.
 NESSIE_URI = "http://localhost:19120"

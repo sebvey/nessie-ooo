@@ -1,6 +1,6 @@
 # Architecture decision records
 
-Why the Nessie demo is the way it is: stack, dependencies, data plane. What deserves an ADR, the lifecycle and the template are in the ADR process of the agentic layer: [`00-agentic/processes/adr.md`](../../00-agentic/processes/adr.md).
+Why the Nessie demo is the way it is: stack, dependencies, data plane, repository layout. What deserves an ADR, the lifecycle and the template are in the ADR process of the agentic layer: [`00-agentic/processes/adr.md`](../../00-agentic/processes/adr.md).
 
 The "Choices" table in [`architecture.md`](../project/architecture.md#choices) stays as the one-line summary of the setup; a row links to an ADR when one exists.
 
@@ -17,3 +17,4 @@ The "Choices" table in [`architecture.md`](../project/architecture.md#choices) s
 | [ADR007](ADR007-tickets-move-to-github-issues.md) | Nessie's tickets move to GitHub Issues, all of them, with issue `#n` for ticket `Tn` | accepted |
 | [ADR008](ADR008-work-delivered-by-pull-requests.md) | Work is delivered by pull requests, squash-merged into a `main` protected with no bypass (public repository) | accepted |
 | [ADR009](ADR009-analysis-tickets-deliver-a-report-on-the-issue.md) | An analysis ticket delivers a report on its issue and proposed tickets, never a change to the repository | accepted |
+| [ADR010](ADR010-components-as-uv-workspace-members.md) | The repository is split into components, each a uv workspace member with its own dependencies, under one lock | proposed |

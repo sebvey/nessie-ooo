@@ -20,6 +20,7 @@ How to write version specifiers in `pyproject.toml` and how to upgrade. Why: [AD
 - **The floor moves with the lock**: every deliberate upgrade raises it to the new locked version, in the same commit.
 - **Exception: `[build-system]`.** The build backend isn't in the lock, so it keeps the upper bound uv recommends for its own backend (`uv_build>=0.9.21,<0.10.0`).
 - **The application has no version of its own.** `version = "0.1.0"` stays as it is: nobody installs the repo by version. A git tag marks a state worth coming back to, such as the one shown in a talk.
+- **Each component declares what it uses.** The dependencies live in the `pyproject.toml` of the component that imports or runs them ([components](architecture.md#components)), not in the root one, which only lists the components. Add one with `mise exec -- uv add --package <component> <pkg>`. A package used by several components is declared in each, with the same floor (the locked version). A component that uses another declares it like a package, with `{ workspace = true }` in `[tool.uv.sources]`.
 - **No dependency cooldown** (`[tool.uv] exclude-newer = "1 week"`, which ignores releases younger than the duration). An arbitrary choice, not investigated, open to challenge: [ADR002](../adr/ADR002-no-dependency-cooldown.md).
 
 ## Library (a package others install)
@@ -30,7 +31,7 @@ The library's lock only serves its own development: users never see it. The spec
 - **Test both ends in CI**: the highest versions (`uv lock --upgrade`) and the floors (`uv lock --resolution lowest-direct`). An untested floor is a guess.
 - **As few dependencies as possible**; optional features go in extras (`pip install nessie-client[async]`).
 - **No upper bound, even on 0.x**, unless a release is known to break; then cap it and fix it fast, since every day under the cap pins your users.
-- **No dependency on the application**: a Nessie client takes its configuration as arguments, not from `nessie_demo.settings`.
+- **No dependency on the application**: a Nessie client takes its configuration as arguments, not from `lakehouse_client.settings`.
 - **Its own version follows SemVer**, starting at 0.x while the API settles: a 0.x minor may break, and says so in the changelog. 1.0 once the API is stable; from then on, a breaking change is a major.
 - **A changelog** with one entry per release, and the supported Python versions declared in `requires-python` and tested in CI.
 
@@ -41,7 +42,7 @@ When: before each talk, on a vulnerability alert, or for a feature you need. Eac
 1. See what's behind: `mise exec -- uv tree --depth 1 --outdated --all-groups`.
 2. Upgrade one package at a time, never everything at once: `mise exec -- uv lock --upgrade-package <pkg>`. A transitive dependency can be upgraded the same way. To stay on a release line, name the version: `--upgrade-package dbt-core==1.11.16`.
 3. Read what uv changed (`Updated`, `Added`, `Removed` lines). A new dependency or a major you didn't ask for is a reason to stop and choose.
-4. Raise the floors in `pyproject.toml` to the new locked versions, then `mise exec -- uv lock` (no version may change).
+4. Raise the floors to the new locked versions, in every component's `pyproject.toml` that declares the package (`grep -rn '"<pkg>' --include=pyproject.toml .`), then `mise exec -- uv lock` (no version may change).
 5. Check for vulnerabilities (`mise run audit-python`, below), then run the end-to-end check from [`CLAUDE.md`](../../CLAUDE.md#running-things).
 
 ## Vulnerability check

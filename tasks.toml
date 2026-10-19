@@ -54,7 +54,7 @@ run = "docker compose run --rm --no-deps nessie-cli -u http://nessie:19120/api/v
 
 [notebook]
 description = "marimo notebook: pick a branch, browse the tables, query them with DuckDB"
-run = "uv run --group explore marimo edit notebooks/explore.mo.py"
+run = "uv run marimo edit exploration/explore.mo.py"
 
 [dbt-inspect]
 description = "Replay dbt build on a branch, e.g. mise run dbt-inspect pipeline-ko-120000"

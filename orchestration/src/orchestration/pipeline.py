@@ -22,18 +22,18 @@ from datetime import datetime
 from pathlib import Path
 
 import duckdb
+from ingestion.ingest import RAW_TABLE, ingest
+from lakehouse_client.catalog import branch_catalog, row_count
+from lakehouse_client.lake import branch_lake
+from lakehouse_client.nessie import Nessie
+from lakehouse_client.settings import settings
 
 from . import display
 from .alert import alert
-from .catalog import branch_catalog, row_count
 from .display import check, line, rows, short, step
-from .ingest import RAW_TABLE, ingest
-from .lake import branch_lake
-from .nessie import Nessie
-from .settings import settings
 
-REPO_ROOT = Path(__file__).resolve().parents[2]
-DBT_DIR = REPO_ROOT / "dbt"
+REPO_ROOT = Path(__file__).resolve().parents[3]
+DBT_DIR = REPO_ROOT / "transformation"
 MAIN = settings.main_branch
 MART_TABLE = "marts.daily_orders"
 
