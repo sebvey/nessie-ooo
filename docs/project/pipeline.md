@@ -41,7 +41,7 @@ uv run pipeline --verbose    # raw dbt output
 ```bash
 mise run branches                         # the pipeline-ko branch is still there
 mise run dbt-inspect pipeline-ko-HHMMSS   # replay dbt build on it
-mise run notebook                          # pick the branch, query raw_orders
+mise run ui-exploration                    # pick the branch, query raw_orders
 ```
 
 ## Files

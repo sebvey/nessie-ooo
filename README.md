@@ -32,7 +32,7 @@ mise run branches              # list Nessie branches and tags
 mise run cli                   # Nessie REPL connected to main
 mise run ui-nessie             # open Nessie's web UI in the browser
 mise run ui-silo               # open the Silo console in the browser
-mise run notebook              # marimo notebook to explore a branch
+mise run ui-exploration        # marimo notebook to explore a branch
 mise run dbt-inspect <branch>  # replay dbt build on a branch (e.g. the kept pipeline-ko branch)
 mise run stack-down            # stop the stack, keep the data
 mise run stack-reset           # stop and delete everything
@@ -44,7 +44,7 @@ mise run audit-python          # known vulnerabilities in the locked Python depe
 
 ## Explore the data
 
-`mise run notebook` opens `exploration/explore.mo.py` in marimo:
+`mise run ui-exploration` opens `exploration/explore.mo.py` in marimo:
 - pick a Nessie branch (branches only, not tags);
 - DuckDB attaches the branch's catalog as `lake` and lists its tables with their row counts; nothing is loaded in advance;
 - query them in the SQL cell as `lake.<namespace>.<table>` (`SELECT * FROM lake.raw.orders WHERE amount < 0`).
