@@ -43,19 +43,19 @@ docs/nessie-cli.md           Nessie CLI reference
 |---|---|---|---|
 | `nessie` | `ghcr.io/projectnessie/nessie:0.106.0` | Nessie API (`/api/v2`) and Iceberg REST (`/iceberg/<branch>`) | `19120` (API), `19000` (management: health, metrics) |
 | `postgres` | `postgres:15` | Nessie version store | `35432` |
-| `minio` | `pgsty/minio` | Silo, the community fork of MinIO: S3 storage for Iceberg files | `29000` (S3 API), `29090` (console) |
-| `minio-setup` | `pgsty/mc` | One-shot job: creates the `iceberg-warehouse` bucket | none |
+| `silo` | `pgsty/silo` | Silo, the community fork of MinIO: S3 storage for Iceberg files | `29000` (S3 API), `29090` (console) |
+| `silo-setup` | `pgsty/silo` | One-shot job: creates the `iceberg-warehouse` bucket with `mcli`, the client shipped in the Silo image | none |
 | `nessie-cli` | `ghcr.io/projectnessie/nessie-cli:0.106.0` | Nessie REPL, started by `mise run cli` (profile `tools`) | none |
 
-Start order: `postgres` and `minio` become healthy, `minio-setup` creates the bucket, then `nessie` starts.
+Start order: `postgres` and `silo` become healthy, `silo-setup` creates the bucket, then `nessie` starts.
 
-Why these: docker compose runs everything locally with one command. Postgres keeps the history across restarts, the same model as production (a stateless Nessie, an external database). Silo gives an S3 API locally: the official MinIO images are no longer published (Docker Hub and quay.io answer 401). The Docker service is still called `minio`.
+Why these: docker compose runs everything locally with one command. Postgres keeps the history across restarts, the same model as production (a stateless Nessie, an external database). Silo gives an S3 API locally: the official MinIO images are no longer published (Docker Hub and quay.io answer 401).
 
 ## Nessie configuration
 
 - **Version store**: `nessie.version.store.type=JDBC2` on Postgres, through the Quarkus datasource named `postgresql` (`nessie.version.store.persist.jdbc.datasource`, `quarkus.datasource.postgresql.*`). Nessie creates its two tables at startup: `refs2` (branches and tags, like `.git/refs`) and `objs2` (commits, content values and internal objects, each serialized in `obj_value`, like `.git/objects`). Nessie itself is stateless: restarting it loses nothing.
 - **Warehouse**: `s3://iceberg-warehouse/`, declared as the default warehouse. Nessie announces it in `/v1/config` and writes the `metadata.json` files there.
-- **S3 endpoints**: Nessie reaches Silo at `http://minio:9000` (compose network); its `external-endpoint` (`http://127.0.0.1:29000`) is the address meant for clients. The demo's clients set their S3 endpoint themselves anyway (`AWS_ENDPOINT_URL`).
+- **S3 endpoints**: Nessie reaches Silo at `http://silo:9000` (compose network); its `external-endpoint` (`http://127.0.0.1:29000`) is the address meant for clients. The demo's clients set their S3 endpoint themselves anyway (`AWS_ENDPOINT_URL`).
 - **Security**: authentication and authorization are disabled. Anyone who can reach port 19120 can write to any branch, including `main`.
 
 ## Credentials and settings
