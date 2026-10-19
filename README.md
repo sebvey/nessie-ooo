@@ -51,7 +51,7 @@ One folder per responsibility, each with its README ([how they connect](docs/pro
 - [Architecture overview](docs/project/architecture.md): the flow of a run, how the components connect, who reads and writes what.
 - [Concepts](docs/concepts/README.md): Iceberg and Nessie, valid outside this repository, in reading order.
 - [Architecture decision records](docs/adr/README.md): what was decided, why, what was ruled out.
-- [How to manage the dependencies](docs/project/dependency-policy.md): version specifiers, dependencies per component, upgrades, vulnerability check.
+- [How to manage the dependencies](docs/project/dependencies.md): version specifiers, dependencies per component, upgrades, vulnerability check.
 - [How to write the documentation](docs/project/documentation.md): where each piece of documentation goes.
 - Working with the coding agent: [Agent setup reference](docs/project/agent-setup.md), and the agentic layer in [`00-agentic/`](00-agentic/README.md) (working agreements, processes, ticket backends).
 - The talk, in French: [Iceberg refresher deck](docs/presentation/iceberg.html) and [Nessie demo deck](docs/presentation/presentation.html).

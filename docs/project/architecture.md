@@ -15,7 +15,7 @@ Step by step, with what the console shows: [orchestration](../../orchestration/R
 
 ## Components
 
-The repository is split into **components**: a top-level folder with one responsibility and its own `README.md`. The list, with a line each, is in the [root README](../../README.md#components). Each component is a uv workspace member with its own `pyproject.toml`, which declares the dependencies the component uses, other components included. The workspace has one `uv.lock` and one `.venv`. The root `pyproject.toml` is the whole demo: it depends on every component, so `uv run <command>` works from anywhere in the repository. Why: [ADR010](../adr/ADR010-components-as-uv-workspace-members.md). How a component declares a dependency, and how to check it: [dependency policy](dependency-policy.md#components).
+The repository is split into **components**: a top-level folder with one responsibility and its own `README.md`. The list, with a line each, is in the [root README](../../README.md#components). Each component is a uv workspace member with its own `pyproject.toml`, which declares the dependencies the component uses, other components included. The workspace has one `uv.lock` and one `.venv`. The root `pyproject.toml` is the whole demo: it depends on every component, so `uv run <command>` works from anywhere in the repository. Why: [ADR010](../adr/ADR010-components-as-uv-workspace-members.md). How a component declares a dependency, and how to check it: [dependency policy](dependencies.md#components).
 
 How they connect:
 
