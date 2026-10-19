@@ -54,4 +54,4 @@ One folder per responsibility, each with its README ([how they connect](docs/pro
 - [How to manage the dependencies](docs/project/dependency-policy.md): version specifiers, dependencies per component, upgrades, vulnerability check.
 - [How to write the documentation](docs/project/documentation.md): where each piece of documentation goes.
 - Working with the coding agent: [Agent setup reference](docs/project/agent-setup.md), and the agentic layer in [`00-agentic/`](00-agentic/README.md) (working agreements, processes, ticket backends).
-- The talk, in French: [Iceberg refresher deck](docs/presentation/iceberg.html), [Nessie demo deck](docs/presentation/presentation.html), [guided REPL walkthrough](docs/presentation/demo-cli.md).
+- The talk, in French: [Iceberg refresher deck](docs/presentation/iceberg.html) and [Nessie demo deck](docs/presentation/presentation.html).

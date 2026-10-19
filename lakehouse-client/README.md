@@ -38,7 +38,7 @@ No other component. Packages: `requests` (Nessie API), `pyiceberg` and `pyarrow`
 
 Every client puts the branch in the catalog URI (`http://localhost:19120/iceberg/<branch>`): `branch_catalog(branch)` for PyIceberg, `branch_lake(branch)` for DuckDB. Nothing reads or writes `main` unless it is the branch asked for. How a client reaches a branch: [Architecture overview](../docs/project/architecture.md#read-and-write-paths).
 
-`lake.py` reads with DuckDB, the engine that writes the marts, because DuckDB deletes rows with position delete files that a reader must apply ([dbt on Iceberg](../transformation/dbt-on-iceberg.md#what-the-files-look-like)).
+`lake.py` reads with DuckDB, the engine that writes the marts, because DuckDB deletes rows with position delete files that a reader must apply ([dbt on Iceberg](../transformation/docs/dbt-on-iceberg.md#what-the-files-look-like)).
 
 ## Why a Nessie client of our own
 

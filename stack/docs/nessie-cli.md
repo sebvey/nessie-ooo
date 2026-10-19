@@ -9,8 +9,6 @@ mise run cli                          # interactive
 mise run cli -c "LIST REFERENCES;"    # one command (needs a terminal)
 ```
 
-The talk's guided REPL walkthrough (in French) is [`presentation/demo-cli.md`](../docs/presentation/demo-cli.md).
-
 Every command ends with `;`. `<ref>` is a branch or tag name; `BRANCH` / `TAG` keywords are only needed where shown.
 
 ## Where am I, what exists
@@ -71,7 +69,7 @@ ASSIGN TAG release-manual TO main;              -- move a tag to main's head
 
 ## Commit messages
 
-Commits written through Iceberg REST (PyIceberg, dbt) get generated messages (`Update ICEBERG_TABLE raw.orders`). Merges, tags and assignments are the catalog operations that carry meaning. See [history](../docs/concepts/nessie-history.md).
+Commits written through Iceberg REST (PyIceberg, dbt) get generated messages (`Update ICEBERG_TABLE raw.orders`). Merges, tags and assignments are the catalog operations that carry meaning. See [history](../../docs/concepts/nessie-history.md).
 
 ## Quit
 

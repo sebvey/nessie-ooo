@@ -19,14 +19,14 @@ mise run ui-silo       # open the Silo console in the browser
 
 `mise.toml` exports `COMPOSE_FILE`, so `docker compose` finds the compose file from anywhere in the repository. The file fixes the compose project name (`nessie-ooo`), which names the containers' volumes.
 
-The Nessie REPL's commands: [Nessie CLI reference](nessie-cli.md).
+The Nessie REPL's commands: [Nessie CLI reference](docs/nessie-cli.md).
 
 ## Files
 
 ```text
 docker-compose.yml           services, below
 src/stack/bootstrap.py       stack-up: start the stack, create the namespaces on main
-nessie-cli.md                Nessie CLI reference
+docs/nessie-cli.md           Nessie CLI reference
 ```
 
 ## Depends on
