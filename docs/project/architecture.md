@@ -57,7 +57,7 @@ Every client puts the branch in the catalog URI (`http://localhost:19120/iceberg
 
 - **Ingestion**: PyIceberg appends to `raw.orders` (`ingest.py`); `bootstrap.py` creates the namespaces through PyIceberg too.
 - **dbt**: DuckDB attaches the branch's catalog as `lake` (`dbt/profiles.yml`), reads `lake.raw.orders` and writes `lake.marts.daily_orders`. How the models are materialized: [dbt on Iceberg](dbt-on-iceberg.md).
-- **Pipeline output and notebook**: DuckDB, through `lake.py` (the same `ATTACH`, read-only). PyIceberg 0.10 doesn't apply the delete files DuckDB writes, so it would miscount the marts. The raw row count still comes from PyIceberg's snapshot summary (metadata only).
+- **Pipeline output and notebook**: DuckDB, through `lake.py` (the same `ATTACH`, read-only): the marts are read by the engine that writes them. The raw row count still comes from PyIceberg's snapshot summary (metadata only).
 
 DuckDB reaches a branch from DuckDB 2.0 on (duckdb-iceberg#1230); before, it ignored the `overrides.uri` Nessie returns and only saw `main` (duckdb-iceberg#1145). The repo runs a 2.0 pre-release.
 
