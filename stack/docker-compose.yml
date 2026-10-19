@@ -12,7 +12,7 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-      minio-setup:
+      silo-setup:
         condition: service_completed_successfully
     environment:
       # Version store -> JDBC2 on Postgres, through the Quarkus datasource named "postgresql"
@@ -34,7 +34,7 @@ services:
       - nessie.catalog.secrets.access-key.name=${AWS_ACCESS_KEY_ID:?set in mise.local.toml, run through mise}
       - nessie.catalog.secrets.access-key.secret=${AWS_SECRET_ACCESS_KEY:?set in mise.local.toml, run through mise}
         # Silo endpoint for the Nessie server
-      - nessie.catalog.service.s3.default-options.endpoint=http://minio:9000/
+      - nessie.catalog.service.s3.default-options.endpoint=http://silo:9000/
         # Silo endpoint for clients (on the Docker host)
       - nessie.catalog.service.s3.default-options.external-endpoint=${AWS_ENDPOINT_URL:?set in mise.toml, run through mise}/
     healthcheck:
@@ -61,33 +61,34 @@ services:
       timeout: 3s
       retries: 10
 
-  minio:
-    image: pgsty/minio:RELEASE.2026-08-04T00-00-00Z  # Silo, community fork: the official MinIO images are no longer published
-    container_name: minio
-    command: server /data
+  silo:
+    image: pgsty/silo:RELEASE.2026-10-18T00-00-00Z  # Silo, community fork: the official MinIO images are no longer published
+    container_name: silo
+    # S3 API on the default port 9000; console moved from its default 9001 to 9090.
+    command: server /data --console-address :9090
     ports:
     # API port
     - "29000:9000"
     # Silo console
     - "29090:9090"
     volumes:
-    - minio_data:/data
+    - silo_data:/data
     environment:
+      # Silo keeps MinIO's variable names: there is no SILO_* equivalent.
       - MINIO_ROOT_USER=${AWS_ACCESS_KEY_ID:?set in mise.local.toml, run through mise}
       - MINIO_ROOT_PASSWORD=${AWS_SECRET_ACCESS_KEY:?set in mise.local.toml, run through mise}
-      - MINIO_ADDRESS=:9000
-      - MINIO_CONSOLE_ADDRESS=:9090
     healthcheck:
-      test: "bash -c '[[ \"$(exec 3<>/dev/tcp/localhost/9000 && echo -e '\"'\"'GET /minio/health/live HTTP/1.1\\r\\nHost: localhost\\r\\nConnection: close\\r\\n\\r\\n'\"'\"' >&3 && cat <&3 | head -n 1)\" == *\"200 OK\"* ]] || exit 1'"
+      # Probes the liveness endpoint on 127.0.0.1:9000, exit code 0 when healthy.
+      test: ["CMD", "silo", "healthcheck", "live"]
       interval: 5s
       timeout: 2s
       retries: 15
 
-  # One-shot: create the Iceberg warehouse bucket, then exit.
-  minio-setup:
-    image: pgsty/mc:RELEASE.2026-09-16T00-00-00Z
+  # One-shot: create the Iceberg warehouse bucket, then exit. Uses the mcli client shipped in the Silo image.
+  silo-setup:
+    image: pgsty/silo:RELEASE.2026-10-18T00-00-00Z
     depends_on:
-      minio:
+      silo:
         condition: service_healthy
     environment:
       - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID:?set in mise.local.toml, run through mise}
@@ -95,8 +96,8 @@ services:
     # $$: expanded by the container's shell, not by compose.
     entrypoint: >
       /bin/sh -c "
-      mc alias set local http://minio:9000 $$AWS_ACCESS_KEY_ID $$AWS_SECRET_ACCESS_KEY &&
-      mc mb -p local/iceberg-warehouse &&
+      mcli alias set local http://silo:9000 $$AWS_ACCESS_KEY_ID $$AWS_SECRET_ACCESS_KEY &&
+      mcli mb -p local/iceberg-warehouse &&
       echo 'bucket iceberg-warehouse ready'
       "
 
@@ -110,5 +111,5 @@ services:
         condition: service_healthy
 
 volumes:
-  minio_data:
+  silo_data:
   postgres_data:

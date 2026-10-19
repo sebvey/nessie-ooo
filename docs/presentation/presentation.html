@@ -310,7 +310,7 @@
           <p class="col-h">Infra · docker-compose</p>
           <button type="button" class="mini" data-detail="nessie" aria-haspopup="dialog"><div class="k"><span class="dot" style="background:var(--accent)"></span>Nessie</div><div class="v">Le catalogue versionné « à la Git » — branches / merge. La star.</div></button>
           <button type="button" class="mini" data-detail="postgres" aria-haspopup="dialog"><div class="k"><span class="dot" style="background:var(--line-strong)"></span>PostgreSQL</div><div class="v">Version store de Nessie : persiste commits &amp; branches.</div></button>
-          <button type="button" class="mini" data-detail="minio" aria-haspopup="dialog"><div class="k"><span class="dot" style="background:var(--line-strong)"></span>Silo</div><div class="v">Stockage objet S3 pour les fichiers Iceberg (fork de MinIO).</div></button>
+          <button type="button" class="mini" data-detail="silo" aria-haspopup="dialog"><div class="k"><span class="dot" style="background:var(--line-strong)"></span>Silo</div><div class="v">Stockage objet S3 pour les fichiers Iceberg (fork de MinIO).</div></button>
         </div>
         <div class="lane reveal">
           <p class="col-h">Data plane · lire, transformer</p>
@@ -685,10 +685,10 @@ insert into lake.marts.daily_orders
         files:['stack/docker-compose.yml'],
         alt:['Autres version stores de Nessie : <strong>in-memory</strong> (tests, tout est perdu au redémarrage), RocksDB, MongoDB, DynamoDB, Cassandra, Bigtable.'],
         say:'Les données sont dans Silo, l\'historique du catalogue est dans Postgres.'},
-      minio:{lane:'Infra · docker-compose',col:'var(--line-strong)',title:'Silo (fork de MinIO)',
+      silo:{lane:'Infra · docker-compose',col:'var(--line-strong)',title:'Silo (fork de MinIO)',
         role:'Stockage objet <strong>compatible S3</strong> : les fichiers Parquet et les métadonnées Iceberg (<code>metadata.json</code>, manifests).',
-        demo:['Bucket <code>iceberg-warehouse</code>, créé au démarrage par le service <code>minio-setup</code>.',
-              'Image <code>pgsty/minio</code> : <strong>Silo</strong>, fork communautaire de MinIO maintenu par Pigsty (AGPLv3). Les images officielles MinIO ne sont plus publiées.',
+        demo:['Bucket <code>iceberg-warehouse</code>, créé au démarrage par le service <code>silo-setup</code>.',
+              'Image <code>pgsty/silo</code> : <strong>Silo</strong>, fork communautaire de MinIO maintenu par Pigsty (AGPLv3). Les images officielles MinIO ne sont plus publiées.',
               'Console sur <code>localhost:29090</code> pour montrer les fichiers.'],
         files:['stack/docker-compose.yml','mise.local.toml (identifiants AWS_*)'],
         alt:['En production : <strong>S3, GCS, ADLS</strong>.'],
