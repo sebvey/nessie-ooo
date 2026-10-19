@@ -8,46 +8,43 @@ app = marimo.App(width="medium")
 def _():
     import marimo as mo
 
-    from lakehouse_client.lake import branch_lake
+    from lakehouse_client.lake import attach_branches, lake_connection
     from lakehouse_client.nessie import Nessie
 
-    return Nessie, branch_lake, mo
+    return Nessie, attach_branches, lake_connection, mo
 
 
 @app.cell(hide_code=True)
-def _(Nessie, mo):
+def _(mo):
+    # The selection survives a refresh of the branch list.
+    get_selected, set_selected = mo.state(["main"])
+    refresh = mo.ui.button(label="Refresh branches")
+    return get_selected, refresh, set_selected
+
+
+@app.cell(hide_code=True)
+def _(Nessie, get_selected, mo, refresh, set_selected):
+    refresh  # re-run on click: re-read the branches from Nessie
     _branches = sorted(r["name"] for r in Nessie().list_branches() if r["type"] == "BRANCH")
-    branch = mo.ui.dropdown(
+    selector = mo.ui.multiselect(
         options=_branches,
-        value="main" if "main" in _branches else _branches[0],
-        label="Nessie branch",
+        value=[b for b in get_selected() if b in _branches],
+        label="Nessie branches",
+        on_change=set_selected,
     )
-    branch
-    return (branch,)
+    mo.hstack([selector, refresh], justify="start")
+    return (selector,)
 
 
 @app.cell(hide_code=True)
-def _(branch, branch_lake, mo):
-    # The branch's Nessie catalog, attached as the `lake` database: query its tables as
-    # lake.<namespace>.<table> (e.g. lake.raw.orders). DuckDB reads the Parquet files from Silo at
-    # query time, without loading anything in advance.
-    con = branch_lake(branch.value)
-    _tables = []
-    for _ns, _name in con.sql(
-        "SELECT schema_name, table_name FROM duckdb_tables() WHERE database_name = 'lake' ORDER BY ALL"
-    ).fetchall():
-        # Not duckdb_tables().column_count: the Iceberg extension only loads a table's schema on use.
-        _table = f"lake.{_ns}.{_name}"
-        _tables.append({
-            "table": _table,
-            "rows": con.sql(f"SELECT count(*) FROM {_table}").fetchall()[0][0],
-            "columns": len(con.sql(f"FROM {_table}").columns),
-        })
-
-    mo.vstack([
-        mo.md(f"**{len(_tables)} table(s)** on branch `{branch.value}`"),
-        mo.ui.table(_tables, selection=None) if _tables else mo.md("_No table on this branch._"),
-    ])
+def _(attach_branches, lake_connection, mo, selector):
+    # Each selected branch's Nessie catalog, attached read-only as lake_<branch> (dashes and other
+    # characters become `_`). Its tables and columns show in the Data sources panel; query them as
+    # lake_<branch>.<namespace>.<table>. DuckDB reads the Parquet files from Silo at query time.
+    mo.stop(not selector.value, mo.md("_Select at least one branch._"))
+    con = lake_connection()
+    _aliases = attach_branches(con, selector.value)
+    mo.md("\n".join(["| database | branch |", "|:---|:---|"] + [f"| {_a} | {_b} |" for _a, _b in _aliases.items()]))
     return (con,)
 
 
@@ -55,7 +52,7 @@ def _(branch, branch_lake, mo):
 def _(con, mo):
     _df = mo.sql(
         f"""
-        SELECT * FROM lake.raw.orders where amount < 0
+        SELECT * FROM lake_main.raw.orders WHERE amount < 0
         """,
         engine=con
     )

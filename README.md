@@ -45,7 +45,7 @@ One folder per responsibility, each with its README ([how they connect](docs/pro
 | [`ingestion`](ingestion/README.md) | Synthetic orders appended to `raw.orders` (dirty ones with `--ko`) |
 | [`transformation`](transformation/README.md) | The dbt project: models and tests, run on a branch |
 | [`orchestration`](orchestration/README.md) | The pipeline: branch, ingest, dbt build, merge or alert |
-| [`exploration`](exploration/README.md) | marimo notebook to query any branch |
+| [`exploration`](exploration/README.md) | marimo notebook to query Nessie branches, side by side |
 
 ## Documentation
 

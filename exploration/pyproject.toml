@@ -1,7 +1,7 @@
 [project]
 name = "exploration"
 version = "0.1.0"
-description = "marimo notebook: pick a Nessie branch, browse its tables, query them with DuckDB"
+description = "marimo notebook: pick Nessie branches, browse their tables, query them with DuckDB"
 requires-python = ">=3.13"
 dependencies = [
     "lakehouse-client",

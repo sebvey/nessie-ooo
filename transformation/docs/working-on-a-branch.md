@@ -35,7 +35,7 @@ For a single command on another branch, without editing `mise.local.toml`, set t
 
 Without `NESSIE_BRANCH`, `transformation/profiles.yml` falls back to `main`: dbt then writes straight to `main`. The pipeline (`pipeline-ok`, `pipeline-ko`) and `dbt-inspect` set the variable themselves, so `mise.local.toml` doesn't affect them.
 
-The notebook ignores this variable: pick the branch in its selector.
+The notebook ignores this variable: pick the branches in its selector.
 
 ## 3. Drop the branch
 
