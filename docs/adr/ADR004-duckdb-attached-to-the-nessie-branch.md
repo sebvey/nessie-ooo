@@ -5,6 +5,7 @@
 - Tickets: T001
 - Basis: investigated (pipeline runs and probes on 2026-10-16 with DuckDB `2.0.0.dev2610151406`, dbt-duckdb 1.10.1, PyIceberg 0.10.0; [dbt on Iceberg](../project/dbt-on-iceberg.md))
 - Supersedes: ADR003
+- Amended: 2026-10-19: PyIceberg 0.12 applies the delete files DuckDB writes (#42); Consequences and Revisit when updated, the decision is unchanged.
 
 ## Context
 
@@ -28,11 +29,11 @@ ADR003 routed every Iceberg read and write through PyIceberg because DuckDB's Ic
 ## Consequences
 
 - One dependency on a DuckDB pre-release until 2.0 ships.
-- PyIceberg 0.10 doesn't apply the position delete files DuckDB writes: read with PyIceberg, a mart counts deleted rows too. Anything reading the marts must go through DuckDB.
+- The marts are read by the engine that writes them. PyIceberg reads them right from 0.12 on (locked since 2026-10-19); older versions mishandle the manifest entries DuckDB writes (apache/iceberg-python#3256), and 0.10 counts the deleted rows too.
 - Each run adds data and delete files to `daily_orders` (merge-on-read), never compacted: fine at demo scale.
 - `SET iceberg_use_metadata_log = false` is required for writes.
 - The slides still describe the PyIceberg detour.
 
 ## Revisit when
 
-DuckDB 2.0 ships as stable, or duckdb-iceberg#784 is fixed (the `table` materialization or a `CREATE OR REPLACE` may become possible), or PyIceberg applies DuckDB's delete files.
+DuckDB 2.0 ships as stable, or duckdb-iceberg#784 is fixed (the `table` materialization or a `CREATE OR REPLACE` may become possible).
