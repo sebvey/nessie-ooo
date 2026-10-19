@@ -62,7 +62,7 @@ services:
       retries: 10
 
   silo:
-    image: pgsty/silo:RELEASE.2026-10-18T00-00-00Z  # Silo, community fork: the official MinIO images are no longer published
+    image: pgsty/silo:RELEASE.2026-10-18T00-00-00Z  # Silo, pgsty's community fork of MinIO: MinIO's official images are no longer published
     container_name: silo
     # S3 API on the default port 9000; console moved from its default 9001 to 9090.
     command: server /data --console-address :9090

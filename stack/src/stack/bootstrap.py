@@ -1,6 +1,6 @@
 """`mise run stack-up`: start the stack and prepare main, with an output meant to be narrated.
 
-  1. start the stack            (docker compose: Postgres, Silo (MinIO fork) + bucket, Nessie)
+  1. start the stack            (docker compose: Postgres, Silo + bucket, Nessie)
   2. initial state of Nessie    (main sits on the "commit zero", no content)
   3. create the namespaces      (raw, marts) on main -> one commit each
 
