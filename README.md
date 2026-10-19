@@ -4,11 +4,11 @@ A demo of **Project Nessie**, a Git-like versioned catalog for Iceberg tables. A
 
 ```mermaid
 flowchart LR
-    branch["Open a branch<br/>pipeline-ok-HHMMSS<br/>or pipeline-ko-HHMMSS"]
+    branch["Open a branch<br/>from main"]
     ingest["Ingest<br/>raw.orders"]
-    dbt["dbt build<br/>transform + test<br/>marts.daily_orders"]
-    merge["Merge + tag on main"]
-    alert["No merge + alert<br/>branch kept"]
+    dbt["dbt build<br/>transform + test"]
+    merge["Merge into main<br/>+ tag"]
+    alert["No merge, alert<br/>branch kept"]
     branch --> ingest --> dbt
     dbt -- tests green --> merge
     dbt -- tests red --> alert
