@@ -1,7 +1,7 @@
 """DuckDB access to the Iceberg tables of a Nessie branch: the catalog is attached as `lake`.
 
-Reads tables that DuckDB wrote (the dbt marts): PyIceberg doesn't apply the position delete files
-DuckDB writes when it replaces a table's rows, so it would count the deleted rows too.
+Reads tables that DuckDB wrote (the dbt marts) with the engine that wrote them, position delete files
+included.
 """
 
 from __future__ import annotations

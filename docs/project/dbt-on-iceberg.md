@@ -67,7 +67,7 @@ Details:
 
 DuckDB deletes rows with **position delete files** (merge-on-read): the old data files stay, and a delete file marks their rows as removed. Each run adds one data file and one delete file to `daily_orders`, never compacted. Fine at demo scale.
 
-PyIceberg 0.10 doesn't apply these delete files: read with PyIceberg, `daily_orders` returns the deleted rows too (2 rows instead of 1 on `main` after two runs). The pipeline and the notebook read the marts with DuckDB (`src/nessie_demo/lake.py`). The raw row count still comes from PyIceberg's snapshot summary, valid because `raw.orders` only gets appends.
+A reader must apply these delete files, or it returns the deleted rows too. The pipeline and the notebook read the marts with DuckDB, the engine that writes them (`src/nessie_demo/lake.py`). The raw row count still comes from PyIceberg's snapshot summary, valid because `raw.orders` only gets appends.
 
 ## One run in the branch's history
 
