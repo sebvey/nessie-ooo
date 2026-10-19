@@ -12,7 +12,14 @@ run = "docker compose down"
 
 [stack-reset]
 description = "Stop the stack and delete everything (Nessie history + Silo objects)"
-run = "docker compose down -v"
+# `down -v` alone only removes what the compose file declares now: after a service or volume is
+# renamed or removed, the old container (still holding its ports) and the old volume would stay.
+# --remove-orphans removes the containers; the volumes are found by the compose project label.
+run = """
+docker compose down -v --remove-orphans
+project=$(docker compose config | sed -n 's/^name: //p')
+docker volume ls -q --filter "label=com.docker.compose.project=$project" | xargs -r docker volume rm
+"""
 
 [pipeline-ok]
 description = "Nominal pipeline: branch -> ingest -> dbt build -> merge + tag on main"

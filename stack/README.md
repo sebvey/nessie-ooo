@@ -7,7 +7,7 @@ The local infrastructure: Nessie, its PostgreSQL version store and Silo (S3 stor
 ```bash
 mise run stack-up      # start the stack, create the raw / marts namespaces on main
 mise run stack-down    # stop the stack, keep the data
-mise run stack-reset   # stop and delete everything: Nessie history and Iceberg files
+mise run stack-reset   # stop and delete everything: Nessie history and Iceberg files, and what a renamed service or volume left behind
 mise run branches      # list Nessie branches and tags
 mise run cli           # Nessie REPL connected to main
 mise run ui-nessie     # open Nessie's web UI in the browser
