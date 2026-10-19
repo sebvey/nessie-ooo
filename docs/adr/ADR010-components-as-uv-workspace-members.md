@@ -1,6 +1,6 @@
 # ADR010 The repository is split into components, each a uv workspace member with its own dependencies, under one lock
 
-- Status: proposed
+- Status: accepted
 - Date: 2026-10-19
 - Tickets: #55
 - Basis: investigated (uv 0.13.1, 2026-10-19: a scratch workspace, then this repository; `uv run --package <member>` leaves other members' dependencies in the shared `.venv`, `uv run --exact --package <member>` removes them and the undeclared import fails; a virtual member's dependencies reach the members that depend on it)

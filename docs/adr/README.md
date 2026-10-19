@@ -17,4 +17,4 @@ The "Choices" table in [`architecture.md`](../project/architecture.md#choices) s
 | [ADR007](ADR007-tickets-move-to-github-issues.md) | Nessie's tickets move to GitHub Issues, all of them, with issue `#n` for ticket `Tn` | accepted |
 | [ADR008](ADR008-work-delivered-by-pull-requests.md) | Work is delivered by pull requests, squash-merged into a `main` protected with no bypass (public repository) | accepted |
 | [ADR009](ADR009-analysis-tickets-deliver-a-report-on-the-issue.md) | An analysis ticket delivers a report on its issue and proposed tickets, never a change to the repository | accepted |
-| [ADR010](ADR010-components-as-uv-workspace-members.md) | The repository is split into components, each a uv workspace member with its own dependencies, under one lock | proposed |
+| [ADR010](ADR010-components-as-uv-workspace-members.md) | The repository is split into components, each a uv workspace member with its own dependencies, under one lock | accepted |
