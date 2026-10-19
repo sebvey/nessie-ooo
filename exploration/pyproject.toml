@@ -1,0 +1,16 @@
+[project]
+name = "exploration"
+version = "0.1.0"
+description = "marimo notebook: pick a Nessie branch, browse its tables, query them with DuckDB"
+requires-python = ">=3.13"
+dependencies = [
+    "lakehouse-client",
+    "marimo[sql]>=0.25.1",
+]
+
+[tool.uv]
+# A notebook, not a Python package: nothing to build, only dependencies.
+package = false
+
+[tool.uv.sources]
+lakehouse-client = { workspace = true }

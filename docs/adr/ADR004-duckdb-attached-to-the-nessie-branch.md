@@ -13,7 +13,7 @@ ADR003 routed every Iceberg read and write through PyIceberg because DuckDB's Ic
 
 ## Decision
 
-- dbt attaches the Nessie catalog of the branch as `lake` (`dbt/profiles.yml`); no dbt plugin.
+- dbt attaches the Nessie catalog of the branch as `lake` (`transformation/profiles.yml`); no dbt plugin.
 - Sources read `lake.raw`; staging models are views in the local DuckDB database; mart models are Iceberg tables in `lake.marts`, materialized `incremental` with a `replace` strategy of ours (delete all rows, insert the model's result, one transaction, one Iceberg commit).
 - Tables DuckDB writes are read with DuckDB (`lake.py`: pipeline output, notebook).
 - PyIceberg stays for ingestion, namespace creation and the raw row count from snapshot metadata.

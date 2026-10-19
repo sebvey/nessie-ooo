@@ -14,10 +14,10 @@ wheels/
 .direnv
 
 # dbt
-dbt/target/
-dbt/logs/
-dbt/dbt_packages/
-dbt/.user.yml
+transformation/target/
+transformation/logs/
+transformation/dbt_packages/
+transformation/.user.yml
 *.duckdb
 
 # macOS

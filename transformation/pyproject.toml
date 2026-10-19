@@ -1,0 +1,14 @@
+[project]
+name = "transformation"
+version = "0.1.0"
+description = "The dbt project: models and tests, run by dbt-duckdb on a Nessie branch"
+requires-python = ">=3.13"
+dependencies = [
+    "dbt-duckdb>=1.11.0",
+    # The engine dbt runs on: the 2.0 pre-release reads and writes Iceberg on a Nessie branch.
+    "duckdb>=2.0.0.dev2610151406",
+]
+
+[tool.uv]
+# A dbt project, not a Python package: nothing to build, only dependencies.
+package = false

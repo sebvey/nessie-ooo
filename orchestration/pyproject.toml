@@ -1,0 +1,26 @@
+[project]
+name = "orchestration"
+version = "0.1.0"
+description = "The demo pipeline: branch, ingest, dbt build, merge or alert, narrated on the console"
+requires-python = ">=3.13"
+dependencies = [
+    "duckdb>=2.0.0.dev2610151406",
+    "ingestion",
+    "lakehouse-client",
+    "pyarrow>=26.0.0",
+    "requests>=2.34.2",
+    "rich>=15.0.0",
+    "transformation",
+]
+
+[project.scripts]
+pipeline = "orchestration.pipeline:main"
+
+[tool.uv.sources]
+ingestion = { workspace = true }
+lakehouse-client = { workspace = true }
+transformation = { workspace = true }
+
+[build-system]
+requires = ["uv_build>=0.9.21,<0.10.0"]
+build-backend = "uv_build"

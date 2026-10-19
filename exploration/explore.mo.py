@@ -8,8 +8,8 @@ app = marimo.App(width="medium")
 def _():
     import marimo as mo
 
-    from nessie_demo.lake import branch_lake
-    from nessie_demo.nessie import Nessie
+    from lakehouse_client.lake import branch_lake
+    from lakehouse_client.nessie import Nessie
 
     return Nessie, branch_lake, mo
 

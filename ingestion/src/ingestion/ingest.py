@@ -15,7 +15,7 @@ from datetime import datetime, timedelta
 import numpy as np
 import pyarrow as pa
 
-from .catalog import append_table, branch_catalog, column_max
+from lakehouse_client.catalog import append_table, branch_catalog, column_max
 
 RAW_TABLE = "raw.orders"
 ROWS_PER_RUN = 5

@@ -2,11 +2,11 @@
 
 How dbt-duckdb builds models when the Nessie catalog is attached to DuckDB as an Iceberg database, which SQL it sends, and what each run leaves in the branch's Nessie history. Why this setup: [ADR004](../adr/ADR004-duckdb-attached-to-the-nessie-branch.md).
 
-Observed on 2026-10-16 with DuckDB `2.0.0.dev2610151406`, dbt-core 1.11.16, dbt-duckdb 1.10.1, Nessie 0.106.0. The SQL comes from dbt's log (`dbt/logs/dbt.log`) and from dbt-duckdb's macros (`dbt/include/duckdb/macros/materializations/` in the installed package).
+Observed on 2026-10-16 with DuckDB `2.0.0.dev2610151406`, dbt-core 1.11.16, dbt-duckdb 1.10.1, Nessie 0.106.0. The SQL comes from dbt's log (`transformation/logs/dbt.log`) and from dbt-duckdb's macros (`dbt/include/duckdb/macros/materializations/` in the installed package).
 
 ## The setup
 
-`dbt/profiles.yml` opens a local DuckDB file (`dbt/target/nessie_demo.duckdb`), loads `httpfs` and `iceberg`, creates an S3 secret for Silo, and attaches the catalog:
+`transformation/profiles.yml` opens a local DuckDB file (`transformation/target/nessie_demo.duckdb`), loads `httpfs` and `iceberg`, creates an S3 secret for Silo, and attaches the catalog:
 
 ```sql
 ATTACH IF NOT EXISTS 'warehouse' AS lake (TYPE iceberg, ENDPOINT 'http://localhost:19120/iceberg/<branch>', AUTHORIZATION_TYPE 'none')
@@ -49,7 +49,7 @@ Nessie commit: `Create ICEBERG_TABLE marts.daily_orders`.
 
 ```sql
 create temporary table "daily_orders__dbt_tmp…" as (<query>)  -- local DuckDB, not in the catalog
--- strategy `replace` (dbt/macros/incremental_replace.sql):
+-- strategy `replace` (transformation/macros/incremental_replace.sql):
 delete from "lake"."marts"."daily_orders";
 insert into "lake"."marts"."daily_orders" by name select * from "daily_orders__dbt_tmp…";
 commit
@@ -67,7 +67,7 @@ Details:
 
 DuckDB deletes rows with **position delete files** (merge-on-read): the old data files stay, and a delete file marks their rows as removed. Each run adds one data file and one delete file to `daily_orders`, never compacted. Fine at demo scale.
 
-A reader must apply these delete files, or it returns the deleted rows too. The pipeline and the notebook read the marts with DuckDB, the engine that writes them (`src/nessie_demo/lake.py`). The raw row count still comes from PyIceberg's snapshot summary, valid because `raw.orders` only gets appends.
+A reader must apply these delete files, or it returns the deleted rows too. The pipeline and the notebook read the marts with DuckDB, the engine that writes them (`lakehouse-client/src/lakehouse_client/lake.py`). The raw row count still comes from PyIceberg's snapshot summary, valid because `raw.orders` only gets appends.
 
 ## One run in the branch's history
 

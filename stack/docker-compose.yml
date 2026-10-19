@@ -1,3 +1,6 @@
+# Fixed project name: the containers and volumes keep their names wherever the file lives.
+name: nessie-ooo
+
 services:
 
   nessie:

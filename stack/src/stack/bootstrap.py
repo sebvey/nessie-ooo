@@ -13,11 +13,11 @@ from __future__ import annotations
 import subprocess
 import sys
 
-from . import display
-from .catalog import branch_catalog, ensure_namespace
-from .display import line, short, step
-from .nessie import Nessie
-from .settings import settings
+from lakehouse_client.catalog import branch_catalog, ensure_namespace
+from lakehouse_client.nessie import Nessie
+from lakehouse_client.settings import settings
+from rich.console import Console
+from rich.table import Table
 
 MAIN = settings.main_branch
 NAMESPACES = {
@@ -25,12 +25,39 @@ NAMESPACES = {
     "marts": "transformed and tested data, ready to use",
 }
 
+TOTAL_STEPS = 3
+
+console = Console(highlight=False)
+
+
+def short(h: str) -> str:
+    """Git-style short hash."""
+    return h[:7]
+
+
+def header(title: str) -> None:
+    console.print()
+    console.rule(f"[bold]{title}", align="left", style="cyan")
+
+
+def step(n: int, title: str, tool: str) -> None:
+    console.print()
+    t = Table.grid(expand=True)
+    t.add_column()
+    t.add_column(justify="right")
+    t.add_row(f"[bold cyan]\\[{n}/{TOTAL_STEPS}][/] [bold]{title}", f"[dim]{tool}")
+    console.print(t)
+
+
+def line(text: str = "") -> None:
+    console.print(f"      {text}")
+
 
 def start_stack() -> None:
     result = subprocess.run(["docker", "compose", "up", "-d", "--wait", "nessie"], capture_output=True, text=True)
     if result.returncode != 0:
         line("[bold red]docker compose failed:")
-        display.console.print(result.stdout, result.stderr)
+        console.print(result.stdout, result.stderr)
         sys.exit(1)
     line("postgres [green]✓[/] · silo [green]✓[/] · bucket iceberg-warehouse [green]✓[/] · nessie [green]✓")
     line(f"[dim]Nessie        {settings.nessie_uri}")
@@ -46,21 +73,20 @@ def describe(entries: list[dict]) -> str:
 
 
 def main() -> None:
-    display.PAUSE = False
-    display.header("Setup")
+    header("Setup")
 
-    step(1, "Starting the stack", "docker compose", total=3)
+    step(1, "Starting the stack", "docker compose")
     start_stack()
 
     nessie = Nessie()
-    step(2, "Initial state of Nessie", "Nessie API", total=3)
+    step(2, "Initial state of Nessie", "Nessie API")
     before = nessie.ref_hash(MAIN)
     zero = nessie.no_ancestor_hash()
     commits = "no commit (commit zero)" if before == zero else "already has commits"
     line(f"main @ [bold]{short(before)}[/]: {commits}")
     line(f"content: {describe(nessie.entries(MAIN))}")
 
-    step(3, "Creating the namespaces on main", "PyIceberg", total=3)
+    step(3, "Creating the namespaces on main", "PyIceberg")
     existing = {".".join(e["name"]["elements"]) for e in nessie.entries(MAIN) if e["type"] == "NAMESPACE"}
     catalog = branch_catalog(MAIN)
     created = 0
@@ -76,7 +102,7 @@ def main() -> None:
         line(f"main @ [bold]{short(after)}[/] (+{created} commits: one per namespace)")
     else:
         line(f"main @ [bold]{short(after)}[/] (unchanged)")
-    display.console.print()
+    console.print()
 
 
 if __name__ == "__main__":
